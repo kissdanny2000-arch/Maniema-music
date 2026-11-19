@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ManiMusic</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0E4;--card:#fff;--ink:#0F241B;--mut:#5A6B60;--g:#1F5B3F;--gold:#F2B138;--red:#B8432B;--line:#D5DBC8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1913;--card:#15271E;--ink:#EAF0E2;--mut:#93A598;--g:#5BBE8A;--line:#25392D;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1913;--card:#15271E;--ink:#EAF0E2;--mut:#93A598;--g:#5BBE8A;--line:#25392D;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Inter',system-ui,sans-serif;padding-bottom:84px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--g);z-index:10}
+header{background:var(--g);color:#fff;padding:18px 16px 20px;position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+header h1{margin:0;font-size:28px;font-weight:800;letter-spacing:-.5px}header h1 span{color:var(--gold)}
+header p{margin:2px 0 0;font-size:14px;opacity:.85}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1,h2,.hero h2{font-family:'Poppins','Inter',system-ui,sans-serif}h2{font-size:22px;margin:4px 0 12px;font-weight:700;letter-spacing:-.3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.song{display:flex;gap:12px;align-items:center}
+.cov{flex:none;width:56px;height:56px;border-radius:10px;display:grid;place-items:center;font-weight:800;color:#fff;font-size:22px}
+.song b{display:block}.song small,.mut{color:var(--mut);font-size:14px}
+.song .r{margin-left:auto;text-align:right}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 14px;background:var(--g);color:#fff;cursor:pointer}
+button.alt{background:var(--gold);color:#1a1405}button.no{background:var(--red)}button.ghost{background:transparent;color:var(--g);border:1.5px solid var(--g)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:9}
+nav button{flex:1;background:none;color:var(--mut);padding:8px 2px;font-size:12px;border-radius:8px}
+nav button.on{color:var(--g);background:color-mix(in srgb,var(--gold) 30%,transparent)}
+nav button i{display:block;font-style:normal;font-size:20px}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--line);margin-right:4px}
+.ann{border-left:5px solid var(--gold)}
+.bal{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bal div{background:var(--g);color:#fff;border-radius:12px;padding:14px}
+.bal strong{display:block;font-size:26px;letter-spacing:-1px}
+label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.pay{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
+dialog{border:0;border-radius:16px;padding:18px;width:min(92vw,460px);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:#000a}dialog{max-height:88vh;overflow:auto}
+.row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:20;display:none;max-width:90vw}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,#0F3D2A,#1F5B3F)}header p{font-size:13px}.role{background:rgba(255,255,255,.16);color:#fff;font-size:12px;padding:7px 11px;border-radius:99px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl{display:inline-block;color:#fff;font-weight:600;font-size:13px;padding:6px 12px;border-radius:99px;margin:3px}.hero{background:var(--g);color:#fff;border-radius:16px;padding:20px;margin-bottom:14px}.hero small{letter-spacing:2px;opacity:.85}.hero h2{font-size:52px;font-weight:800;margin:0;letter-spacing:-1px;color:var(--gold);line-height:1.05}.hero p{margin:4px 0 0;font-size:18px;font-weight:600}.arts{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;margin-bottom:12px}.art{flex:none;width:84px;text-align:center;cursor:pointer;font-size:13px}.art .av{width:72px;height:72px;border-radius:50%;margin:0 auto 4px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:26px}
+.sec{display:none}.sec.on{display:block}
+</style></head><body>
+<header><div><h1>♪ Mani<span>Music</span></h1><p>La musique du Maniema</p></div><button id="role" class="role" onclick="openWel()">Visiteur</button></header>
+<main>
+<section class="sec on" id="sorties"><div id="artBar"></div><div class="hero"><small>PROVINCE DU</small><h2>Maniema</h2><p>Découvrez la musique du Maniema</p></div><h2 style="font-size:18px">Artistes du Maniema</h2><div id="arts" class="arts"></div><input id="q" type="search" placeholder="Chercher un artiste ou une chanson" aria-label="Recherche" oninput="V.art=null;render()"><div class="row" style="margin-bottom:12px"><button class="ghost" onclick="show('achats')">Mes achats</button></div><div class="row"><button class="ghost" onclick="V.top='new';render()">Nouveautés</button><button class="ghost" onclick="V.top='plays';render()">Top lectures</button><button class="ghost" onclick="V.top='buys';render()">Top ventes</button></div><h2>Sorties</h2><div id="sorties-l"></div></section>
+<section class="sec" id="actus"><h2>Actualités des artistes</h2><div id="actBtn"></div><div id="actus-l"></div>
+</section>
+<section class="sec" id="annonces"><h2>Annonces de ManiMusic</h2><div id="ann-l"></div></section>
+<section class="sec" id="services"><h2>Services</h2>
+<div class="card"><b>Distribution sur toutes les plateformes de streaming</b><div style="margin:8px 0"><span class="pl" style="background:#158a3e">Spotify</span><span class="pl" style="background:#d6213a">Apple Music</span><span class="pl" style="background:#c62828">YouTube Music</span><span class="pl" style="background:#6d28d9">Deezer</span><span class="pl" style="background:#111">TikTok</span><span class="pl" style="background:#1558b8">Facebook</span><span class="pl" style="background:#b02a78">Instagram</span><span class="pl" style="background:#1a6fb5">Amazon Music</span><span class="pl" style="background:#0a7a8f">Boomplay</span><span class="pl" style="background:#a86200">Audiomack</span></div><p class="mut">Vos chansons sont publiées partout dans le monde.</p><b>5 $ par chanson</b><div class="row"><button class="alt" onclick="toast('Demande envoyée. Nous vous contactons.')">Demander ce service</button></div></div>
+<div class="card"><b>Réservation d’artistes</b><p class="mut">Concerts, mariages, fêtes : contactez l’artiste directement.</p></div></section>
+<section class="sec" id="compte"><h2>Mon compte</h2><div class="row" style="margin:0 0 12px"><button style="flex:1" onclick="openSong()">🎵 Poster une chanson</button><button class="alt" style="flex:1" onclick="openNews()">📰 Publier une actualité</button></div><div id="prof"></div>
+
+<div class="bal"><div>Solde USD<strong id="bu">0,00 $</strong></div><div>Solde CDF<strong id="bc">0 FC</strong></div></div>
+<h2 style="font-size:17px;margin-top:16px">Mes chansons</h2><div id="mine"></div>
+<div class="card" id="postNews"><b>Publier une actualité</b><label for="na">Concert, sortie, annonce…</label><textarea id="na" rows="3" placeholder="Ex. Concert samedi à Kindu"></textarea><label for="nm">Photo ou vidéo (facultatif)</label><input id="nm" type="file" accept="image/*,video/*"><p class="mut">Votre publication est vérifiée avant d’apparaître.</p><div class="row"><button onclick="addActu()">Envoyer pour validation</button></div></div><div id="myNews"></div>
+<div class="card" id="postSong"><b>Poster une chanson</b>
+<label for="sk">Type</label><select id="sk" onchange="kind()"><option value="song">Chanson</option><option value="beat">Beat / instrumentale</option></select>
+<label for="stt">Titre</label><input id="stt">
+<label for="sf">Fichier audio</label><input id="sf" type="file" accept="audio/*">
+<p class="mut" id="fp">Prix fixe pour toute chanson ou tout beat : 1 $ ou 2 800 FC.</p><div id="bp" style="display:none"><label for="sp">Prix du beat en dollars ($)</label><input id="sp" type="number" inputmode="decimal">
+<label for="sq">Prix en francs (FC)</label><input id="sq" type="number" inputmode="numeric"></div>
+<label for="si">Pièce d’identité</label><input id="si" type="file" accept="image/*,.pdf">
+<label style="display:flex;gap:8px;align-items:flex-start"><input id="so" type="checkbox" style="width:auto;margin-top:4px"> Je certifie être l’auteur et propriétaire des droits de cette chanson.</label>
+<p class="mut">Votre chanson est vérifiée avant d’apparaître dans Sorties.</p>
+<div class="row"><button onclick="postSong()">Envoyer pour validation</button></div></div>
+<div class="card" style="margin-top:12px"><b>Retirer mes gains</b><p class="mut">Minimum : 5 $ ou 10 000 FC. Vous gardez 70 % de chaque vente.</p>
+<label for="wc">Monnaie</label><select id="wc"><option>USD</option><option>CDF</option></select>
+<label for="wa">Montant</label><input id="wa" type="number" inputmode="decimal">
+<label for="wn">Numéro mobile money</label><input id="wn" inputmode="tel" placeholder="+243 …">
+<div class="row"><button onclick="withdraw()">Demander le retrait</button></div></div>
+<h2>Historique</h2><div id="hist"><p class="mut">Aucun mouvement pour l’instant.</p></div></section>
+<section class="sec" id="achats"><h2>Mes achats</h2><p id="fid" class="mut"></p><div class="card"><label for="bn">Numéro utilisé pour payer</label><input id="bn" inputmode="tel" placeholder="+243 …"><div class="row"><button onclick="buysView()">Voir mes achats</button><button class="ghost" onclick="show('sorties')">Retour</button></div></div><div id="bl"></div></section>
+<section class="sec" id="inscr"><h2>Créer mon compte artiste</h2><div class="card">
+<label for="rc">Photo de couverture</label><input id="rc" type="file" accept="image/*" onchange="pic(this,'cv')">
+<label for="rp">Photo de profil</label><input id="rp" type="file" accept="image/*" onchange="pic(this,'ph')">
+<label for="rk">Type de compte</label><select id="rk"><option>Artiste</option><option>DJ / ingénieur du son</option></select>
+<label for="rn">Nom d’artiste ou de DJ</label><input id="rn">
+<label for="rd">Date de naissance</label><input id="rd" type="date">
+<label for="ry">Pays</label><select id="ry"><option>RDC</option></select>
+<label for="rv">Province</label><select id="rv" onchange="cities()"></select>
+<label for="rt">Ville</label><input id="rt" list="vl" placeholder="Choisissez ou écrivez"><datalist id="vl"></datalist>
+<label for="rg">Genre de chansons</label><select id="rg"><option>Rumba</option><option>Afro-pop</option><option>Gospel</option><option>Hip-hop</option><option>Ndombolo</option><option>Traditionnel</option><option>Autre</option></select>
+<label for="rs">Style</label><input id="rs" placeholder="Ex. rumba lente, afro-fusion">
+<label for="rb">Biographie</label><textarea id="rb" rows="3"></textarea>
+<label for="rr">Réseau mobile money</label><select id="rr"><option>M-Pesa (Vodacom)</option><option>Airtel Money</option><option>Orange Money</option></select>
+<label for="rm">Numéro pour vos retraits</label><input id="rm" inputmode="tel" placeholder="+243 …">
+<details class="card" style="margin-top:12px"><summary><b>Lire le règlement</b></summary><ol><li>Je suis l’auteur et le propriétaire des droits de ce que je publie.</li><li>Aucun contenu haineux, violent, sexuel explicite ou diffamatoire.</li><li>Les chansons coûtent 1 $ ou 2 800 FC. Chaque vente est partagée : 70 % pour moi, 30 % pour ManiMusic.</li><li>Chaque chanson et chaque publication est vérifiée. ManiMusic peut refuser ou retirer un contenu.</li><li>Aucune fraude ni faux paiement. Un parent donne son accord si j’ai moins de 18 ans.</li></ol></details>
+<label style="display:flex;gap:8px;align-items:flex-start"><input id="rg2" type="checkbox" style="width:auto;margin-top:4px"> J’ai lu et je respecte le règlement de ManiMusic.</label>
+<div class="row"><button onclick="register()">Créer mon compte</button></div></div></section>
+<section class="sec" id="admin"><h2>Espace propriétaire</h2>
+<div class="card"><b>Publier une annonce</b><input id="an" placeholder="Votre annonce" aria-label="Annonce"><div class="row"><button onclick="addAnn()">Publier</button></div></div><h2 style="font-size:17px">Chansons à valider</h2><div id="a-songs"></div>
+<h2 style="font-size:17px">Publications à valider</h2><div id="a-posts"></div>
+<h2 style="font-size:17px">Paiements à valider</h2><div id="a-pay"></div>
+<h2 style="font-size:17px">Retraits à payer</h2><div id="a-wd"></div></section>
+<p style="text-align:center;font-size:12px;margin:24px 0 0"><a href="#" onclick="adminLogin();return false" style="color:var(--mut)">Espace propriétaire</a></p></main>
+<nav>
+<button class="on" data-t="sorties"><i>⌂</i>Accueil</button>
+<button data-t="actus"><i>✦</i>Actus</button>
+<button data-t="annonces"><i>📢</i>Annonces</button>
+<button data-t="services"><i>🌍</i>Services</button>
+<button data-t="compte"><i>👤</i>Compte</button>
+<button data-t="admin"><i>🛡</i>Admin</button>
+</nav>
+<dialog id="dlg"><h2 id="dt"></h2>
+<label for="cur">Payer en</label><select id="cur" onchange="payUI()"><option value="USD">Dollars (USD)</option><option value="CDF">Francs congolais (CDF)</option></select>
+<p>Montant à payer : <b id="amt"></b></p><label for="op">Votre opérateur</label><select id="op"><option>M-Pesa (Vodacom)</option><option>Airtel Money</option><option>Orange Money</option></select>
+
+
+
+<label for="pn">Votre numéro</label><input id="pn" inputmode="tel">
+<div id="ps" class="mut" style="margin-top:10px"></div>
+<div class="row"><button id="pb" onclick="submitPay()">Payer</button><button class="ghost" onclick="dlg.close()">Annuler</button></div></dialog>
+<dialog id="wel"><h2>Bienvenue sur ManiMusic</h2><p>Vous êtes :</p><div class="row"><button onclick="isFan()">Je suis fan</button><button class="alt" onclick="isArtist()">Je suis artiste / DJ</button><button class="ghost" onclick="$('wel').close();adminLogin()">Propriétaire</button></div></dialog>
+<dialog id="newsDlg"></dialog><dialog id="songDlg"></dialog>
+<div id="toast" role="status"></div>
+<script>
+const $=id=>document.getElementById(id),dlg=$('dlg');
+const cols=['#1F5B3F','#B8432B','#7A5A12','#2B5F8A'];
+const fx=n=>n.toLocaleString('fr-FR');
+const S={songs:[
+{id:1,t:'Kindu Nights',a:'Kasongo Flow',v:'Kindu',g:'Rumba',u:1,c:2800,st:'ok'},
+{id:2,t:'Lualaba',a:'Mama Kailo',v:'Kailo',g:'Afro',u:1,c:2800,st:'ok'},
+{id:3,t:'Soko ya Kasongo',a:'Dj Masisi',v:'Kasongo',g:'Gospel',u:1,c:2800,st:'ok'},
+{id:5,t:'Kindu Drill',a:'DJ Kalume',v:'Kindu',g:'Beat',u:1,c:2800,st:'ok',k:'beat'},
+{id:4,t:'Nzela Mpya',a:'Kasongo Flow',v:'Kindu',g:'Rumba',u:1,c:2800,st:'wait'}],
+actus:[{a:'Mama Kailo',x:'Concert samedi soir à Kailo, entrée libre.'}],
+ann:['Bienvenue sur ManiMusic ! Chaque chanson est vérifiée avant sa publication.','Les retraits sont payés sous 24 h.'],
+pays:[],wds:[],bal:{USD:0,CDF:0},hist:[]};
+let cur=null;
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
+function show(t){let to=t;if(t=='compte'){if(S.mode=='artist')to=S.me?'compte':'inscr';else if(S.mode=='fan')to='achats';else{openWel();to='sorties'}}if(t=='admin'&&!S.admin)to='sorties';document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id===to));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.t));
+function render(){role();renderMe();
+$('sorties-l').innerHTML=S.songs.filter(s=>s.st=='ok').map(s=>`<div class="card song"><div class="cov" style="background:${cols[s.id%4]}">${s.t[0]}</div><div><b>${s.t}</b><small>${s.a} · ${s.v}</small><br><span class="tag">${s.k=='beat'?'Beat':s.g}</span><span class="tag">Artiste vérifié</span></div><div class="r"><b>${s.u} $</b><small>${fx(s.c)} FC</small><br><button class="alt" onclick="buy(${s.id})">Acheter</button></div></div>`).join('');
+$('actus-l').innerHTML=S.actus.map(a=>`<div class="card"><b>${a.a}</b><p style="margin:4px 0 0">${a.x}</p></div>`).join('');
+$('ann-l').innerHTML=S.ann.map(a=>`<div class="card ann">${a}</div>`).join('');
+$('bu').textContent=S.bal.USD.toFixed(2).replace('.',',')+' $';$('bc').textContent=fx(Math.round(S.bal.CDF))+' FC';
+if(S.hist.length)$('hist').innerHTML=S.hist.map(h=>`<div class="pay"><span>${h[0]}</span><b>${h[1]}</b></div>`).join('');
+const w=S.songs.filter(s=>s.st=='wait');
+$('a-songs').innerHTML=w.length?w.map(s=>`<div class="card"><b>${s.t}</b> · ${s.a}<p class="mut">Déclaration sur l’honneur et pièce d’identité reçues.</p><div class="row"><button onclick="appr(${s.id},1)">Approuver</button><button class="no" onclick="appr(${s.id},0)">Refuser</button></div></div>`).join(''):'<p class="mut">Rien en attente.</p>';
+$('a-pay').innerHTML=S.pays.length?S.pays.map((p,i)=>`<div class="card"><b>${p.t}</b><p class="mut">${p.m} · ${p.n} · Réf. ${p.r}</p><div class="row"><button onclick="okPay(${i})">Valider le paiement</button><button class="no" onclick="S.pays.splice(${i},1);render()">Rejeter</button></div></div>`).join(''):'<p class="mut">Aucun paiement en attente.</p>';
+$('a-wd').innerHTML=S.wds.length?S.wds.map((p,i)=>`<div class="card"><b>${p.m}</b> vers ${p.n}<div class="row"><button onclick="okWd(${i})">Marquer payé</button></div></div>`).join(''):'<p class="mut">Aucune demande.</p>';renderSearch()}
+function buy(id){cur=S.songs.find(s=>s.id==id);$('dt').textContent=cur.t;$('ps').innerHTML='';$('pb').disabled=false;payUI();dlg.showModal()}
+function payUI(){const c=$('cur').value;$('amt').textContent=c=='USD'?cur.u+' $':fx(cur.c)+' FC'}
+function oldSubmitPay(){const r=$('pr').value.trim(),n=$('pn').value.trim();
+if(!r||!n)return toast('Saisissez votre numéro et la référence.');
+if(S.pays.some(p=>p.r==r))return toast('Cette référence est déjà utilisée.');
+S.pays.push({s:cur,t:cur.t,c:$('cur').value,m:$('amt').textContent,n,r});dlg.close();render();toast('Paiement envoyé. Il sera vérifié avant le téléchargement.')}
+function okPay(i){const p=S.pays.splice(i,1)[0],v=(p.c=='USD'?p.s.u:p.s.c)*.7;S.bal[p.c]+=v;S.hist.unshift(['Vente : '+p.t,'+'+(p.c=='USD'?v.toFixed(2)+' $':fx(Math.round(v))+' FC')]);render();toast('Paiement validé. 70 % crédités à l’artiste.')}
+function appr(id,ok){const s=S.songs.find(x=>x.id==id);s.st=ok?'ok':'no';if(!ok)s.why=prompt('Motif du refus ?')||'Droits non prouvés';render();toast(ok?'Chanson approuvée. Elle apparaît dans Sorties.':'Chanson refusée. L’artiste est prévenu.')}
+function oldAddActu(){const v=$('na').value.trim();if(!v)return;S.actus.unshift({a:S.me.name,x:v});$('na').value='';render();toast('Actualité publiée.')}
+function withdraw(){const c=$('wc').value,a=+$('wa').value,n=$('wn').value.trim(),min=c=='USD'?5:10000;
+if(!n)return toast('Saisissez votre numéro mobile money.');
+if(a<min)return toast('Minimum : '+(c=='USD'?'5 $':'10 000 FC')+'.');
+if(a>S.bal[c])return toast('Solde insuffisant.');
+S.bal[c]-=a;S.wds.push({m:a+(c=='USD'?' $':' FC'),n,c,a});S.hist.unshift(['Retrait demandé',(c=='USD'?a+' $':fx(a)+' FC')]);render();toast('Demande envoyée. Le solde est réservé.')}
+function okWd(i){S.wds.splice(i,1);render();toast('Retrait marqué payé.')}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PROV=['Bas-Uele','Équateur','Haut-Katanga','Haut-Lomami','Haut-Uele','Ituri','Kasaï','Kasaï-Central','Kasaï-Oriental','Kinshasa','Kongo-Central','Kwango','Kwilu','Lomami','Lualaba','Mai-Ndombe','Maniema','Mongala','Nord-Kivu','Nord-Ubangi','Sankuru','Sud-Kivu','Sud-Ubangi','Tanganyika','Tshopo','Tshuapa'];
+const CITY={'Maniema':['Kindu','Kasongo','Kailo','Punia','Pangi','Kabambare','Lubutu'],'Nord-Kivu':['Goma','Butembo','Beni'],'Sud-Kivu':['Bukavu','Uvira'],'Haut-Katanga':['Lubumbashi','Likasi'],'Tshopo':['Kisangani'],'Kinshasa':['Kinshasa'],'Lualaba':['Kolwezi'],'Kasaï-Oriental':['Mbuji-Mayi']};
+const LBL={ok:'Publiée',wait:'En attente',no:'Refusée'},T={};
+const V={art:null,top:'new'};S.buys=[];
+const seed={1:[540,12,35],2:[310,6,18],3:[180,3,9],5:[260,8,14]};S.songs.forEach(s=>{const x=seed[s.id];if(x){s.p=x[0];s.d=x[1];s.b=x[2]}});
+S.actus[0].n=24;S.actus[0].c=[['Fan-1042','Hâte d’y être !']];
+function row(s){return `<div class="card"><div class="song"><div class="cov" style="background:${cols[s.id%4]}">${esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u> · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span><span class="tag">Artiste vérifié</span></div><div class="r"><b>${s.u} $</b><small>${fx(s.c)} FC</small></div></div><div class="row" style="align-items:center"><button class="ghost" onclick="play(${s.id})">▶ Écouter 30 s</button><button class="alt" onclick="buy(${s.id})">Acheter</button><small class="mut">▶ ${s.p||0} · ⬇ ${s.d||0} · 🛒 ${s.b||0}</small></div></div>`}
+const who=()=>{const w=S.mode=='fan'?S.fan.id:(S.mode=='artist'&&S.me)?S.me.name:null;if(!w)openWel();return w};
+function play(id){const s=S.songs.find(x=>x.id==id);s.p=(s.p||0)+1;render();toast('Lecture de 30 secondes · '+s.p+' lectures')}
+function dl(id){const s=S.songs.find(x=>x.id==id);s.d=(s.d||0)+1;render();toast('Téléchargement lancé (démo).')}
+function like(i){if(!who())return;const a=S.actus[i];a.l=!a.l;a.n=(a.n||0)+(a.l?1:-1);render()}
+const WEL0=$('wel').innerHTML;function openWel(){$('wel').innerHTML=WEL0;$('wel').showModal()}
+$('newsDlg').insertAdjacentHTML('afterbegin','<div class="row" style="margin:0 0 8px"><button class="ghost" onclick="newsDlg.close()">Fermer</button></div>');$('newsDlg').appendChild($('postNews'));
+$('songDlg').insertAdjacentHTML('afterbegin','<div class="row" style="margin:0 0 8px"><button class="ghost" onclick="songDlg.close()">Fermer</button></div>');$('songDlg').appendChild($('postSong'));
+function openNews(){$('newsDlg').showModal()}
+function openSong(){$('songDlg').showModal()}
+function adminLogin(){const c=prompt('Code propriétaire');if(c==='MANI2026'){S.admin=true;render();show('admin');toast('Espace propriétaire ouvert.')}else if(c!==null)toast('Code incorrect.')}
+function role(){const m=S.mode,ad=S.admin,nb=t=>document.querySelector('nav button[data-t="'+t+'"]');
+$('role').textContent=ad?'🛡 Propriétaire':m=='fan'?'👤 Fan · '+S.fan.id:m=='artist'?'🎤 '+(S.me?S.me.name:'Artiste'):'Visiteur ⇄';
+nb('services').style.display=(m=='artist'||ad)?'':'none';nb('admin').style.display=ad?'':'none';
+nb('compte').innerHTML=m=='fan'?'<i>🛒</i>Mes achats':'<i>👤</i>Compte';
+const mk=(a,b)=>m=='artist'?(S.me?'<div class="row" style="margin:0 0 12px">'+a+'</div>':'<div class="row" style="margin:0 0 12px"><button onclick="show(\'compte\')">Créer mon compte artiste</button></div>'):'';
+$('artBar').innerHTML=mk('<button onclick="openSong()">＋ Poster une chanson</button><button class="alt" onclick="openNews()">＋ Publier une actualité</button>');
+$('actBtn').innerHTML=mk('<button class="alt" onclick="openNews()">＋ Publier une actualité</button>')}
+function go(id){const e=$(id);e.style.scrollMarginTop='110px';e.scrollIntoView({behavior:'smooth',block:'start'})}
+function openN(i){V.art=V.al[i];$('q').value='';render();show('sorties')}
+function appN(i,ok){S.actus[i].st=ok?'ok':'no';render();toast(ok?'Publication approuvée.':'Publication refusée.')}
+function addActu(){const v=$('na').value.trim(),f=$('nm').files[0];if(!v)return toast('Écrivez votre actualité.');const add=(m,k)=>{S.actus.unshift({a:S.me.name,x:v,st:'wait',m,k});$('na').value='';$('nm').value='';$('newsDlg').close();render();toast('Envoyée. Elle apparaît après validation.')};if(!f)return add();const r=new FileReader();r.onload=()=>add(r.result,f.type.startsWith('video')?'v':'i');r.readAsDataURL(f)}
+function comment(i){const w=who(),v=$('cm'+i).value.trim();if(!w||!v)return;(S.actus[i].c=S.actus[i].c||[]).push([w,v]);render()}
+S.al={};function likeA(i){if(!who())return;const a=S.ann[i],k=S.al[a]=S.al[a]||{n:0,l:false};k.l=!k.l;k.n+=k.l?1:-1;render()}
+function kind(){const b=false;$('bp').style.display=b?'block':'none';$('fp').style.display=b?'none':'block'}
+function addAnn(){const v=$('an').value.trim();if(!v)return;S.ann.unshift(v);$('an').value='';render();toast('Annonce publiée.')}
+function isArtist(){S.mode='artist';$('wel').close();render();show('compte')}
+function isFan(){S.mode='fan';if(!S.fan)S.fan={id:'Fan-'+(1000+Math.floor(Math.random()*9000)),code:String(1000+Math.floor(Math.random()*9000))};
+render();$('fid').innerHTML='Identifiant : <b>'+S.fan.id+'</b> · Code : <b>'+S.fan.code+'</b>';
+$('wel').innerHTML=`<h2>Compte fan créé</h2><p>Gardez ces identifiants pour vous reconnecter :</p><div class="card"><b>${S.fan.id}</b><br>Code : <b>${S.fan.code}</b></div><div class="row"><button onclick="$('wel').close()">Découvrir les sorties</button></div>`}
+openWel();
+function oldRow(s){return `<div class="card song"><div class="cov" style="background:${cols[s.id%4]}">${esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u> · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span><span class="tag">Artiste vérifié</span></div><div class="r"><b>${s.u} $</b><small>${fx(s.c)} FC</small><br><button class="alt" onclick="buy(${s.id})">Acheter</button></div></div>`}
+function openArt(id){V.art=S.songs.find(s=>s.id==id).a;$('q').value='';render();show('sorties')}
+function renderActus(){{const as=[...new Set(S.songs.filter(s=>s.st=='ok').map(s=>s.a))];if(S.me&&!as.includes(S.me.name))as.push(S.me.name);V.al=as;$('arts').innerHTML=as.map((a,i)=>{const m=S.me&&S.me.name==a&&S.me.ph;return `<div class="art" onclick="openN(${i})"><div class="av" style="background:${m?`url(${S.me.ph}) center/cover`:cols[a.length%4]}">${m?'':esc(a[0])}</div>${esc(a)}</div>`}).join('')}
+if(S.me&&$('myNews'))$('myNews').innerHTML=S.actus.filter(a=>a.a==S.me.name&&a.st&&a.st!='ok').map(a=>`<div class="card"><span class="tag">${a.st=='wait'?'En attente':'Refusée'}</span> ${esc(a.x)}</div>`).join('');
+{const w=S.actus.map((a,i)=>a.st=='wait'?`<div class="card"><b>${esc(a.a)}</b><p>${esc(a.x)}</p>${a.m?`<span class="tag">${a.k=='v'?'Vidéo':'Photo'} jointe</span>`:''}<div class="row"><button onclick="appN(${i},1)">Approuver</button><button class="no" onclick="appN(${i},0)">Refuser</button></div></div>`:'').join('');$('a-posts').innerHTML=w||'<p class="mut">Aucune publication en attente.</p>'}$('ann-l').innerHTML=S.ann.map((a,i)=>{const k=S.al[a]||{};return `<div class="card ann">${esc(a)}<div class="row"><button class="ghost" onclick="likeA(${i})">${k.l?'♥':'♡'} ${k.n||0}</button></div></div>`}).join('');$('actus-l').innerHTML=S.actus.map((a,i)=>a.st&&a.st!='ok'?'':`<div class="card"><b>${esc(a.a)}</b><p style="margin:4px 0 8px">${esc(a.x)}</p>${a.m?(a.k=='v'?`<video src="${a.m}" controls style="width:100%;border-radius:10px"></video>`:`<img src="${a.m}" alt="" style="width:100%;border-radius:10px">`):''}<div class="row" style="margin:0"><button class="ghost" onclick="like(${i})">${a.l?'♥':'♡'} ${a.n||0}</button></div>${(a.c||[]).map(c=>`<p class="mut" style="margin:8px 0 0"><b>${esc(c[0])}</b> : ${esc(c[1])}</p>`).join('')}<div class="row"><input id="cm${i}" placeholder="Votre commentaire" aria-label="Commentaire" style="flex:1"><button onclick="comment(${i})">Envoyer</button></div></div>`).join('')}
+function renderSearch(){renderActus();const q=$('q').value.trim().toLowerCase(),ok=S.songs.filter(s=>s.st=='ok');let h;
+if(V.art){const l=ok.filter(s=>s.a==V.art);h=`<button class="ghost" onclick="V.art=null;render()">Retour aux sorties</button><div class="card" style="margin-top:10px"><b style="font-size:20px">${esc(V.art)}</b><br><small class="mut">${esc(l[0]?l[0].v:'')} · ${l.length} titre(s)</small></div>`+l.map(row).join('')}
+else if(q){const as=[...new Set(ok.filter(s=>s.a.toLowerCase().includes(q)).map(s=>s.a))],ts=ok.filter(s=>s.t.toLowerCase().includes(q));
+h=(as.length?'<h2 style="font-size:17px">Artistes</h2>'+as.map(a=>{const f=ok.find(s=>s.a==a);return `<div class="card song"><div class="cov" style="background:${cols[f.id%4]}">${esc(a[0])}</div><div><b>${esc(a)}</b><small>${esc(f.v)}</small></div><div class="r"><button onclick="openArt(${f.id})">Voir</button></div></div>`}).join(''):'')+(ts.length?'<h2 style="font-size:17px">Chansons</h2>'+ts.map(row).join(''):'');
+if(!h)h='<p class="mut">Aucun résultat. Vérifiez l’orthographe du nom ou du titre.</p>'}
+else{const o=[...ok];if(V.top=='plays')o.sort((a,b)=>(b.p||0)-(a.p||0));if(V.top=='buys')o.sort((a,b)=>(b.b||0)-(a.b||0));h=o.map(row).join('')}
+$('sorties-l').innerHTML=h}
+function submitPay(){const n=$('pn').value.trim();if(!/^\+?\d{9,13}$/.test(n.replace(/\s/g,'')))return toast('Saisissez un numéro valide.');
+$('pb').disabled=true;$('ps').innerHTML=`Un message de paiement vient d’être envoyé au <b>${esc(n)}</b> (${$('op').value}). Entrez votre code secret pour valider.<div class="row"><button class="alt" onclick="confirmPay('${esc(n)}')">Simuler la validation (démo)</button></div>`}
+function confirmPay(n){const c=$('cur').value,v=(c=='USD'?cur.u:cur.c)*.7;S.bal[c]+=v;S.hist.unshift(['Vente : '+cur.t,'+'+(c=='USD'?v.toFixed(2)+' $':fx(Math.round(v))+' FC')]);S.buys.push({n:n.replace(/\s/g,''),t:cur.t,a:cur.a,id:cur.id});cur.b=(cur.b||0)+1;
+$('ps').innerHTML=`Paiement reçu. <b>Merci !</b><div class="row"><button onclick="dl(${cur.id})">Télécharger</button><button class="ghost" onclick="dlg.close()">Fermer</button></div>`;render()}
+function buysView(){const n=$('bn').value.replace(/\s/g,''),l=S.buys.filter(b=>b.n==n);$('bl').innerHTML=l.length?l.map(b=>`<div class="card"><b>${esc(b.t)}</b> <small class="mut">${esc(b.a)}</small><div class="row"><button onclick="dl(${b.id})">Télécharger</button></div></div>`).join(''):'<p class="mut">Aucun achat trouvé pour ce numéro.</p>'}
+$('rv').innerHTML=PROV.map(p=>`<option${p=='Maniema'?' selected':''}>${p}</option>`).join('');
+function cities(){$('vl').innerHTML=(CITY[$('rv').value]||[]).map(c=>`<option value="${c}">`).join('')}cities();
+function pic(i,k){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{if(S.me){S.me[k]=r.result;renderMe()}else T[k]=r.result};r.readAsDataURL(f)}
+function register(){const n=$('rn').value.trim(),d=$('rd').value,c=$('rt').value.trim(),m=$('rm').value.trim();
+if(!n||!d||!c||!m)return toast('Remplissez nom, date de naissance, ville et numéro.');if(!$('rg2').checked)return toast('Vous devez accepter le règlement.');
+S.mode='artist';S.me={kind:$('rk').value,name:n,prov:$('rv').value,city:c,genre:$('rg').value+(($('rs').value.trim())?' · '+$('rs').value.trim():''),bio:$('rb').value.trim()||'Artiste du '+$('rv').value+'.',ph:T.ph||'',cv:T.cv||''};
+$('wn').value=m;const age=(Date.now()-new Date(d))/3.15576e10;show('compte');render();
+toast(age<18?'Compte créé. Moins de 18 ans : l’accord d’un parent sera demandé.':'Compte créé. Bienvenue sur ManiMusic !')}
+function renderMe(){const m=S.me;if(!m)return;
+$('prof').innerHTML=`<div class="card" style="padding:0;overflow:hidden"><div style="height:110px;background:${m.cv?`url(${m.cv}) center/cover`:'var(--g)'}"></div><div style="padding:14px"><div class="song"><div class="cov" style="background:${m.ph?`url(${m.ph}) center/cover`:'var(--gold)'};margin-top:-44px;border:3px solid var(--card);width:72px;height:72px">${m.ph?'':esc(m.name[0])}</div><div><b>${esc(m.name)}</b><small>${esc(m.city)}, ${m.prov} · ${esc(m.genre)}</small></div></div><p>${esc(m.bio)}</p><label for="cp">Changer la photo de profil</label><input id="cp" type="file" accept="image/*" onchange="pic(this,'ph')"><label for="cc">Changer la photo de couverture</label><input id="cc" type="file" accept="image/*" onchange="pic(this,'cv')"><label for="eb">Biographie</label><textarea id="eb" rows="3">${esc(m.bio)}</textarea><div class="row"><button class="ghost" onclick="S.me.bio=$('eb').value;renderMe();toast('Biographie enregistrée.')">Enregistrer</button></div></div></div>`;
+$('mine').innerHTML=S.songs.filter(s=>s.own).map(s=>`<div class="card"><b>${esc(s.t)}</b> <span class="tag">${LBL[s.st]}</span>${s.k=='beat'?'<span class="tag">Beat</span>':''}<p class="mut">${s.u} $ · ${fx(s.c)} FC${s.st=='no'?' · Motif : '+esc(s.why):''}</p><div class="row"><button class="no" onclick="del(${s.id})">Retirer</button></div></div>`).join('')||'<p class="mut">Aucune chanson pour l’instant. Publiez la première ci-dessous.</p>'}
+function postSong(){const t=$('stt').value.trim(),p=1,q=2800;
+if(!t||!$('sf').files.length)return toast('Ajoutez le titre et le fichier audio.');
+if(p<=0||q<=0)return toast('Fixez un prix en $ et en FC.');
+if(!$('si').files.length||!$('so').checked)return toast('Ajoutez votre pièce d’identité et cochez la certification.');
+S.songs.push({id:Date.now()%1e6,t,a:S.me.name,v:S.me.city,g:S.me.genre.split(' · ')[0],u:p,c:q,st:'wait',own:1,k:$('sk').value});
+['stt','sp','sq','sf','si'].forEach(i=>$(i).value='');$('so').checked=false;$('songDlg').close();render();toast('Chanson envoyée. Elle apparaît dans Sorties après validation.')}
+function chg(id){const s=S.songs.find(x=>x.id==id),u=+prompt('Nouveau prix en $ ?',s.u);if(u>0){s.u=u;s.c=Math.round(u*2800);render();toast('Prix modifié.')}}
+function del(id){if(confirm('Retirer cette chanson ?')){S.songs=S.songs.filter(x=>x.id!=id);render();toast('Chanson retirée.')}}
+render();
+</script></body></html>
