@@ -76,6 +76,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ba
 <section class="sec" id="inscr"><h2>Créer mon compte artiste</h2><div class="card">
 <label for="rc">Photo de couverture</label><input id="rc" type="file" accept="image/*" onchange="pic(this,'cv')">
 <label for="rp">Photo de profil</label><input id="rp" type="file" accept="image/*" onchange="pic(this,'ph')">
+<label for="re">Adresse email</label><input id="re" type="email" autocomplete="email"><label for="rw">Mot de passe (6 caractères minimum)</label><input id="rw" type="password" autocomplete="new-password">
 <label for="rk">Type de compte</label><select id="rk"><option>Artiste</option><option>DJ / ingénieur du son</option></select>
 <label for="rn">Nom d’artiste ou de DJ</label><input id="rn">
 <label for="rd">Date de naissance</label><input id="rd" type="date">
@@ -113,9 +114,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ba
 <label for="pn">Votre numéro</label><input id="pn" inputmode="tel">
 <div id="ps" class="mut" style="margin-top:10px"></div>
 <div class="row"><button id="pb" onclick="submitPay()">Payer</button><button class="ghost" onclick="dlg.close()">Annuler</button></div></dialog>
-<dialog id="wel"><h2>Bienvenue sur ManiMusic</h2><p>Vous êtes :</p><div class="row"><button onclick="isFan()">Je suis fan</button><button class="alt" onclick="isArtist()">Je suis artiste / DJ</button><button class="ghost" onclick="$('wel').close();adminLogin()">Propriétaire</button></div></dialog>
+<dialog id="wel"><h2>Bienvenue sur ManiMusic</h2><p>Vous êtes :</p><div class="row"><button onclick="isFan()">Je suis fan</button><button class="alt" onclick="isArtist()">Je suis artiste / DJ</button><button class="ghost" onclick="$('wel').close();openLogin()">J’ai déjà un compte</button><button class="ghost" onclick="$('wel').close();openLogin()">Propriétaire</button></div></dialog>
+<dialog id="logDlg"><h2>Se connecter</h2><label for="le">Email ou identifiant fan</label><input id="le" autocomplete="username"><label for="lp">Mot de passe ou code</label><input id="lp" type="password" autocomplete="current-password"><div class="row"><button onclick="doLogin()">Connexion</button><button class="ghost" onclick="logDlg.close()">Annuler</button></div></dialog>
 <dialog id="newsDlg"></dialog><dialog id="songDlg"></dialog>
 <div id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const $=id=>document.getElementById(id),dlg=$('dlg');
 const cols=['#1F5B3F','#B8432B','#7A5A12','#2B5F8A'];
@@ -140,7 +143,7 @@ $('ann-l').innerHTML=S.ann.map(a=>`<div class="card ann">${a}</div>`).join('');
 $('bu').textContent=S.bal.USD.toFixed(2).replace('.',',')+' $';$('bc').textContent=fx(Math.round(S.bal.CDF))+' FC';
 if(S.hist.length)$('hist').innerHTML=S.hist.map(h=>`<div class="pay"><span>${h[0]}</span><b>${h[1]}</b></div>`).join('');
 const w=S.songs.filter(s=>s.st=='wait');
-$('a-songs').innerHTML=w.length?w.map(s=>`<div class="card"><b>${s.t}</b> · ${s.a}<p class="mut">Déclaration sur l’honneur et pièce d’identité reçues.</p><div class="row"><button onclick="appr(${s.id},1)">Approuver</button><button class="no" onclick="appr(${s.id},0)">Refuser</button></div></div>`).join(''):'<p class="mut">Rien en attente.</p>';
+$('a-songs').innerHTML=w.length?w.map(s=>`<div class="card"><b>${s.t}</b> · ${s.a}<div class="row"><button class="ghost" onclick="viewF('audio',${s.id})">Écouter</button><button class="ghost" onclick="viewF('docs',${s.id})">Pièce d’identité</button></div><div class="row"><button onclick="appr(${s.id},1)">Approuver</button><button class="no" onclick="appr(${s.id},0)">Refuser</button></div></div>`).join(''):'<p class="mut">Rien en attente.</p>';
 $('a-pay').innerHTML=S.pays.length?S.pays.map((p,i)=>`<div class="card"><b>${p.t}</b><p class="mut">${p.m} · ${p.n} · Réf. ${p.r}</p><div class="row"><button onclick="okPay(${i})">Valider le paiement</button><button class="no" onclick="S.pays.splice(${i},1);render()">Rejeter</button></div></div>`).join(''):'<p class="mut">Aucun paiement en attente.</p>';
 $('a-wd').innerHTML=S.wds.length?S.wds.map((p,i)=>`<div class="card"><b>${p.m}</b> vers ${p.n}<div class="row"><button onclick="okWd(${i})">Marquer payé</button></div></div>`).join(''):'<p class="mut">Aucune demande.</p>';renderSearch()}
 function buy(id){cur=S.songs.find(s=>s.id==id);$('dt').textContent=cur.t;$('ps').innerHTML='';$('pb').disabled=false;payUI();dlg.showModal()}
@@ -222,7 +225,7 @@ S.mode='artist';S.me={kind:$('rk').value,name:n,prov:$('rv').value,city:c,genre:
 $('wn').value=m;const age=(Date.now()-new Date(d))/3.15576e10;show('compte');render();
 toast(age<18?'Compte créé. Moins de 18 ans : l’accord d’un parent sera demandé.':'Compte créé. Bienvenue sur ManiMusic !')}
 function renderMe(){const m=S.me;if(!m)return;
-$('prof').innerHTML=`<div class="card" style="padding:0;overflow:hidden"><div style="height:110px;background:${m.cv?`url(${m.cv}) center/cover`:'var(--g)'}"></div><div style="padding:14px"><div class="song"><div class="cov" style="background:${m.ph?`url(${m.ph}) center/cover`:'var(--gold)'};margin-top:-44px;border:3px solid var(--card);width:72px;height:72px">${m.ph?'':esc(m.name[0])}</div><div><b>${esc(m.name)}</b><small>${esc(m.city)}, ${m.prov} · ${esc(m.genre)}</small></div></div><p>${esc(m.bio)}</p><label for="cp">Changer la photo de profil</label><input id="cp" type="file" accept="image/*" onchange="pic(this,'ph')"><label for="cc">Changer la photo de couverture</label><input id="cc" type="file" accept="image/*" onchange="pic(this,'cv')"><label for="eb">Biographie</label><textarea id="eb" rows="3">${esc(m.bio)}</textarea><div class="row"><button class="ghost" onclick="S.me.bio=$('eb').value;renderMe();toast('Biographie enregistrée.')">Enregistrer</button></div></div></div>`;
+$('prof').innerHTML=`<div class="card" style="padding:0;overflow:hidden"><div style="height:110px;background:${m.cv?`url(${m.cv}) center/cover`:'var(--g)'}"></div><div style="padding:14px"><div class="song"><div class="cov" style="background:${m.ph?`url(${m.ph}) center/cover`:'var(--gold)'};margin-top:-44px;border:3px solid var(--card);width:72px;height:72px">${m.ph?'':esc(m.name[0])}</div><div><b>${esc(m.name)}</b><small>${esc(m.city)}, ${m.prov} · ${esc(m.genre)}</small></div></div><p>${esc(m.bio)}</p><label for="cp">Changer la photo de profil</label><input id="cp" type="file" accept="image/*" onchange="pic(this,'ph')"><label for="cc">Changer la photo de couverture</label><input id="cc" type="file" accept="image/*" onchange="pic(this,'cv')"><label for="eb">Biographie</label><textarea id="eb" rows="3">${esc(m.bio)}</textarea><div class="row"><button class="ghost" onclick="saveBio()">Enregistrer</button></div></div></div>`;
 $('mine').innerHTML=S.songs.filter(s=>s.own).map(s=>`<div class="card"><b>${esc(s.t)}</b> <span class="tag">${LBL[s.st]}</span>${s.k=='beat'?'<span class="tag">Beat</span>':''}<p class="mut">${s.u} $ · ${fx(s.c)} FC${s.st=='no'?' · Motif : '+esc(s.why):''}</p><div class="row"><button class="no" onclick="del(${s.id})">Retirer</button></div></div>`).join('')||'<p class="mut">Aucune chanson pour l’instant. Publiez la première ci-dessous.</p>'}
 function postSong(){const t=$('stt').value.trim(),p=1,q=2800;
 if(!t||!$('sf').files.length)return toast('Ajoutez le titre et le fichier audio.');
@@ -233,4 +236,60 @@ S.songs.push({id:Date.now()%1e6,t,a:S.me.name,v:S.me.city,g:S.me.genre.split(' �
 function chg(id){const s=S.songs.find(x=>x.id==id),u=+prompt('Nouveau prix en $ ?',s.u);if(u>0){s.u=u;s.c=Math.round(u*2800);render();toast('Prix modifié.')}}
 function del(id){if(confirm('Retirer cette chanson ?')){S.songs=S.songs.filter(x=>x.id!=id);render();toast('Chanson retirée.')}}
 render();
+
+var ME=null;
+const SB=supabase.createClient('https://xzobkpuizruxxrnkksrz.supabase.co','sb_publishable_IgMbn2cyqcp2Gjw4JzlvBQ_GVQPrEh5');
+const PUB=(b,p)=>SB.storage.from(b).getPublicUrl(p).data.publicUrl;
+async function up(b,f,uid){const p=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),r=await SB.storage.from(b).upload(p,f);if(r.error)throw r.error;return p}
+async function load(){
+const {data:{session}}=await SB.auth.getSession();ME=null;S.me=null;S.fan=null;S.admin=false;
+if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.id).single();ME=r.data}
+const ss=await SB.from('songs').select('*, profiles(name,city,genre)').order('created_at',{ascending:false});
+S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:r.status,k:r.kind,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,ap:r.audio_path,dp:r.doc_path}));
+const ns=await SB.from('news').select('*, profiles(name)').order('created_at',{ascending:false});
+S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type}));
+const an=await SB.from('announcements').select('*').order('created_at',{ascending:false});S.ann=(an.data||[]).map(r=>r.body);
+if(ME){$('wel').close();
+if(ME.role=='admin')S.admin=true;
+else if(ME.role=='fan'){S.mode='fan';S.fan={id:ME.name,code:''};$('fid').innerHTML='Identifiant : <b>'+ME.name+'</b>'}
+else{S.mode='artist';S.me={kind:ME.kind,name:ME.name,prov:ME.province,city:ME.city,genre:ME.genre||'',bio:ME.bio||'',ph:ME.avatar?PUB('avatars',ME.avatar):'',cv:''}}}
+render()}
+function openWel(){$('wel').innerHTML=ME?'<h2>Connecté</h2><p>'+esc(ME.role=='admin'?'Propriétaire':ME.name)+'</p><div class="row"><button class="no" onclick="logout();$(\'wel\').close()">Se déconnecter</button><button class="ghost" onclick="$(\'wel\').close()">Fermer</button></div>':WEL0;$('wel').showModal()}
+function openLogin(){$('logDlg').showModal()}
+function adminLogin(){openLogin()}
+async function doLogin(){let e=$('le').value.trim().toLowerCase();if(!e.includes('@'))e+='@fans.manimusic.app';
+const r=await SB.auth.signInWithPassword({email:e,password:$('lp').value});if(r.error)return toast('Identifiant ou mot de passe incorrect.');
+$('logDlg').close();$('lp').value='';await load();toast('Connecté.');if(S.admin)show('admin')}
+async function logout(){await SB.auth.signOut();S.mode=null;await load();show('sorties');toast('Déconnecté.')}
+async function isFan(){const id='Fan-'+(1000+Math.floor(Math.random()*9000)),code=String(100000+Math.floor(Math.random()*900000));
+const r=await SB.auth.signUp({email:id.toLowerCase()+'@fans.manimusic.app',password:code,options:{data:{role:'fan',name:id}}});
+if(r.error)return toast(r.error.message);if(!r.data.session)return toast('Compte créé, mais la confirmation email est active : désactivez-la dans Supabase.');
+await load();$('wel').innerHTML='<h2>Compte fan créé</h2><p>Gardez ces identifiants pour vous reconnecter :</p><div class="card"><b>'+id+'</b><br>Code : <b>'+code+'</b></div><div class="row"><button onclick="$(\'wel\').close()">Découvrir les sorties</button></div>';$('wel').showModal()}
+async function register(){const n=$('rn').value.trim(),d=$('rd').value,c=$('rt').value.trim(),m=$('rm').value.trim(),em=$('re').value.trim(),pw=$('rw').value;
+if(!n||!d||!c||!m||!em||pw.length<6)return toast('Remplissez tout (mot de passe : 6 caractères minimum).');
+if(!$('rg2').checked)return toast('Vous devez accepter le règlement.');
+const g=$('rg').value+($('rs').value.trim()?' · '+$('rs').value.trim():'');
+const r=await SB.auth.signUp({email:em,password:pw,options:{data:{role:'artist',name:n,kind:$('rk').value,province:$('rv').value,city:c,genre:g,bio:$('rb').value.trim()||'Artiste du '+$('rv').value+'.'}}});
+if(r.error)return toast(r.error.message);if(!r.data.session)return toast('Compte créé. Confirmez votre email puis connectez-vous.');
+await SB.from('artist_private').insert({id:r.data.user.id,birth:d,momo_net:$('rr').value,momo_num:m});
+if(T.file){const p=await up('avatars',T.file,r.data.user.id);await SB.from('profiles').update({avatar:p}).eq('id',r.data.user.id)}
+await load();show('compte');toast('Compte créé. Bienvenue sur ManiMusic !')}
+function pic(i,k){const f=i.files[0];if(!f)return;if(k!='ph')return toast('La photo de couverture arrive bientôt.');T.file=f;if(ME)setAvatar(f)}
+async function setAvatar(f){try{const p=await up('avatars',f,ME.id);await SB.from('profiles').update({avatar:p}).eq('id',ME.id);await load();toast('Photo mise à jour.')}catch(e){toast('Erreur : '+e.message)}}
+async function saveBio(){await SB.from('profiles').update({bio:$('eb').value}).eq('id',ME.id);await load();toast('Biographie enregistrée.')}
+async function postSong(){const t=$('stt').value.trim(),f=$('sf').files[0],d=$('si').files[0];
+if(!t||!f)return toast('Ajoutez le titre et le fichier audio.');
+if(!d||!$('so').checked)return toast('Ajoutez votre pièce d’identité et cochez la certification.');
+toast('Envoi en cours…');
+try{const a=await up('audio',f,ME.id),dc=await up('docs',d,ME.id),r=await SB.from('songs').insert({artist_id:ME.id,title:t,kind:$('sk').value,audio_path:a,doc_path:dc});if(r.error)throw r.error;
+['stt','sf','si'].forEach(i=>$(i).value='');$('so').checked=false;$('songDlg').close();await load();toast('Chanson envoyée. Elle apparaît après validation.')}catch(e){toast('Erreur : '+e.message)}}
+async function addActu(){const v=$('na').value.trim(),f=$('nm').files[0];if(!v)return toast('Écrivez votre actualité.');
+try{const m=f?await up('media',f,ME.id):null,r=await SB.from('news').insert({author_id:ME.id,body:v,media_path:m,media_type:f?(f.type.startsWith('video')?'v':'i'):null});if(r.error)throw r.error;
+$('na').value='';$('nm').value='';$('newsDlg').close();await load();toast('Envoyée. Elle apparaît après validation.')}catch(e){toast('Erreur : '+e.message)}}
+async function appr(id,ok){let why=null;if(!ok)why=prompt('Motif du refus ?')||'Droits non prouvés';await SB.from('songs').update({status:ok?'ok':'no',why}).eq('id',id);await load();toast(ok?'Chanson approuvée.':'Chanson refusée.')}
+async function appN(i,ok){await SB.from('news').update({status:ok?'ok':'no'}).eq('id',S.actus[i].id);await load();toast(ok?'Publication approuvée.':'Publication refusée.')}
+async function addAnn(){const v=$('an').value.trim();if(!v)return;await SB.from('announcements').insert({body:v});$('an').value='';await load();toast('Annonce publiée.')}
+async function viewF(b,id){const s=S.songs.find(x=>x.id==id),r=await SB.storage.from(b).createSignedUrl(b=='audio'?s.ap:s.dp,300);if(r.error)return toast('Fichier introuvable.');window.open(r.data.signedUrl,'_blank')}
+function play(id){SB.rpc('inc_play',{sid:id});const s=S.songs.find(x=>x.id==id);s.p=(s.p||0)+1;render();toast('Lecture de 30 secondes · '+s.p+' lectures')}
+S.songs=[];S.actus=[];S.ann=[];render();load();
 </script></body></html>
