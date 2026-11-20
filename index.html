@@ -94,10 +94,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ba
 <label for="rt">Ville</label><input id="rt" list="vl" placeholder="Choisissez ou écrivez"><datalist id="vl"></datalist>
 <label for="rg">Genre de chansons</label><select id="rg"><option>Rumba</option><option>Ndombolo</option><option>Afrobeat</option><option>Afro-pop</option><option>Hip-hop</option><option>Rap</option><option>Reggae</option><option>Zouk</option><option>Afro-compas</option><option>Gospel</option><option>Traditionnel</option><option>Autre</option></select>
 <label for="rs">Style</label><input id="rs" placeholder="Ex. rumba lente, afro-fusion">
-<label for="rb">Biographie</label><textarea id="rb" rows="3"></textarea>
+<label for="rb">Description</label><textarea id="rb" rows="3"></textarea>
 <label for="rr">Réseau mobile money</label><select id="rr"><option>M-Pesa (Vodacom)</option><option>Airtel Money</option><option>Orange Money</option></select>
 <label for="rm">Numéro pour vos retraits</label><input id="rm" inputmode="tel" placeholder="+243 …">
-<h3 style="margin:14px 0 0">Mes réseaux (facultatif)</h3><p class="mut">Ajoutez vos liens et votre nombre d’abonnés. Ils servent au classement.</p><div id="soc-r"></div>
 <details class="card" style="margin-top:12px"><summary><b>Lire le règlement</b></summary><ol><li>Je suis l’auteur et le propriétaire des droits de ce que je publie.</li><li>Aucun contenu haineux, violent, sexuel explicite ou diffamatoire.</li><li>Chaque chanson ou beat coûte 500 FC (ou l’équivalent en dollars au taux du jour). Chaque vente est partagée : 70 % pour moi, 30 % pour ManiMusic.</li><li>Chaque chanson et chaque publication est vérifiée. ManiMusic peut refuser ou retirer un contenu.</li><li>Aucune fraude ni faux paiement. Un parent donne son accord si j’ai moins de 18 ans.</li></ol></details>
 <label style="display:flex;gap:8px;align-items:flex-start"><input id="rg2" type="checkbox" style="width:auto;margin-top:4px"> J’ai lu et je respecte le règlement de ManiMusic.</label>
 <div class="row"><button onclick="register()">Créer mon compte</button></div></div></section>
@@ -152,10 +151,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ba
 <label for="ft">Ville</label><input id="ft" list="vl">
 <label for="fg">Genre</label><select id="fg"></select>
 <label for="fs">Style</label><input id="fs">
-<label for="fb">Biographie</label><textarea id="fb" rows="3"></textarea>
+<label for="fb">Description</label><textarea id="fb" rows="3"></textarea>
 <label for="fr">Réseau mobile money</label><select id="fr"></select>
 <label for="fm">Numéro pour vos retraits (privé)</label><input id="fm" inputmode="tel">
-<h3 style="margin:14px 0 0">Mes réseaux</h3><p class="mut">Liens et nombre d’abonnés (déclaré). Ils servent au classement.</p><div id="soc-e"></div>
+<h3 style="margin:14px 0 0">Mes réseaux</h3><p class="mut">Facultatif. Remplissez seulement les plateformes que vous voulez montrer. Elles servent au classement. Laissez vide pour ne pas apparaître.</p><div id="soc-e"></div>
 <div class="row"><button onclick="saveEdit()">Enregistrer</button><button class="ghost" onclick="editDlg.close()">Annuler</button></div></dialog>
 <dialog id="certDlg"><h2>Demander la certification <span class="vf">✓</span></h2><p class="mut">Badge bleu à vie. Paiement unique : 10 000 FC.</p>
 <label for="kcur">Payer en</label><select id="kcur" onchange="certPrice()"><option value="CDF">Francs congolais (CDF)</option><option value="USD">Dollars (USD)</option></select>
@@ -283,7 +282,7 @@ S.mode='artist';S.me={kind:$('rk').value,name:n,prov:$('rv').value,city:c,genre:
 $('wn').value=m;const age=(Date.now()-new Date(d))/3.15576e10;show('compte');render();
 toast(age<18?'Compte créé. Moins de 18 ans : l’accord d’un parent sera demandé.':'Compte créé. Bienvenue sur ManiMusic !')}
 function renderMe(){const m=S.me;if(!m)return;
-$('prof').innerHTML=`<div class="card" style="padding:0;overflow:hidden"><div style="height:110px;background:${m.cv?`url(${m.cv}) center/cover`:'var(--g)'}"></div><div style="padding:14px"><div class="song"><div class="cov" style="background:${m.ph?`url(${m.ph}) center/cover`:'var(--gold)'};margin-top:-44px;border:3px solid var(--card);width:72px;height:72px">${m.ph?'':esc(m.name[0])}</div><div><b>${esc(m.name)}${vfb(ME&&ME.id)}</b><small>${esc(m.city)}, ${m.prov} · ${esc(m.genre)}</small></div></div><p>${esc(m.bio)}</p><label for="cp">Changer la photo de profil</label><input id="cp" type="file" accept="image/*" onchange="pic(this,'ph')"><label for="cc">Changer la photo de couverture</label><input id="cc" type="file" accept="image/*" onchange="pic(this,'cv')"><label for="eb">Biographie</label><textarea id="eb" rows="3">${esc(m.bio)}</textarea><div class="row"><button onclick="openEdit()">✏️ Modifier mon profil</button><button class="ghost" onclick="saveBio()">Enregistrer la bio</button></div></div></div>`;
+$('prof').innerHTML=`<div class="card" style="padding:0;overflow:hidden"><div style="height:110px;background:${m.cv?`url(${m.cv}) center/cover`:'var(--g)'}"></div><div style="padding:14px"><div class="song"><div class="cov" style="background:${m.ph?`url(${m.ph}) center/cover`:'var(--gold)'};margin-top:-44px;border:3px solid var(--card);width:72px;height:72px">${m.ph?'':esc(m.name[0])}</div><div><b>${esc(m.name)}${vfb(ME&&ME.id)}</b><small>${esc(m.city)}, ${m.prov} · ${esc(m.genre)}</small></div></div><p>${esc(m.bio)}</p><label for="cp">Changer la photo de profil</label><input id="cp" type="file" accept="image/*" onchange="pic(this,'ph')"><label for="cc">Changer la photo de couverture</label><input id="cc" type="file" accept="image/*" onchange="pic(this,'cv')"><label for="eb">Description</label><textarea id="eb" rows="3">${esc(m.bio)}</textarea><div class="row"><button onclick="openEdit()">✏️ Modifier mon profil</button><button class="ghost" onclick="saveBio()">Enregistrer la description</button></div></div></div>`;
 $('mine').innerHTML=S.songs.filter(s=>s.own).map(s=>`<div class="card"><b>${esc(s.t)}</b> <span class="tag">${LBL[s.st]}</span>${s.k=='beat'?'<span class="tag">Beat</span>':''}<p class="mut">${s.u} $ · ${fx(s.c)} FC${s.st=='no'?' · Motif : '+esc(s.why):''}</p><div class="row"><button class="no" onclick="del(${s.id})">Retirer</button></div></div>`).join('')||'<p class="mut">Aucune chanson pour l’instant. Publiez la première ci-dessous.</p>'}
 function postSong(){const t=$('stt').value.trim(),p=1,q=2800;
 if(!t||!$('sf').files.length)return toast('Ajoutez le titre et le fichier audio.');
@@ -332,10 +331,10 @@ const r=await SB.auth.signUp({email:em,password:pw,options:{data:{role:'artist',
 if(r.error)return toast(r.error.message);if(!r.data.session)return toast('Compte créé. Confirmez votre email puis connectez-vous.');
 await SB.from('artist_private').insert({id:r.data.user.id,birth:d,momo_net:$('rr').value,momo_num:m});await SB.from('profiles').update({birth:d}).eq('id',r.data.user.id);
 {const u={},id=r.data.user.id;if(T.ph)u.avatar=await up('avatars',T.ph,id);if(T.cv)u.cover=await up('avatars',T.cv,id);if(u.avatar||u.cover)await SB.from('profiles').update(u).eq('id',id)}
-try{await saveSocials(r.data.user.id,'r')}catch(e){toast(e.message)}await load();show('compte');toast('Compte créé. Bienvenue sur ManiMusic !')}
+await load();show('compte');toast('Compte créé. Bienvenue sur ManiMusic !')}
 function pic(i,k){const f=i.files[0];if(!f)return;if(k!='ph')return toast('La photo de couverture arrive bientôt.');T.file=f;if(ME)setAvatar(f)}
 async function setAvatar(f){try{const p=await up('avatars',f,ME.id);await SB.from('profiles').update({avatar:p}).eq('id',ME.id);await load();toast('Photo mise à jour.')}catch(e){toast('Erreur : '+e.message)}}
-async function saveBio(){await SB.from('profiles').update({bio:$('eb').value}).eq('id',ME.id);await load();toast('Biographie enregistrée.')}
+async function saveBio(){await SB.from('profiles').update({bio:$('eb').value}).eq('id',ME.id);await load();toast('Description enregistrée.')}
 async function postSong(){const t=$('stt').value.trim(),f=$('sf').files[0];
 if(!t||!f)return toast('Ajoutez le titre et le fichier audio.');
 if(!T.sc)return toast('Ajoutez la pochette (obligatoire).');if(!$('so').checked)return toast('Cochez la certification : vous êtes le créateur.');
@@ -476,7 +475,7 @@ S.soc=[];S.wd=[];V.pl='youtube';
 function socRows(pf,cur){return PLAT.map(p=>{const c=(cur||[]).find(x=>x.platform==p[0])||{};return `<label for="${pf}u_${p[0]}">${p[1]}</label><div class="row" style="margin:0;flex-wrap:nowrap"><input id="${pf}u_${p[0]}" type="url" placeholder="https://…" value="${esc(c.url||'')}" style="flex:2"><input id="${pf}f_${p[0]}" type="number" inputmode="numeric" placeholder="Abonnés" value="${c.followers||''}" style="flex:1"></div>`}).join('')}
 async function saveSocials(uid,pf){const rows=[],del=[];for(const p of PLAT){const u=$(pf+'u_'+p[0]).value.trim(),f=Math.max(0,parseInt($(pf+'f_'+p[0]).value)||0);if(!u){del.push(p[0]);continue}if(!/^https?:\/\//i.test(u)||!p[2].test(u))throw new Error('Lien '+p[1]+' invalide.');rows.push({artist_id:uid,platform:p[0],url:u,followers:f,updated_at:new Date().toISOString()})}
 if(rows.length){const r=await SB.from('socials').upsert(rows,{onConflict:'artist_id,platform'});if(r.error)throw r.error}if(del.length)await SB.from('socials').delete().eq('artist_id',uid).in('platform',del)}
-$('soc-r').innerHTML=socRows('r');
+
 async function loadSoc(){const r=await SB.from('socials').select('*');S.soc=r.data||[]}
 try{SB.channel('socials').on('postgres_changes',{event:'*',schema:'public',table:'socials'},()=>{loadSoc().then(render)}).subscribe()}catch(e){}
 function socHtml(id){const l=(S.soc||[]).filter(x=>x.artist_id==id);return l.length?'<div style="margin-top:10px">'+l.map(x=>{const p=PLAT.find(q=>q[0]==x.platform)||[0,x.platform];return `<div class="pay"><a href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--g);font-weight:600">${p[1]} ↗</a><span><b>${fx(x.followers)}</b> abonnés</span></div>`}).join('')+'<small class="mut">Nombre d’abonnés déclaré par l’artiste.</small></div>':''}
