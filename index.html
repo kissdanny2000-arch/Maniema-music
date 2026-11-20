@@ -64,7 +64,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ba
 <div class="card" id="postNews"><b>Publier une actualité</b><label for="na">Concert, sortie, annonce…</label><textarea id="na" rows="3" placeholder="Ex. Concert samedi à Kindu"></textarea><label for="nm">Photo ou vidéo (facultatif)</label><input id="nm" type="file" accept="image/*,video/*"><p class="mut">Votre publication est vérifiée avant d’apparaître.</p><div class="row"><button onclick="addActu()">Envoyer pour validation</button></div></div><div id="myNews"></div>
 <div class="card" id="postSong"><b>Poster une chanson</b>
 <label for="sk">Type</label><select id="sk" onchange="kind()"><option value="song">Chanson</option><option value="beat">Beat / instrumentale</option></select>
-<label for="stt">Titre</label><input id="stt">
+<label for="stt">Titre</label><input id="stt"><label for="sfeat">Featuring (facultatif)</label><input id="sfeat" placeholder="Noms séparés par des virgules"><small class="mut">Ex. : Artiste 1, Artiste 2, Artiste 3</small>
 <label for="sf">Fichier audio</label><input id="sf" type="file" accept="audio/*">
 <p class="mut" id="fp">Prix fixe pour toute chanson ou tout beat : 500 FC (ou l’équivalent en dollars au taux du jour). Écoute gratuite, téléchargement payant.</p><div id="bp" style="display:none"><label for="sp">Prix du beat en dollars ($)</label><input id="sp" type="number" inputmode="decimal">
 <label for="sq">Prix en francs (FC)</label><input id="sq" type="number" inputmode="numeric"></div>
@@ -237,7 +237,7 @@ const LBL={ok:'Publiée',wait:'En attente',no:'Refusée'},T={};
 const V={art:null,top:'new'};S.buys=[];
 const seed={1:[540,12,35],2:[310,6,18],3:[180,3,9],5:[260,8,14]};S.songs.forEach(s=>{const x=seed[s.id];if(x){s.p=x[0];s.d=x[1];s.b=x[2]}});
 S.actus[0].n=24;S.actus[0].c=[['Fan-1042','Hâte d’y être !']];
-function row(s){return `<div class="card"><div class="song"><div class="cov" style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u> · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span>${vfb(s.aid)?'<span class="tag" style="background:#1d9bf0;color:#fff">Certifié ✓</span>':''}</div><div class="r"><b>${String(s.u).replace('.',',')} $</b><small>${fx(s.c)} FC</small></div></div><div class="row" style="align-items:center"><button class="ghost" onclick="play(${s.id})">▶ Écouter</button><button class="alt" onclick="buy(${s.id})">Acheter</button><small class="mut">▶ ${s.p||0} · ⬇ ${s.d||0} · 🛒 ${s.b||0}</small></div></div>`}
+function row(s){return `<div class="card"><div class="song"><div class="cov" style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u>${s.ft?' feat. '+esc(s.ft):''} · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span>${vfb(s.aid)?'<span class="tag" style="background:#1d9bf0;color:#fff">Certifié ✓</span>':''}</div><div class="r"><b>${String(s.u).replace('.',',')} $</b><small>${fx(s.c)} FC</small></div></div><div class="row" style="align-items:center"><button class="ghost" onclick="play(${s.id})">▶ Écouter</button><button class="alt" onclick="buy(${s.id})">Acheter</button><small class="mut">▶ ${s.p||0} · ⬇ ${s.d||0} · 🛒 ${s.b||0}</small></div></div>`}
 const who=()=>{const w=S.mode=='fan'?S.fan.id:(S.mode=='artist'&&S.me)?S.me.name:null;if(!w)openWel();return w};
 function play(id){const s=S.songs.find(x=>x.id==id);s.p=(s.p||0)+1;render();toast('Lecture de 30 secondes · '+s.p+' lectures')}
 function dl(id){const s=S.songs.find(x=>x.id==id);s.d=(s.d||0)+1;render();toast('Téléchargement lancé (démo).')}
@@ -268,7 +268,7 @@ function isFan(){S.mode='fan';if(!S.fan)S.fan={id:'Fan-'+(1000+Math.floor(Math.r
 render();$('fid').innerHTML='Identifiant : <b>'+S.fan.id+'</b> · Code : <b>'+S.fan.code+'</b>';
 $('wel').innerHTML=`<h2>Compte fan créé</h2><p>Gardez ces identifiants pour vous reconnecter :</p><div class="card"><b>${S.fan.id}</b><br>Code : <b>${S.fan.code}</b></div><div class="row"><button onclick="$('wel').close()">Découvrir les sorties</button></div>`}
 openWel();
-function oldRow(s){return `<div class="card song"><div class="cov" style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u> · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span>${vfb(s.aid)?'<span class="tag" style="background:#1d9bf0;color:#fff">Certifié ✓</span>':''}</div><div class="r"><b>${String(s.u).replace('.',',')} $</b><small>${fx(s.c)} FC</small><br><button class="alt" onclick="buy(${s.id})">Acheter</button></div></div>`}
+function oldRow(s){return `<div class="card song"><div class="cov" style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u>${s.ft?' feat. '+esc(s.ft):''} · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span>${vfb(s.aid)?'<span class="tag" style="background:#1d9bf0;color:#fff">Certifié ✓</span>':''}</div><div class="r"><b>${String(s.u).replace('.',',')} $</b><small>${fx(s.c)} FC</small><br><button class="alt" onclick="buy(${s.id})">Acheter</button></div></div>`}
 function openArt(id){V.art=S.songs.find(s=>s.id==id).a;$('q').value='';render();show('sorties')}
 function renderActus(){{const as=[...new Set(S.songs.filter(s=>s.st=='ok').map(s=>s.a))];if(S.me&&!as.includes(S.me.name))as.push(S.me.name);V.al=as;$('arts').innerHTML=as.map((a,i)=>{const m=S.me&&S.me.name==a&&S.me.ph;return `<div class="art" onclick="openN(${i})"><div class="av" style="background:${m?`url(${S.me.ph}) center/cover`:cols[a.length%4]}">${m?'':esc(a[0])}</div>${esc(a)}</div>`}).join('')}
 if(S.me&&$('myNews'))$('myNews').innerHTML=S.actus.filter(a=>a.a==S.me.name&&a.st&&a.st!='ok').map(a=>`<div class="card"><span class="tag">${a.st=='wait'?'En attente':'Refusée'}</span> ${esc(a.x)}</div>`).join('');
@@ -314,7 +314,7 @@ async function load(){
 const {data:{session}}=await SB.auth.getSession();ME=null;S.me=null;S.fan=null;S.admin=false;
 if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.id).single();ME=r.data}
 const ss=await SB.from('songs').select('*, profiles(name,city,genre)').order('created_at',{ascending:false});
-S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:r.status,k:r.kind,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,aid:r.artist_id,ap:r.audio_path,dp:r.doc_path,cv:r.cover_path?PUB('media',r.cover_path):''}));
+S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:r.status,k:r.kind,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,aid:r.artist_id,ft:r.featuring||'',ap:r.audio_path,dp:r.doc_path,cv:r.cover_path?PUB('media',r.cover_path):''}));
 const ns=await SB.from('news').select('*, profiles(name)').order('created_at',{ascending:false});
 S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id}));
 const an=await SB.from('announcements').select('*').order('created_at',{ascending:false});S.ann=[];S.annx=an.data||[];
@@ -351,8 +351,8 @@ async function postSong(){const t=$('stt').value.trim(),f=$('sf').files[0];
 if(!t||!f)return toast('Ajoutez le titre et le fichier audio.');
 if(!T.sc)return toast('Ajoutez la pochette (obligatoire).');if(!$('so').checked)return toast('Cochez la certification : vous êtes le créateur.');
 if(S.songs.filter(s=>s.own&&s.st!='no').length>=3)return toast('Limite atteinte : 3 chansons par artiste pour le moment.');toast('Envoi en cours…');
-try{const a=await up('audio',f,ME.id),cv=await up('media',T.sc,ME.id),r=await SB.from('songs').insert({artist_id:ME.id,title:t,kind:$('sk').value,audio_path:a,cover_path:cv});if(r.error)throw r.error;
-['stt','sf'].forEach(i=>$(i).value='');T.sc=null;$('scs').textContent='';$('so').checked=false;$('songDlg').close();await load();toast('Chanson envoyée. Elle apparaît après validation.')}catch(e){toast('Erreur : '+e.message)}}
+try{const a=await up('audio',f,ME.id),cv=await up('media',T.sc,ME.id),r=await SB.from('songs').insert({artist_id:ME.id,title:t,kind:$('sk').value,audio_path:a,cover_path:cv,featuring:feat()});if(r.error)throw r.error;
+['stt','sf','sfeat'].forEach(i=>$(i).value='');T.sc=null;$('scs').textContent='';$('so').checked=false;$('songDlg').close();await load();toast('Chanson envoyée. Elle apparaît après validation.')}catch(e){toast('Erreur : '+e.message)}}
 async function addActu(){const v=$('na').value.trim(),f=$('nm').files[0];if(!v)return toast('Écrivez votre actualité.');
 try{const m=f?await up('media',f,ME.id):null,r=await SB.from('news').insert({author_id:ME.id,body:v,media_path:m,media_type:f?(f.type.startsWith('video')?'v':'i'):null});if(r.error)throw r.error;
 $('na').value='';$('nm').value='';$('newsDlg').close();await load();toast('Envoyée. Elle apparaît après validation.')}catch(e){toast('Erreur : '+e.message)}}
@@ -379,7 +379,7 @@ var RATE=2300;
 async function play(id){if(!ME){toast('Créez un compte fan gratuit pour écouter.');return openWel()}
 const s=S.songs.find(x=>x.id==id);if(!s||!s.ap)return toast('Fichier introuvable.');
 const r=await SB.storage.from('audio').createSignedUrl(s.ap,3600);if(r.error)return toast('Lecture impossible : '+r.error.message);
-$('au').src=r.data.signedUrl;$('pt').textContent=s.t+' · '+s.a;$('pl').style.display='block';$('au').play().catch(()=>{});
+$('au').src=r.data.signedUrl;$('pt').textContent=s.t+' · '+s.a+(s.ft?' feat. '+s.ft:'');$('pl').style.display='block';$('au').play().catch(()=>{});
 SB.rpc('inc_play',{sid:id});s.p=(s.p||0)+1;render()}
 async function dl(id){const s=S.songs.find(x=>x.id==id);if(!ME)return toast('Connectez-vous pour télécharger.');
 const r=await SB.storage.from('audio').createSignedUrl(s.ap,300,{download:s.t+'.'+s.ap.split('.').pop()});if(r.error)return toast('Téléchargement impossible.');
@@ -546,4 +546,6 @@ function supOpen(id){if(!ME){toast('Créez un compte pour soutenir un artiste.')
 function supSend(){const c=$('ucur').value,a=+$('ua').value,ph=$('uph').value.trim(),f=$('upf').files[0],min=c=='USD'?.25:500;
 if(!(a>=min))return toast('Montant minimum : '+(c=='USD'?'0,25 $':'500 FC')+'.');if(!ph)return toast('Saisissez le numéro qui envoie l’argent.');if(!f)return toast('Ajoutez la capture du transfert.');
 return busy(async()=>{const pr=await up('docs',f,ME.id),r=await SB.from('supports').insert({artist_id:V.sup,from_id:ME.id,from_name:ME.role=='admin'?'ManiMusic':ME.name,currency:c,amount:a,operator:$('uop').value,phone:ph,proof_path:pr});if(r.error)throw r.error;['ua','uph','upf'].forEach(i=>$(i).value='');$('supDlg').close();await loadMisc();toast('Merci ! Votre soutien sera envoyé après validation.')})}
+
+function feat(){return $('sfeat').value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,8).join(', ')||null}
 </script></body></html>
