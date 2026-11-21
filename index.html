@@ -107,6 +107,12 @@ nav button.on{color:#fff!important;background:linear-gradient(180deg,#1b6bffcc,#
 @media(min-width:760px){main{max-width:880px!important}#sorties-l,#topm{display:grid;grid-template-columns:1fr 1fr;gap:12px}#sorties-l>.sg,#topm>.tp{margin:0}.hw{font-size:64px}}
 @media(max-width:360px){.hw{font-size:38px}.hs{font-size:19px}.brand small{max-width:130px}.pgH h2{font-size:28px}.pbar button,.pbar span.pv{font-size:12px;padding:6px 4px}}
 </style>
+<style>
+.sb{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px;margin:0 0 16px;border-radius:28px;border:2px solid #1b7bff;background:linear-gradient(180deg,#041a52,#020b26);box-shadow:0 0 24px #1b6bffcc,inset 0 0 18px #1b6bff55}
+.st{min-width:0;border-radius:20px;border:1.5px solid #1b6bff99;background:linear-gradient(180deg,#0a2a7a77,#030d2b);padding:12px 2px 10px;text-align:center;box-shadow:inset 0 0 14px #0b63f633}
+.st b{display:block;font:800 clamp(30px,9vw,50px) Poppins,sans-serif;line-height:1}.st b.c1{background:linear-gradient(180deg,#38f2d4,#00cfc0);-webkit-background-clip:text;background-clip:text;color:transparent}.st b.c2{background:linear-gradient(180deg,#33d6ff,#00b8ff);-webkit-background-clip:text;background-clip:text;color:transparent}.st b.c3{background:linear-gradient(180deg,#ffd24a,#f5a800);-webkit-background-clip:text;background-clip:text;color:transparent}
+.st small{display:block;font-size:clamp(8px,2.5vw,12px);letter-spacing:.12em;color:#c5d3f0;margin:7px 0 8px;line-height:1.25;font-weight:600}.st span{display:block;color:#19d3f3;filter:drop-shadow(0 0 6px #19d3f3aa)}
+</style>
 </head><body>
 <header><div class="hrow"><div class="brand" onclick="show('sorties')"><div class="ico" role="img" aria-label="Logo ManiMusic"></div><div><h1>Mani<span>Music</span></h1><small>Découvrez la musique urbaine du <b>Maniema</b></small></div></div><div class="hact"><button class="hbtn" onclick="openSearch()" aria-label="Rechercher"><span data-ic="sr"></span></button><button id="role" class="role" onclick="openWel()">Compte</button><button id="bell" class="hbtn" style="display:none" onclick="openNotif()" aria-label="Notifications"><span data-ic="bl"></span><span id="bn" class="bdg" style="display:none"></span></button></div></div>
 <div class="hsr"><div class="hsi" onclick="openSearch()"><span data-ic="sr"></span><span>Chercher un artiste, une chanson…</span></div><button class="hgo" onclick="openSearch()">Rechercher</button></div></header>
@@ -709,7 +715,7 @@ if(tt=='news'||tt=='ann')return `<div class="pbar"><button onclick="tog('${tt}',
 const lab=tt=='song'?'cette chanson':'ce service';
 return `<div class="rx"><div class="rxT">📢 <i></i> Réagissez à ${lab}</div><div class="rxB"><button class="rxI" onclick="tog('${tt}',${id})" aria-label="J’aime"><span class="rxC ${q.me?'on':''}">${ic('up',24)}</span><b>${fx(q.n)}</b></button><span class="rxS"></span><button class="rxI" onclick="$('c_${tt}_${id}').focus()" aria-label="Commentaires"><span class="rxO">${ic('cm',28)}</span><b>${fx(cs.length)}</b></button><span class="rxS"></span><button class="rxI" onclick="shareIt('${tt}',${id})" aria-label="Partager"><span class="rxO">${ic('sh',28)}</span><b>${fx(c.shares)}</b></button></div><div class="rxL"><small class="on">J’aime</small><small>Commentaires</small><small>Partager</small></div></div>`+cmBody(tt,id)}
 function postCard(tt,id,body,media,mk,date,author,link,full){const L=String(body||'').split('\n'),title=L.length>1?L[0]:'',rest=(L.length>1?L.slice(1).join('\n').trim():L[0])||'',cut=!full&&rest.length>170,txt=cut?rest.slice(0,170).trim()+'…':rest;
-return `<article class="pc"><div class="pcMedia">${media?(mk=='v'?`<video src="${media}" controls playsinline></video>`:`<img src="${media}" alt="" loading="lazy">`):`<div class="pcPh">${ic2('cp',64)}</div>`}<span class="pcB">${tt=='ann'?'📢 ANNONCE':'⚡ ACTUALITÉ'}</span>${date?`<span class="pcD">📅 ${date}</span>`:''}</div><div class="pcT">${author?`<small class="pcA">${author}</small>`:''}${title?`<h3>${ic2('cp',22)} ${esc(title)}</h3>`:''}<p>${esc(txt)}</p>${cut?`<button class="pcMore" onclick="openPost('${tt}',${id})">Lire la suite ${ic2('cr',18)}</button>`:''}${/^https?:\/\//.test(link||'')?`<a class="pcLink" href="${esc(link)}" target="_blank" rel="noopener">Ouvrir le lien ↗</a>`:''}</div>${soc(tt,id)}</article>`}
+return `<article class="pc"${full?'':` data-vt="${tt}" data-vid="${id}"`}><div class="pcMedia">${media?(mk=='v'?`<video src="${media}" controls playsinline></video>`:`<img src="${media}" alt="" loading="lazy">`):`<div class="pcPh">${ic2('cp',64)}</div>`}<span class="pcB">${tt=='ann'?'📢 ANNONCE':'⚡ ACTUALITÉ'}</span>${date?`<span class="pcD">📅 ${date}</span>`:''}</div><div class="pcT">${author?`<small class="pcA">${author}</small>`:''}${title?`<h3>${ic2('cp',22)} ${esc(title)}</h3>`:''}<p>${esc(txt)}</p>${cut?`<button class="pcMore" onclick="openPost('${tt}',${id})">Lire la suite ${ic2('cr',18)}</button>`:''}${/^https?:\/\//.test(link||'')?`<a class="pcLink" href="${esc(link)}" target="_blank" rel="noopener">Ouvrir le lien ↗</a>`:''}</div>${soc(tt,id)}</article>`}
 function renderPosts(){const A=$('ann-l'),N=$('actus-l');if(!A||!N)return;
 A.innerHTML=(S.annx||[]).map(a=>postCard('ann',a.id,a.body,a.media_path?PUB('media',a.media_path):'','i',dfmt(a.created_at),'',a.link)).join('')||'<p class="mut">Aucune annonce pour le moment.</p>';
 N.innerHTML=(S.actus||[]).filter(a=>a.st=='ok').map(a=>postCard('news',a.id,a.x,a.m,a.k,dfmt(a.t),esc(a.a)+vfb(a.aid))).join('')||'<p class="mut">Aucune actualité pour le moment.</p>'}
@@ -719,6 +725,16 @@ if(tt=='ann'){const a=(S.annx||[]).find(x=>x.id==id);if(!a)return;o=postCard('an
 else{const a=(S.actus||[]).find(x=>x.id==id);if(!a)return;o=postCard('news',id,a.x,a.m,a.k,dfmt(a.t),esc(a.a)+vfb(a.aid),'',true)}
 $('post-l').innerHTML=o+cmBody(tt,id)}
 function cmRef(){const d=$('cmDlg');if(d&&d.open&&V.cmS)$('cm-l').innerHTML=soc('song',V.cmS);document.querySelectorAll('.pill').forEach(b=>b.classList.toggle('on',b.dataset.k==(V.top||'all')));postRef()}
-(function(){const r=render;render=function(){r();renderPosts()}})();
+(function(){const r=render;render=function(){r();renderPosts();watchV()}})();
+render();
+
+function renderStats(){const ok=(S.songs||[]).filter(s=>s.st=='ok'),P=S.prof||[],dj=P.filter(p=>(p.kind||'').startsWith('DJ')).length,pl=ok.reduce((a,s)=>a+(s.p||0),0),el=$('stats');
+el.className='sb';
+el.innerHTML=`<div class="st"><b class="c1">${fx(P.length-dj)}</b><small>ARTISTES</small><span>${ic2('pp',36)}</span></div><div class="st"><b class="c2">${fx(dj)}</b><small>DJ & ING. SON</small><span>${ic2('hp',36)}</span></div><div class="st"><b class="c1">${fx(ok.length)}</b><small>TITRES EN LIGNE</small><span>${ic2('mn',36)}</span></div><div class="st"><b class="c3">${fx(pl)}</b><small>LECTURES</small><span>${ic2('pl',36)}</span></div>`;
+const hp=$('heroPh'),a=P.filter(p=>p.avatar);if(hp&&a.length)hp.style.backgroundImage=`url(${PUB('avatars',a[new Date().getDate()%a.length].avatar)})`}
+try{IO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,tt=el.dataset.vt,id=el.dataset.vid,k=tt+':'+id;let seen={};try{seen=JSON.parse(sessionStorage.getItem('mm_seen_s')||'{}')}catch(x){}if(seen[k])return;seen[k]=1;try{sessionStorage.setItem('mm_seen_s',JSON.stringify(seen))}catch(x){}
+SB.rpc('bump',{tt,tid:+id,fld:'views'}).then(r=>{if(r.error&&!V.vw){V.vw=1;toast('Vues non enregistrées : '+r.error.message)}});
+S.cnt[k]=S.cnt[k]||{views:0,shares:0};S.cnt[k].views++;document.querySelectorAll('[data-vt="'+tt+'"][data-vid="'+id+'"]').forEach(n=>{const c=n.closest('.pc')||n.parentElement,b=c.querySelector('.pv b');if(b)b.textContent=kf(S.cnt[k].views)})}),{threshold:.35})}catch(e){}
+function watchV(){if(!IO)return;document.querySelectorAll('[data-vt]').forEach(el=>{if(!el._w){el._w=1;IO.observe(el)}})}
 render();
 </script></body></html>
