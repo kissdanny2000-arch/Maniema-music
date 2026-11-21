@@ -113,6 +113,13 @@ nav button.on{color:#fff!important;background:linear-gradient(180deg,#1b6bffcc,#
 .st b{display:block;font:800 clamp(30px,9vw,50px) Poppins,sans-serif;line-height:1}.st b.c1{background:linear-gradient(180deg,#38f2d4,#00cfc0);-webkit-background-clip:text;background-clip:text;color:transparent}.st b.c2{background:linear-gradient(180deg,#33d6ff,#00b8ff);-webkit-background-clip:text;background-clip:text;color:transparent}.st b.c3{background:linear-gradient(180deg,#ffd24a,#f5a800);-webkit-background-clip:text;background-clip:text;color:transparent}
 .st small{display:block;font-size:clamp(8px,2.5vw,12px);letter-spacing:.12em;color:#c5d3f0;margin:7px 0 8px;line-height:1.25;font-weight:600}.st span{display:block;color:#19d3f3;filter:drop-shadow(0 0 6px #19d3f3aa)}
 </style>
+<style>
+#lb{position:fixed;inset:0;width:100%;height:100%;max-width:100%;max-height:100%;margin:0;padding:0;border:0!important;box-shadow:none!important;background:rgba(0,0,0,.94)!important}
+#lb[open]{display:flex;align-items:center;justify-content:center}#lb img{max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom;display:block}
+.lbx{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;width:44px;height:44px;border-radius:50%;padding:0;background:#0b3da8;border:2px solid #4aa3ff;font-size:20px;z-index:2}
+main img{cursor:zoom-in}#lb img{cursor:default}
+.sb.two{grid-template-columns:repeat(2,1fr)}.sb.two .st{padding:14px 6px}.sb.two .st b{font-size:clamp(28px,8vw,42px)}.live{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2ee66b;box-shadow:0 0 0 0 #2ee66b;animation:pu 1.6s infinite;margin-right:6px}@keyframes pu{70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+</style>
 </head><body>
 <header><div class="hrow"><div class="brand" onclick="show('sorties')"><div class="ico" role="img" aria-label="Logo ManiMusic"></div><div><h1>Mani<span>Music</span></h1><small>Découvrez la musique urbaine du <b>Maniema</b></small></div></div><div class="hact"><button class="hbtn" onclick="openSearch()" aria-label="Rechercher"><span data-ic="sr"></span></button><button id="role" class="role" onclick="openWel()">Compte</button><button id="bell" class="hbtn" style="display:none" onclick="openNotif()" aria-label="Notifications"><span data-ic="bl"></span><span id="bn" class="bdg" style="display:none"></span></button></div></div>
 <div class="hsr"><div class="hsi" onclick="openSearch()"><span data-ic="sr"></span><span>Chercher un artiste, une chanson…</span></div><button class="hgo" onclick="openSearch()">Rechercher</button></div></header>
@@ -175,7 +182,7 @@ nav button.on{color:#fff!important;background:linear-gradient(180deg,#1b6bffcc,#
 <details class="card" style="margin-top:12px"><summary><b>Lire le règlement</b></summary><ol><li>Je suis l’auteur et le propriétaire des droits de ce que je publie.</li><li>Aucun contenu haineux, violent, sexuel explicite ou diffamatoire.</li><li>Chaque chanson ou beat coûte 500 FC (ou l’équivalent en dollars au taux du jour). Chaque vente est partagée : 70 % pour moi, 30 % pour ManiMusic.</li><li>Chaque chanson et chaque publication est vérifiée. ManiMusic peut refuser ou retirer un contenu.</li><li>Aucune fraude ni faux paiement. Un parent donne son accord si j’ai moins de 18 ans.</li></ol></details>
 <label style="display:flex;gap:8px;align-items:flex-start"><input id="rg2" type="checkbox" style="width:auto;margin-top:4px"> J’ai lu et je respecte le règlement de ManiMusic.</label>
 <div class="row"><button onclick="register()">Créer mon compte</button></div></div></section>
-<section class="sec" id="admin"><h2>Espace propriétaire</h2>
+<section class="sec" id="admin"><h2>Espace propriétaire</h2><div id="a-stats"></div>
 <div class="card"><b>Publier une annonce</b><input id="an" placeholder="Votre annonce" aria-label="Annonce"><label for="ap">Photo (facultatif)</label><input id="ap" type="file" accept="image/*"><label for="al">Lien (facultatif)</label><input id="al" type="url" placeholder="https://…"><div class="row"><button onclick="addAnn()">Publier</button></div></div><h2 style="font-size:17px">Chansons à valider</h2><div id="a-songs"></div>
 <h2 style="font-size:17px">Soutiens à valider</h2><div id="a-sup"></div>
 <h2 style="font-size:17px">Achats à valider</h2><div id="a-ord"></div>
@@ -255,6 +262,7 @@ nav button.on{color:#fff!important;background:linear-gradient(180deg,#1b6bffcc,#
 <label for="upf">Capture du transfert (obligatoire)</label><input id="upf" type="file" accept="image/*">
 <div class="row"><button onclick="supSend()">Envoyer mon soutien</button><button class="ghost" onclick="supDlg.close()">Annuler</button></div></dialog>
 <dialog id="notifDlg"><h2>Notifications</h2><div id="nt-l"></div><div class="row"><button class="ghost" onclick="notifDlg.close()">Fermer</button></div></dialog>
+<dialog id="lb" onclick="if(event.target.id!=='lbi')lb.close()"><button class="lbx" aria-label="Fermer l’image" onclick="lb.close()">✕</button><img id="lbi" alt=""></dialog>
 <dialog id="postDlg"><div id="post-l"></div><div class="row"><button class="ghost" onclick="postDlg.close()">Fermer</button></div></dialog>
 <dialog id="cmDlg"><h2>Commentaires</h2><div id="cm-l"></div><div class="row"><button class="ghost" onclick="cmDlg.close()">Fermer</button></div></dialog>
 <dialog id="cropDlg"><h2>Cadrer la photo</h2><p class="mut">Glissez l’image avec le doigt, zoomez avec le curseur.</p><canvas id="cc2" style="touch-action:none;border-radius:10px;max-width:100%;background:#000"></canvas><input id="cz" type="range" min="1" max="4" step="0.01" value="1" aria-label="Zoom" oninput="czoom()"><div class="row"><button onclick="cropOk()">Valider</button><button class="ghost" onclick="cropDlg.close()">Annuler</button></div></dialog>
@@ -396,7 +404,7 @@ if(ME){$('wel').close();
 if(ME.role=='admin')S.admin=true;
 else if(ME.role=='fan'){S.mode='fan';S.fan={id:ME.name,code:''};$('fid').innerHTML='Identifiant : <b>'+ME.name+'</b>'}
 else{S.mode='artist';S.me={kind:ME.kind,name:ME.name,prov:ME.province,city:ME.city,genre:ME.genre||'',bio:ME.bio||'',ph:ME.avatar?PUB('avatars',ME.avatar):'',cv:ME.cover?PUB('avatars',ME.cover):''}}}
-{const st=await SB.from('settings').select('value').eq('key','rate').maybeSingle();if(st.data)RATE=+st.data.value;S.songs.forEach(s=>{s.u=+(500/RATE).toFixed(2);s.c=500});$('rt2').textContent='Prix : 500 FC ou '+(500/RATE).toFixed(2).replace('.',',')+' $ (1 $ = '+RATE+' FC)';$('nr').value=RATE;await loadDist();await loadSocial();await loadMore();await loadOrders();await loadSoc();await loadMisc()}
+{const st=await SB.from('settings').select('value').eq('key','rate').maybeSingle();if(st.data)RATE=+st.data.value;S.songs.forEach(s=>{s.u=+(500/RATE).toFixed(2);s.c=500});$('rt2').textContent='Prix : 500 FC ou '+(500/RATE).toFixed(2).replace('.',',')+' $ (1 $ = '+RATE+' FC)';$('nr').value=RATE;await loadDist();await loadSocial();await loadMore();await loadOrders();await loadSoc();await loadMisc();regVisit();if(S.admin)loadVS()}
 render()}
 function openWel(){$('wel').innerHTML=ME?'<h2>Connecté</h2><p>'+esc(ME.role=='admin'?'Propriétaire':ME.name)+'</p><div class="row"><button class="no" onclick="logout();$(\'wel\').close()">Se déconnecter</button><button class="ghost" onclick="$(\'wel\').close()">Fermer</button></div>':welHTML();$('wel').showModal()}
 function openLogin(){$('logDlg').showModal()}
@@ -725,7 +733,7 @@ if(tt=='ann'){const a=(S.annx||[]).find(x=>x.id==id);if(!a)return;o=postCard('an
 else{const a=(S.actus||[]).find(x=>x.id==id);if(!a)return;o=postCard('news',id,a.x,a.m,a.k,dfmt(a.t),esc(a.a)+vfb(a.aid),'',true)}
 $('post-l').innerHTML=o+cmBody(tt,id)}
 function cmRef(){const d=$('cmDlg');if(d&&d.open&&V.cmS)$('cm-l').innerHTML=soc('song',V.cmS);document.querySelectorAll('.pill').forEach(b=>b.classList.toggle('on',b.dataset.k==(V.top||'all')));postRef()}
-(function(){const r=render;render=function(){r();renderPosts();watchV()}})();
+(function(){const r=render;render=function(){r();renderPosts();watchV();renderVS()}})();
 render();
 
 function renderStats(){const ok=(S.songs||[]).filter(s=>s.st=='ok'),P=S.prof||[],dj=P.filter(p=>(p.kind||'').startsWith('DJ')).length,pl=ok.reduce((a,s)=>a+(s.p||0),0),el=$('stats');
@@ -736,5 +744,28 @@ try{IO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;c
 SB.rpc('bump',{tt,tid:+id,fld:'views'}).then(r=>{if(r.error&&!V.vw){V.vw=1;toast('Vues non enregistrées : '+r.error.message)}});
 S.cnt[k]=S.cnt[k]||{views:0,shares:0};S.cnt[k].views++;document.querySelectorAll('[data-vt="'+tt+'"][data-vid="'+id+'"]').forEach(n=>{const c=n.closest('.pc')||n.parentElement,b=c.querySelector('.pv b');if(b)b.textContent=kf(S.cnt[k].views)})}),{threshold:.35})}catch(e){}
 function watchV(){if(!IO)return;document.querySelectorAll('[data-vt]').forEach(el=>{if(!el._w){el._w=1;IO.observe(el)}})}
+render();
+
+document.addEventListener('click',e=>{const t=e.target;if(t&&t.tagName=='IMG'&&t.id!='lbi'&&t.closest&&t.closest('main,#postDlg')&&t.src){$('lbi').src=t.src;$('lb').showModal()}});
+var VID=(function(){let v;try{v=localStorage.getItem('mm_vid');if(!v){v=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));localStorage.setItem('mm_vid',v)}}catch(e){v=Math.random().toString(36).slice(2)}return v})();
+function regVisit(){try{if(!sessionStorage.mm_vs){sessionStorage.mm_vs=1;SB.rpc('register_visit',{k:'d:'+VID,kd:'device'}).then(()=>{})}if(ME&&sessionStorage.mm_vu!=ME.id){sessionStorage.mm_vu=ME.id;SB.rpc('register_visit',{k:'u:'+ME.id,kd:'account'}).then(()=>{})}}catch(e){}}
+function updLive(){const n=Math.max(0,(V.live||0)-(S.admin?1:0)),el=$('liveN');if(el)el.textContent=fx(n)}
+try{const ch=SB.channel('site',{config:{presence:{key:VID}}});ch.on('presence',{event:'sync'},()=>{V.live=Object.keys(ch.presenceState()).length;updLive()}).subscribe(s=>{if(s==='SUBSCRIBED')ch.track({at:Date.now()})})}catch(e){}
+async function loadVS(){try{const r=await SB.rpc('visit_stats');if(r.error){V.vsErr=r.error.message}else{V.vsErr=null;S.vs=r.data}}catch(e){V.vsErr=e.message}renderVS()}
+function renderVS(){const el=$('a-stats');if(!el)return;if(!S.admin){el.innerHTML='';return}
+if(V.vsErr){el.innerHTML='<p class="mut">Statistiques indisponibles : '+esc(V.vsErr)+'</p>';return}
+const v=S.vs||{},n=Math.max(0,(V.live||0)-1);
+el.innerHTML=`<h2 style="font-size:17px">Visites du site</h2><div class="sb two"><div class="st"><b class="c1" id="liveN">${fx(n)}</b><small><span class="live"></span>EN CE MOMENT</small></div><div class="st"><b class="c2">${fx(v.devices||0)}</b><small>VISITEURS UNIQUES<br>DEPUIS LA CRÉATION</small></div><div class="st"><b class="c1">${fx(v.visits||0)}</b><small>VISITES TOTALES</small></div><div class="st"><b class="c3">${fx(v.today||0)}</b><small>ACTIFS AUJOURD’HUI</small></div><div class="st"><b class="c2">${fx(v.new_today||0)}</b><small>NOUVEAUX AUJOURD’HUI</small></div><div class="st"><b class="c1">${fx((v.fans||0)+(v.artists||0))}</b><small>COMPTES INSCRITS<br>${fx(v.artists||0)} artistes · ${fx(v.fans||0)} fans</small></div></div><p class="mut"><small>« En ce moment » se met à jour tout seul. Un visiteur est compté une seule fois à vie (par téléphone ou navigateur).</small></p>`}
+setInterval(()=>{if(S.admin&&curPg()=='admin')loadVS()},8000);
+function heroPick(a){if(V.hp)return V.hp;let st=null;try{st=JSON.parse(localStorage.getItem('mm_hero')||'null')}catch(e){}
+const key=a.map(p=>p.id).sort().join(','),sh=()=>a.map(p=>p.id).sort(()=>Math.random()-.5);
+if(!st||st.k!=key||!st.o){st={k:key,o:sh(),i:-1}}
+st.i++;if(st.i>=st.o.length){st.o=sh();st.i=0}
+try{localStorage.setItem('mm_hero',JSON.stringify(st))}catch(e){}
+V.hp=a.find(p=>p.id==st.o[st.i])||a[0];return V.hp}
+function renderStats(){const ok=(S.songs||[]).filter(s=>s.st=='ok'),P=S.prof||[],dj=P.filter(p=>(p.kind||'').startsWith('DJ')).length,pl=ok.reduce((a,s)=>a+(s.p||0),0),el=$('stats');
+el.className='sb';
+el.innerHTML=`<div class="st"><b class="c1">${fx(P.length-dj)}</b><small>ARTISTES</small><span>${ic2('pp',36)}</span></div><div class="st"><b class="c2">${fx(dj)}</b><small>DJ & ING. SON</small><span>${ic2('hp',36)}</span></div><div class="st"><b class="c1">${fx(ok.length)}</b><small>TITRES EN LIGNE</small><span>${ic2('mn',36)}</span></div><div class="st"><b class="c3">${fx(pl)}</b><small>LECTURES</small><span>${ic2('pl',36)}</span></div>`;
+const hp=$('heroPh'),a=P.filter(p=>p.avatar);if(hp&&a.length)hp.style.backgroundImage=`url(${PUB('avatars',heroPick(a).avatar)})`}
 render();
 </script></body></html>
