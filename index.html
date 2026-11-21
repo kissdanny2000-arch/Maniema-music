@@ -124,8 +124,10 @@ main img{cursor:zoom-in}#lb img{cursor:default}
 </style>
 <style>.hshare{background:transparent;border:1.5px solid #19d3f3;color:#fff;border-radius:99px;padding:11px 16px;margin-top:8px}</style>
 <style>#splash{position:fixed;inset:0;z-index:2147483000;background:radial-gradient(circle at 50% 30%,#0b2a7a,#030a1e);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s;color:#fff;font:700 22px Poppins,sans-serif;text-align:center;padding:20px}#splash .logobox{margin:0}</style>
+<style>#topbar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#19d3f3,#1b6bff);z-index:2147483001;transition:width .9s ease,opacity .4s;box-shadow:0 0 10px #19d3f3}.spBox{display:flex;flex-direction:column;align-items:center;gap:12px}#splash.soft{background:rgba(3,8,24,.5);backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px)}#splash.soft .logobox{display:none}#splash.soft .spBox{background:linear-gradient(160deg,#08184a,#040a1c);border:1.5px solid #1b6bff;border-radius:18px;padding:22px 38px;box-shadow:0 0 30px #0b63f699;font-size:18px}</style>
 </head><body>
-<div id="splash"><div class="logobox" style="width:min(86vw,420px)" role="img" aria-label="ManiMusic"></div><div class="spin"></div><p id="spT" style="margin:0">Chargement…</p></div>
+<div id="topbar"></div><div id="splash"><div class="logobox" style="width:min(86vw,420px)" role="img" aria-label="ManiMusic"></div><div class="spBox"><div class="spin"></div><p id="spT" style="margin:0">Chargement…</p></div></div>
+<script>try{if(sessionStorage.mm_wb)document.getElementById("splash").className="soft"}catch(e){}</script>
 <header><div class="hrow"><div class="brand" onclick="show('sorties')"><div class="ico" role="img" aria-label="Logo ManiMusic"></div><div><h1>Mani<span>Music</span></h1><small>Découvrez la musique urbaine du <b>Maniema</b></small></div></div><div class="hact"><button class="hbtn" onclick="openSearch()" aria-label="Rechercher"><span data-ic="sr"></span></button><button id="role" class="role" onclick="openWel()">Compte</button><button id="bell" class="hbtn" style="display:none" onclick="openNotif()" aria-label="Notifications"><span data-ic="bl"></span><span id="bn" class="bdg" style="display:none"></span></button></div></div>
 <div class="hsr"><div class="hsi" onclick="openSearch()"><span data-ic="sr"></span><span>Chercher un artiste, une chanson…</span></div><button class="hgo" onclick="openSearch()">Rechercher</button></div></header>
 <main>
@@ -416,8 +418,8 @@ function openLogin(){$('logDlg').showModal()}
 function adminLogin(){openLogin()}
 async function doLogin(){let e=$('le').value.trim().toLowerCase();if(!e.includes('@'))e+='@fans.manimusic.app';
 const r=await SB.auth.signInWithPassword({email:e,password:$('lp').value});if(r.error)return toast('Identifiant ou mot de passe incorrect.');
-$('logDlg').close();try{const u=$('le').value.trim();localStorage.setItem('mm_user',u);if(!u.includes('@'))localStorage.setItem('mm_fan',JSON.stringify({id:u.replace(/^fan-?/i,'Fan-'),code:$('lp').value}))}catch(e){}$('lp').value='';await load();toast('Connecté.');if(S.admin)show('admin')}
-async function logout(){await SB.auth.signOut();S.mode=null;await load();show('sorties');try{localStorage.removeItem('mm_fan');localStorage.removeItem('mm_user');sessionStorage.clear()}catch(e){}setTimeout(openWel,350)}
+$('logDlg').close();try{const u=$('le').value.trim();localStorage.setItem('mm_user',u);if(!u.includes('@'))localStorage.setItem('mm_fan',JSON.stringify({id:u.replace(/^fan-?/i,'Fan-'),code:$('lp').value}))}catch(e){}$('lp').value='';await load();welcomeFlash(ME?(ME.role=='admin'?'Propriétaire':ME.name):'',S.admin?'admin':'sorties')}
+async function logout(){await SB.auth.signOut();S.mode=null;await load();show('sorties');try{['mm_pg','mm_pa','mm_dg','mm_wl','mm_vu'].forEach(k=>sessionStorage.removeItem(k))}catch(e){}setTimeout(openWel,350)}
 async function isFan(){const id='Fan-'+(1000+Math.floor(Math.random()*9000)),code=String(100000+Math.floor(Math.random()*900000));
 const r=await SB.auth.signUp({email:id.toLowerCase()+'@fans.manimusic.app',password:code,options:{data:{role:'fan',username:id.toLowerCase().replace('-',''),name:id}}});
 if(r.error)return toast(r.error.message);if(!r.data.session)return toast('Compte créé, mais la confirmation email est active : désactivez-la dans Supabase.');
@@ -606,7 +608,7 @@ if(back)return L+'<div class="row"><button onclick="wLogin()" style="flex:1">Se 
 return L+'<h2>Bienvenue sur ManiMusic</h2><p class="mut">Rejoignez la musique urbaine du Maniema.</p><div class="row"><button onclick="wChoose()" style="flex:1">Créer un compte</button></div><p class="mut" style="margin-top:14px">Vous avez déjà un compte ?</p><div class="row"><button class="ghost" style="flex:1" onclick="wLogin()">Se connecter</button></div>'+sk}
 function wLogin(){$('wel').innerHTML='<div class="logobox"></div><h2>Se connecter</h2><p>Vous êtes :</p><div class="row"><button onclick="fanLogin()">Je suis fan</button><button class="alt" onclick="$(\'wel\').close();openLogin()">Je suis artiste / DJ</button></div><p><a href="#" onclick="openWel();return false" style="color:var(--mut)">← Retour</a></p>'}
 function fanLogin(){const f=getFan();if(!f){$('wel').close();toast('Entrez votre identifiant fan et votre code.');return openLogin()}return fanSign(f)}
-function fanSign(f){return busy(async()=>{const r=await SB.auth.signInWithPassword({email:f.id.toLowerCase()+'@fans.manimusic.app',password:f.code});if(r.error){toast('Connexion impossible. Entrez votre identifiant et votre code.');return}$('wel').close();await load();toast('Content de vous revoir !')})}
+function fanSign(f){return busy(async()=>{const r=await SB.auth.signInWithPassword({email:f.id.toLowerCase()+'@fans.manimusic.app',password:f.code});if(r.error){toast('Connexion impossible. Entrez votre identifiant et votre code.');return}$('wel').close();await load();welcomeFlash(ME?ME.name:'')})}
 async function isFan(){const st=getFan();if(st)return fanSign(st);
 const id='Fan-'+(1000+Math.floor(Math.random()*9000)),code=String(100000+Math.floor(Math.random()*900000));
 const r=await SB.auth.signUp({email:id.toLowerCase()+'@fans.manimusic.app',password:code,options:{data:{role:'fan',username:id.toLowerCase().replace('-',''),name:id}}});
@@ -782,7 +784,7 @@ async function shareSite(){const url=location.origin+location.pathname+'?v=3',ti
 ['notifDlg','postDlg'].forEach(i=>$(i).addEventListener('close',()=>{try{sessionStorage.removeItem('mm_dg')}catch(e){}}));
 function restoreNav(ph){if(/^#(a|n|p|s|v)=/.test(location.hash))return;let pg,aid,dg;try{pg=sessionStorage.mm_pg;aid=sessionStorage.mm_pa;dg=sessionStorage.mm_dg}catch(e){}
 const simple=['actus','annonces','services','achats','classement','soutien','artistes','recherche'];
-if(ph==1){if(pg&&simple.includes(pg))show(pg);return}
+if(ph==1){if(pg&&simple.includes(pg))show(pg);else if(pg&&['compte','admin','profil'].includes(pg)){document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id===pg));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===pg))}return}
 if(pg&&!simple.includes(pg)&&pg!='sorties'){if(pg=='profil'&&aid){V.aid=aid;render()}show(pg)}
 if(dg){if(dg=='notif'&&ME)openNotif();else if(dg.indexOf('post:')==0){const m=dg.split(':');openPost(m[1],+m[2])}}}
 restoreNav(1);
@@ -796,7 +798,7 @@ function welTick(){if(!ME||S.admin||V.blk)return;let done=false;try{done=session
 if(Date.now()-V.wt0>=10000&&!V.cur&&curPg()=='sorties'&&S.wl&&S.wl.length){try{sessionStorage.mm_wl=1}catch(e){}startWelcome()}}
 setInterval(welTick,2000);
 function bootDone(){const sp=$('splash');let fresh=false;try{fresh=!sessionStorage.mm_wb;sessionStorage.mm_wb=1}catch(e){}
-const fin=()=>{sp.style.opacity=0;setTimeout(()=>{sp.style.display='none'},420)},wait=Math.max(0,900-(Date.now()-V.t0));
+const tb=$('topbar'),fin=()=>{tb.style.width='100%';setTimeout(()=>{tb.style.opacity=0},350);sp.style.opacity=0;setTimeout(()=>{sp.style.display='none'},420)},wait=Math.max(0,(fresh?900:450)-(Date.now()-V.t0));
 if(ME&&fresh){$('spT').textContent='Bienvenue, '+((ME.role=='admin')?'Propriétaire':String(ME.name||'').split(' ')[0]);setTimeout(fin,Math.max(wait,1900));if(ME.status=='suspended'&&inact(ME))setTimeout(()=>toast('Compte suspendu'+(ME.blocked_until?' jusqu’au '+dfmt(ME.blocked_until):'')+' : vous ne pouvez plus publier.'),2400);return}
 setTimeout(()=>{fin();if(V.blk){showBlocked();return}if(!ME&&fresh)setTimeout(openWel,450)},wait)}
 function showBlocked(){const b=V.blk;$('wel').innerHTML='<div class="logobox"></div><h2>Compte bloqué</h2><p style="text-align:center">Votre compte est bloqué'+(b&&b.blocked_until?' jusqu’au <b>'+dfmt(b.blocked_until)+'</b>':'')+'.<br>Contactez ManiMusic pour plus d’informations.</p><div class="row"><button class="ghost" style="flex:1" onclick="$(\'wel\').close()">Fermer</button></div>';$('wel').showModal()}
@@ -824,5 +826,9 @@ el.style.maxHeight=full?'65vh':'';el.style.overflowY=full?'auto':'';
 el.innerHTML=L.map(p=>{const t=[];if(p.verified)t.push('Certifié ✓');if(p.status=='blocked')t.push('Bloqué'+(p.blocked_until?' jusqu’au '+dfmt(p.blocked_until):''));if(p.status=='suspended')t.push('Suspendu'+(p.blocked_until?' jusqu’au '+dfmt(p.blocked_until):''));if(p.song_ban)t.push('Chansons interdites');
 return `<div class="card"><div class="song" style="cursor:pointer" onclick="openP('${p.id}')" title="Ouvrir la page"><div class="cov" style="border-radius:50%;background:${avt(p)}">${p.avatar?'':esc((p.name||'?')[0])}</div><div><b>${esc(p.name||'')}${vfb(p.id)}</b><small>@${esc(p.username||'')} · ${esc(p.kind||'')}</small><br>${t.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div><div class="row"><button class="ghost" onclick="admVerify('${p.id}',${!p.verified})">${p.verified?'Retirer le badge':'✓ Certifier'}</button><button class="ghost" onclick="admSt('${p.id}','${p.status=='blocked'?'active':'blocked'}')">${p.status=='blocked'?'Débloquer':'🚫 Bloquer'}</button><button class="ghost" onclick="admSt('${p.id}','${p.status=='suspended'?'active':'suspended'}')">${p.status=='suspended'?'Réactiver':'⏸ Suspendre'}</button><button class="ghost" onclick="admBan('${p.id}',${!p.song_ban})">${p.song_ban?'Autoriser les chansons':'🎵 Interdire les chansons'}</button><button class="no" onclick="admDel('${p.id}')">🗑 Supprimer</button></div></div>`}).join('')||'<p class="mut">Aucun compte trouvé.</p>';
 if(!full&&M.length>3)el.insertAdjacentHTML('beforeend','<p class="mut" style="text-align:center">'+L.length+' sur '+M.length+' artistes. Utilisez la recherche ou « Tous les artistes ».</p>')}
+render();
+
+function welcomeFlash(n,pg){const sp=$('splash'),tb=$('topbar');sp.className='';$('spT').textContent='Bienvenue'+(n?', '+n:'');sp.style.display='flex';sp.style.opacity=1;show(pg||'sorties');setTimeout(()=>{sp.style.opacity=0;setTimeout(()=>{sp.style.display='none'},420)},1700)}
+setTimeout(()=>{const tb=$('topbar');if(tb)tb.style.width='85%'},60);
 render();
 </script></body></html>
