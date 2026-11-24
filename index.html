@@ -747,7 +747,7 @@ function ic(n,s){const P={up:'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.5
 function sortSongs(a){const o=[...a],k=V.top||'all';if(k=='pop')o.sort((x,y)=>(y.p||0)-(x.p||0));else if(k=='rec')o.sort((x,y)=>lk('song',y.id).n-lk('song',x.id).n||(y.p||0)-(x.p||0));else if(k=='all')o.sort((x,y)=>(x.t||'').localeCompare(y.t||''));return o}
 function row(s){const q=lk('song',s.id),c=cnt('song',s.id),own=s.own||bought(s.id),cm=(S.cm||[]).filter(x=>x.target_type=='song'&&x.target_id==s.id).length;
 return `<div class="sg"><div class="sgTop"><div class="sgCv" style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div class="sgIn"><b class="sgT">${esc(s.t)}</b><u class="sgA" onclick="openArt(${s.id})">${esc(s.a)}${s.ft?' feat. '+esc(s.ft):''}</u>${vfb(s.aid)}<div class="sgTg"><span class="tag">${s.k=='beat'?'Beat':esc(s.g||'Musique')}</span><span class="tag">${String(s.u).replace('.',',')} $ · ${fx(s.c)} FC</span></div></div><button class="sgPlay" onclick="play(${s.id})" aria-label="Écouter ${esc(s.t)}">${ic('pl',30)}</button></div>
-<div class="sgBot"><span class="sgSt" title="Écoutes">${ic('pl',14)} ${fx(s.p||0)}</span><span class="sgSt" title="Téléchargements">${ic('dl',14)} ${fx(s.d||0)}</span><button class="sgSt b" onclick="tog('song',${s.id})" aria-label="J’aime">${ic('up',14)} ${fx(q.n)}</button><button class="sgSt b" onclick="cmOpen(${s.id})" aria-label="Commentaires">${ic('cm',14)} ${fx(cm)}</button><button class="sgSt b" onclick="shareIt('song',${s.id})" aria-label="Partager">${ic('sh',14)} ${fx(c.shares)}</button>${own?`<button class="sgBuy dl" onclick="dl(${s.id})">${ic('dl',16)} Télécharger</button>`:s.sold?`<span class="sgBuy dl" style="opacity:.85">🔒 Vendu</span>`:`<button class="sgBuy" onclick="buy(${s.id})">${ic('ct',16)} Acheter</button>`}</div></div>`}
+<div class="sgBot"><span class="sgSt" title="Écoutes">${ic('pl',14)} ${kf(s.p||0)}</span><span class="sgSt" title="Téléchargements">${ic('dl',14)} ${kf(s.d||0)}</span><button class="sgSt b" onclick="tog('song',${s.id})" aria-label="J’aime">${ic('up',14)} ${kf(q.n)}</button><button class="sgSt b" onclick="cmOpen(${s.id})" aria-label="Commentaires">${ic('cm',14)} ${kf(cm)}</button><button class="sgSt b" onclick="shareIt('song',${s.id})" aria-label="Partager">${ic('sh',14)} ${kf(c.shares)}</button>${own?`<button class="sgBuy dl" onclick="dl(${s.id})">${ic('dl',16)} Télécharger</button>`:s.sold?`<span class="sgBuy dl" style="opacity:.85">🔒 Vendu</span>`:`<button class="sgBuy" onclick="buy(${s.id})">${ic('ct',16)} Acheter</button>`}</div></div>`}
 function soc(tt,id){const q=lk(tt,id),cs=(S.cm||[]).filter(c=>c.target_type==tt&&c.target_id==id),c=cnt(tt,id),v=(tt=='news'||tt=='ann'),lab=tt=='ann'?'cette annonce':tt=='news'?'cette actualité':tt=='song'?'cette chanson':'ce service';
 return `<div class="rx"><div class="rxT">📢 <i></i> Réagissez à ${lab}</div><div class="rxB"><button class="rxI" onclick="tog('${tt}',${id})" aria-label="J’aime"><span class="rxC ${q.me?'on':''}">${ic('up',24)}</span><b>${fx(q.n)}</b></button><span class="rxS"></span><button class="rxI" onclick="$('c_${tt}_${id}').focus()" aria-label="Commentaires"><span class="rxO">${ic('cm',28)}</span><b>${fx(cs.length)}</b></button><span class="rxS"></span><button class="rxI" onclick="shareIt('${tt}',${id})" aria-label="Partager"><span class="rxO">${ic('sh',28)}</span><b>${fx(c.shares)}</b></button></div><div class="rxL"><small class="on">J’aime</small><small>Commentaires</small><small>Partager</small></div>${v?`<p class="rxV">👁 ${fx(c.views)} vues</p>`:''}</div>`+cs.map(c=>`<p class="mut" style="margin:8px 0 0"><b>${esc(c.user_name||'')}</b> : ${esc(c.body)}</p>`).join('')+`<div class="row"><input id="c_${tt}_${id}" placeholder="Ajouter un commentaire…" aria-label="Commentaire" style="flex:1"><button onclick="addCm('${tt}',${id})">Publier</button></div>`+(v?`<span data-vt="${tt}" data-vid="${id}" style="display:block;height:1px"></span>`:'')}
 function cmOpen(id){V.cmS=id;$('cm-l').innerHTML=soc('song',id);$('cmDlg').showModal()}
@@ -777,7 +777,7 @@ function plUI(){const s=V.cur&&S.songs.find(x=>x.id==V.cur);if(!s)return;
 const cv=s.cv?`url(${s.cv}) center/cover`:cols[s.id%4];$('plCv').style.background=cv;$('plCv2').style.background=cv;
 $('pt').textContent=s.t;$('pt2').textContent=s.t;$('plArt').textContent=s.a+(s.ft?' feat. '+s.ft:'');$('pa2').textContent=s.a;
 const q=lk('song',s.id),n=(S.cm||[]).filter(x=>x.target_type=='song'&&x.target_id==s.id).length,own=s.own||bought(s.id);
-$('plLk').innerHTML=ic('up',20)+' '+fx(q.n);$('plLk').className=q.me?'on':'';$('plCm').innerHTML=ic('cm',20)+' '+fx(n);
+$('plLk').innerHTML=ic('up',20)+' '+kf(q.n);$('plLk').className=q.me?'on':'';$('plCm').innerHTML=ic('cm',20)+' '+kf(n);
 $('plBuy').innerHTML=own?ic('dl',20)+' Télécharger':s.sold?'🔒 Vendu':ic('ct',20)+' Acheter'}
 function plLike(){tog('song',V.cur)}
 function plComment(){cmOpen(V.cur)}
@@ -802,7 +802,7 @@ if(!V.q||!V.q.includes(id))V.q=qList();V.qi=V.q.indexOf(id);
 const a=$('au');a.src=r.data.signedUrl;a.play().catch(e=>toast('Appuyez sur ▶ pour lancer la lecture.'));
 const rp=await SB.rpc('inc_play',{sid:id});if(rp.error)toast('Compteur non enregistré : '+rp.error.message);s.p=(s.p||0)+1;plUI();render()}catch(e){toast('Erreur : '+e.message)}}
 
-function kf(n){n=+n||0;return n>=1000?(n/1000).toFixed(n>=10000?0:1).replace('.0','')+'K':String(n)}
+function kf(n){n=+n||0;if(n>=1e6)return (n/1e6).toFixed(n>=1e7?0:1).replace('.0','')+'M';if(n>=1000){const k=Math.floor(n/100)/10;return (k>=10?String(Math.floor(k)):String(k).replace('.0',''))+'K'}return String(n)}
 function dfmt(t){return t?new Date(t).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):''}
 function cmBody(tt,id){const cs=(S.cm||[]).filter(c=>c.target_type==tt&&c.target_id==id);return cs.map(c=>`<p class="mut" style="margin:8px 0 0"><b>${esc(c.user_name||'')}</b> : ${esc(c.body)}</p>`).join('')+`<div class="row"><input id="c_${tt}_${id}" placeholder="Ajouter un commentaire…" aria-label="Commentaire" style="flex:1"><button onclick="addCm('${tt}',${id})">Publier</button></div>`}
 function soc(tt,id){const q=lk(tt,id),cs=(S.cm||[]).filter(c=>c.target_type==tt&&c.target_id==id),c=cnt(tt,id);
@@ -826,7 +826,7 @@ render();
 
 function renderStats(){const ok=(S.songs||[]).filter(s=>s.st=='ok'),P=S.prof||[],dj=P.filter(p=>(p.kind||'').startsWith('DJ')).length,pl=ok.reduce((a,s)=>a+(s.p||0),0),el=$('stats');
 el.className='sb';
-el.innerHTML=`<div class="st"><b class="c1">${fx(P.length-dj)}</b><small>ARTISTES</small><span>${ic2('pp',36)}</span></div><div class="st"><b class="c2">${fx(dj)}</b><small>DJ & ING. SON</small><span>${ic2('hp',36)}</span></div><div class="st"><b class="c1">${fx(ok.length)}</b><small>TITRES EN LIGNE</small><span>${ic2('mn',36)}</span></div><div class="st"><b class="c3">${fx(pl)}</b><small>LECTURES</small><span>${ic2('pl',36)}</span></div>`;
+el.innerHTML=`<div class="st"><b class="c1">${kf(P.length-dj)}</b><small>ARTISTES</small><span>${ic2('pp',36)}</span></div><div class="st"><b class="c2">${kf(dj)}</b><small>DJ & ING. SON</small><span>${ic2('hp',36)}</span></div><div class="st"><b class="c1">${kf(ok.length)}</b><small>TITRES EN LIGNE</small><span>${ic2('mn',36)}</span></div><div class="st"><b class="c3">${kf(pl)}</b><small>LECTURES</small><span>${ic2('pl',36)}</span></div>`;
 const hp=$('heroPh'),a=P.filter(p=>p.avatar);if(hp&&a.length)hp.style.backgroundImage=`url(${PUB('avatars',a[new Date().getDate()%a.length].avatar)})`}
 try{IO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,tt=el.dataset.vt,id=el.dataset.vid,k=tt+':'+id;let seen={};try{seen=JSON.parse(sessionStorage.getItem('mm_seen_s')||'{}')}catch(x){}if(seen[k])return;seen[k]=1;try{sessionStorage.setItem('mm_seen_s',JSON.stringify(seen))}catch(x){}
 SB.rpc('bump',{tt,tid:+id,fld:'views'}).then(r=>{if(r.error&&!V.vw){V.vw=1;toast('Vues non enregistrées : '+r.error.message)}});
@@ -853,7 +853,7 @@ try{localStorage.setItem('mm_hero',JSON.stringify(st))}catch(e){}
 V.hp=a.find(p=>p.id==st.o[st.i])||a[0];return V.hp}
 function renderStats(){const ok=(S.songs||[]).filter(s=>s.st=='ok'),P=S.prof||[],dj=P.filter(p=>(p.kind||'').startsWith('DJ')).length,pl=ok.reduce((a,s)=>a+(s.p||0),0),el=$('stats');
 el.className='sb';
-el.innerHTML=`<div class="st"><b class="c1">${fx(P.length-dj)}</b><small>ARTISTES</small><span>${ic2('pp',36)}</span></div><div class="st"><b class="c2">${fx(dj)}</b><small>DJ & ING. SON</small><span>${ic2('hp',36)}</span></div><div class="st"><b class="c1">${fx(ok.length)}</b><small>TITRES EN LIGNE</small><span>${ic2('mn',36)}</span></div><div class="st"><b class="c3">${fx(pl)}</b><small>LECTURES</small><span>${ic2('pl',36)}</span></div>`;
+el.innerHTML=`<div class="st"><b class="c1">${kf(P.length-dj)}</b><small>ARTISTES</small><span>${ic2('pp',36)}</span></div><div class="st"><b class="c2">${kf(dj)}</b><small>DJ & ING. SON</small><span>${ic2('hp',36)}</span></div><div class="st"><b class="c1">${kf(ok.length)}</b><small>TITRES EN LIGNE</small><span>${ic2('mn',36)}</span></div><div class="st"><b class="c3">${kf(pl)}</b><small>LECTURES</small><span>${ic2('pl',36)}</span></div>`;
 const hp=$('heroPh'),a=P.filter(p=>p.avatar);if(hp&&a.length)hp.style.backgroundImage=`url(${PUB('avatars',heroPick(a).avatar)})`}
 render();
 
@@ -1131,4 +1131,20 @@ return o()}})();
 /* --- Branchement sur l’affichage existant --- */
 (function(){const r=render;render=function(){r();try{renderFeedX();watchV();renderCity();bellRef()}catch(e){console.error(e)}}})();
 render();
+
+/* ===== v32 : bouton retour du téléphone = retour d'onglet ===== */
+V.tabH=['sorties'];V.gb=0;
+(function(){const T=['sorties','actus','annonces','services','compte','admin'],o=show;
+show=function(t){o(t);if(V.gb)return;if(t=='sorties')V.tabH=['sorties'];else if(T.includes(t)&&V.tabH[V.tabH.length-1]!==t){V.tabH.push(t);if(V.tabH.length>30)V.tabH.shift()}}})();
+try{history.replaceState({mm:'b'},'');history.pushState({mm:'g'},'')}catch(e){}
+window.addEventListener('popstate',function(){
+const g=()=>{try{history.pushState({mm:'g'},'')}catch(e){}};
+const ds=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!='ld');
+if(ds.length){ds[ds.length-1].close();g();return}
+if(document.querySelector('dialog#ld[open]')){g();return}
+const c=curPg();
+if(['profil','recherche','artistes','classement','soutien'].includes(c)){backP();g();return}
+if(V.tabH.length>1){V.tabH.pop();const p=V.tabH[V.tabH.length-1];V.gb=1;try{show(p)}finally{V.gb=0}g();return}
+if(c!='sorties'){V.gb=1;try{show('sorties')}finally{V.gb=0}V.tabH=['sorties'];g();return}
+history.back()});
 </script></body></html>
