@@ -153,6 +153,39 @@ main,header,nav,section{max-width:100%}
 .srP{width:46px;height:46px;border-radius:50%;padding:0;display:grid;place-items:center;background:#0a1f55;border:2px solid #1b8cff;flex:none}.srM{width:42px;height:42px;border-radius:50%;padding:0;background:#000;font-size:20px;flex:none;color:#fff}
 .smB{display:flex;flex-direction:column;gap:8px;margin-top:10px}.smB button{display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 14px;font-size:16px}
 </style>
+<style>
+/* v29 : bibliothèque fan, pastilles, boutons s'abonner */
+nav button{position:relative}
+.nb{position:absolute;top:0;left:calc(50% + 4px);min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:#ef3b3b;color:#fff;font:700 11px/19px Inter,sans-serif;text-align:center;box-shadow:0 0 0 2px #040a1c;pointer-events:none}
+.sbn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px;border-radius:99px;font-size:12px;font-weight:700;background:linear-gradient(135deg,#1a8cff,#0b4fe0);color:#fff;border:1.5px solid transparent;margin:4px 0 0;white-space:nowrap}
+.sbn.on{background:#071538;border-color:#1b6bff;color:#cfe0ff}
+.sbn.pl{background:transparent;border-color:#ffffff88}.sbn.pl.on{background:#071538;border-color:#1b6bff}
+.art{width:108px!important}.art .arN{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.art .sbn{width:100%}
+.sgc{flex:none;width:132px;background:linear-gradient(160deg,#0a1f55,#061233);border:1px solid #1b6bff66;border-radius:18px;padding:12px 8px;text-align:center}
+.sgc .av{width:78px;height:78px;border-radius:50%;margin:0 auto 6px;border:3px solid #19d3f3;display:grid;place-items:center;font:800 26px Poppins,sans-serif;color:#fff;cursor:pointer}
+.sgc b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sgc small{display:block;color:#a9c4ff;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px}
+.sgc .sbn{width:100%}
+.aln{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+#lib .ptabs{margin:12px 0 0}
+.lbH{display:flex;align-items:center;gap:12px;padding:12px 4px 8px}
+.lbI{color:#19a0ff;display:grid;place-items:center;flex:none}
+.lbT{flex:1;min-width:0}.lbT b{display:block;font:700 18px Poppins,sans-serif}.lbT small{color:#cfe0ff;font-size:13px}
+.lbP{flex:none;border:1.5px solid #19a0ff;border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap;background:#0a1f55}
+.lbR{display:flex;align-items:center;gap:10px;background:linear-gradient(160deg,#0a1f55,#061233);border:1px solid #1b6bff66;border-radius:18px;padding:8px;margin-bottom:8px}
+.lbA{width:64px;height:64px;border-radius:50%;flex:none;border:3px solid #19a0ff;display:grid;place-items:center;font:800 22px Poppins,sans-serif;color:#fff;cursor:pointer}
+.lbN{flex:1;min-width:0}.lbN b{display:block;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbN small{color:#cfe0ff;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbN u{cursor:pointer}
+.lbG{width:36px;height:36px;border-radius:50%;padding:0;display:grid;place-items:center;background:#0a1f55;border:1.5px solid #1b6bff;color:#fff;flex:none}
+.lbM{display:flex;margin:6px auto 4px;align-items:center;gap:6px;background:transparent;color:#fff;border:1.5px solid #19d3f3;border-radius:99px;padding:10px 18px}
+.lbC{width:64px;height:64px;border-radius:10px;flex:none;display:grid;place-items:center;font:800 22px Poppins,sans-serif;color:#fff;border:1px solid #ffffff44;cursor:zoom-in}
+.mq{overflow:hidden;border:1px solid #1b6bff66;border-radius:18px;background:linear-gradient(160deg,#0a1f55,#061233);padding:10px 0;margin-bottom:8px}
+.mqT{display:flex;gap:18px;width:max-content;animation:mqs 20s linear infinite}.mq:active .mqT{animation-play-state:paused}
+@keyframes mqs{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.mqI{width:84px;text-align:center;font-size:13px;flex:none;cursor:pointer}.mqI>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mqA{position:relative;width:74px;height:74px;border-radius:50%;margin:0 auto 4px;border:3px solid #19d3f3;box-shadow:0 0 12px #19d3f388;display:grid;place-items:center;font:800 24px Poppins,sans-serif;color:#fff}
+.mqH{position:absolute;right:-4px;bottom:-4px;width:24px;height:24px;border-radius:50%;background:#0b63f6;display:grid;place-items:center;color:#fff;border:2px solid #040a1c}
+</style>
 </head><body>
 <div id="topbar"></div><div id="splash"><div class="logobox" style="width:min(86vw,420px)" role="img" aria-label="ManiMusic"></div><div class="spBox"><div class="spin"></div><p id="spT" style="margin:0">Chargement…</p></div></div>
 <script>try{if(sessionStorage.mm_wb)document.getElementById("splash").className="soft"}catch(e){}</script>
@@ -942,5 +975,94 @@ ${bd?`<div class="pfBd"><span>📅 Anniversaire</span><i></i><span>🎂 ${bd}</s
 <p class="pfBio">${esc(p.bio||'')}</p>
 <div class="ptabs"><button class="${tab=='songs'?'on':''}" onclick="ptab('songs')">♫ Chansons</button><button class="${tab=='posts'?'on':''}" onclick="ptab('posts')">≣ Publications</button></div></div>
 <div style="margin-top:12px">${list}</div>${socHtml(p.id)?'<h2 style="font-size:17px">Plateformes</h2><div class="card">'+socHtml(p.id)+'</div>':''}`}
+render();
+
+/* ===== v29 : Bibliothèque fan, notifications cliquables, pastilles, boutons S’abonner ===== */
+V.lib='artists';V.libAll=false;V.favAll=false;
+var NAVB=['actus','annonces','services'];
+function heart(s){return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`}
+
+/* --- Pastilles rouges (1, 2 … 9+) sur Actualités / Annonces / Services --- */
+function sk(t){return 'mm_sn_'+t+'_'+(ME?ME.id:'v')}
+function seenAt(t){let v=null;try{v=localStorage.getItem(sk(t));if(!v){v=new Date().toISOString();localStorage.setItem(sk(t),v)}}catch(e){v=v||new Date().toISOString()}return Date.parse(v)||0}
+function feedItems(t){const me=ME&&ME.id;if(t=='actus')return(S.actus||[]).filter(a=>a.st=='ok'&&a.aid!=me).map(a=>a.t);if(t=='annonces')return(S.annx||[]).map(a=>a.created_at);return(S.svc||[]).map(a=>a.created_at)}
+function unreadN(t){const s=seenAt(t);return feedItems(t).filter(x=>Date.parse(x)>s).length}
+function markSeen(t){let m=Date.now();feedItems(t).forEach(x=>{const d=Date.parse(x);if(d>m)m=d});try{localStorage.setItem(sk(t),new Date(m).toISOString())}catch(e){}}
+function navBadges(){NAVB.forEach(t=>{const b=document.querySelector('nav button[data-t="'+t+'"]');if(!b)return;if(curPg()==t&&!S.admin)markSeen(t);const n=(S.admin||curPg()==t)?0:unreadN(t);let e=b.querySelector('.nb');if(!e){e=document.createElement('span');e.className='nb';b.appendChild(e)}e.textContent=n>9?'9+':n;e.style.display=n?'':'none'})}
+
+/* --- Bouton S’abonner (fans et visiteurs seulement) --- */
+function subBtn(aid,c){if(ME&&ME.role!='fan')return'';if(ME&&ME.id==aid)return'';const on=!!(S.mf||{})[aid];return `<button class="sbn ${on?'on':''} ${c||''}" onclick="event.stopPropagation();folDo('${aid}','${on?'unsub':'sub'}')">${on?'✓ Abonné':'＋ S’abonner'}</button>`}
+
+/* --- Abonnements : on garde aussi la date, pour la Bibliothèque --- */
+async function loadFollow(){const [a,b]=await Promise.all([SB.rpc('follow_counts'),(ME&&ME.role=='fan')?SB.from('follows').select('artist_id,top,created_at').eq('fan_id',ME.id).order('created_at',{ascending:false}):Promise.resolve({data:[]})]);
+S.fc={};(a.data||[]).forEach(x=>{S.fc[x.artist_id]={subs:+x.subs,tops:+x.tops}});S.mf={};(b.data||[]).forEach(x=>{S.mf[x.artist_id]={top:!!x.top,t:x.created_at}})}
+
+/* --- Bibliothèque (onglet des fans) --- */
+function libArtists(){const ids=Object.keys(S.mf||{}),all=[...(S.prof||[]),...(S.admin?(S.profAll||[]):[])],tm=x=>Date.parse(x.m.t)||Date.now();
+const L=ids.map(id=>({p:all.find(x=>x.id==id),m:S.mf[id]})).filter(x=>x.p).sort((a,b)=>tm(b)-tm(a)),N=L.length,vis=V.libAll?L:L.slice(0,5),F=L.filter(x=>x.m.top);
+let h=`<div class="lbH"><span class="lbI">${ic2('pp',30)}</span><div class="lbT"><b>Les artistes que vous suivez</b><small>Retrouvez tous les artistes auxquels vous êtes abonné.</small></div><span class="lbP">${N>5&&!V.libAll?'5 sur '+N:N+' artiste'+(N>1?'s':'')}</span></div>`;
+h+=vis.map(x=>`<div class="lbR"><div class="lbA" style="background:${avt(x.p)}" onclick="openP('${x.p.id}')">${x.p.avatar?'':esc((x.p.name||'?')[0])}</div><div class="lbN" onclick="openP('${x.p.id}')" style="cursor:pointer"><b>${esc(x.p.name||'')}${vfb(x.p.id)}</b><small>♫ ${esc(x.p.genre||'')}</small></div><button class="sbn on" onclick="folDo('${x.p.id}','unsub')">✓ Abonné</button><button class="lbG" onclick="openP('${x.p.id}')" aria-label="Voir le profil">${ic2('cr',20)}</button></div>`).join('')||'<p class="mut">Vous ne suivez encore aucun artiste. Allez sur l’Accueil pour les découvrir et vous abonner.</p><button class="lbM" onclick="show(\'sorties\')">Découvrir des artistes</button>';
+if(N>5)h+=`<button class="lbM" onclick="V.libAll=!V.libAll;render()">${V.libAll?'Voir moins':'Voir plus ('+N+' artistes suivis)'}</button>`;
+h+=`<div class="lbH" style="margin-top:14px"><span class="lbI">${heart(30)}</span><div class="lbT"><b>Artistes préférés</b><small>Vos artistes favoris sur ManiMusic.</small></div><span class="lbP">${F.length} artiste${F.length>1?'s':''} préféré${F.length>1?'s':''}</span></div>`;
+if(F.length){const mq=F.map(x=>`<div class="mqI" onclick="openP('${x.p.id}')"><div class="mqA" style="background:${avt(x.p)}">${x.p.avatar?'':esc((x.p.name||'?')[0])}<span class="mqH">${heart(13)}</span></div><span>${esc(x.p.name||'')}</span></div>`).join(''),half=mq.repeat(Math.max(1,Math.ceil(8/F.length)));
+h+=`<div class="mq"><div class="mqT" style="animation-duration:${Math.max(14,F.length*6)}s">${half}${half}</div></div><button class="lbM" onclick="V.favAll=!V.favAll;render()">${V.favAll?'Masquer la liste':'Voir la liste'}</button>`;
+if(V.favAll)h+=F.map(x=>`<div class="lbR"><div class="lbA" style="background:${avt(x.p)}" onclick="openP('${x.p.id}')">${x.p.avatar?'':esc((x.p.name||'?')[0])}</div><div class="lbN" onclick="openP('${x.p.id}')" style="cursor:pointer"><b>${esc(x.p.name||'')}${vfb(x.p.id)}</b><small>♫ ${esc(x.p.genre||'')}</small></div><button class="sbn on" onclick="folDo('${x.p.id}','untop')">★ Top Fan</button><button class="lbG" onclick="openP('${x.p.id}')" aria-label="Voir le profil">${ic2('cr',20)}</button></div>`).join('')}
+else h+='<p class="mut">Aucun artiste préféré pour l’instant. Ouvrez le profil d’un artiste que vous suivez et touchez « Artiste préféré ».</p>';
+return h}
+function libBuys(){const mine=(S.ord||[]).filter(o=>ME&&o.buyer_id==ME.id),seen={},L=[];
+[...mine].sort((a,b)=>(a.status=='paid'?0:1)-(b.status=='paid'?0:1)).forEach(o=>{if(seen[o.song_id])return;seen[o.song_id]=1;L.push(o)});
+const hd=`<div class="lbH"><span class="lbI">${ic('ct',30)}</span><div class="lbT"><b>Mes chansons achetées</b><small>Retrouvez toutes les chansons que vous avez achetées.</small></div></div>`;
+return hd+(L.map(o=>{const s=S.songs.find(x=>x.id==o.song_id),t=s?s.t:((o.songs||{}).title||'Chanson'),paid=o.status=='paid';
+return `<div class="lbR"><div class="lbC" ${s&&s.cv?`data-zoom="${s.cv}"`:''} style="background:${s&&s.cv?`url(${s.cv}) center/cover`:cols[(o.song_id||0)%4]}">${s&&s.cv?'':esc(t[0])}</div><div class="lbN"><b>${esc(t)}</b>${s?`<small><u onclick="openP('${s.aid}')">${esc(s.a)}</u>${s.ft?' feat. '+esc(s.ft):''}</small>`:''}${paid?'':`<small>${o.status=='no'?'Refusé':'En attente de validation'}</small>`}</div>${paid&&s?`<button class="srP" onclick="play(${s.id})" aria-label="Écouter">${ic('pl',24)}</button><button class="srM" onclick="smOpen(${s.id})" aria-label="Plus">⋯</button>`:''}</div>`}).join('')||'<p class="mut">Aucun achat pour le moment.</p>')}
+function hdrSr(){const e=document.querySelector('.hsi span:last-child');if(!e)return;const lib=curPg()=='achats'&&ME&&ME.role=='fan';e.textContent=lib?(V.lib=='buys'?'Chercher une chanson…':'Chercher un artiste…'):'Chercher un artiste, une chanson…'}
+function renderLib(){const el=$('lib');if(!el)return;
+if(!ME){el.innerHTML='<p class="mut">Connectez-vous pour voir votre bibliothèque.</p><div class="row"><button onclick="openWel()">Se connecter</button></div>';return}
+const fan=ME.role=='fan',tab=fan?V.lib:'buys';
+el.innerHTML=`<div class="pgH"><div class="pgI">${ic2('mn',56)}</div><div><h2>Bibliothèque</h2><small>Vos artistes et vos chansons</small></div></div>`+(fan?`<div class="ptabs"><button class="${tab=='artists'?'on':''}" onclick="libTab('artists')">${ic2('pp',22)} Mes artistes</button><button class="${tab=='buys'?'on':''}" onclick="libTab('buys')">${ic('ct',22)} Mes achats</button></div>`:'')+`<div style="margin-top:12px">${tab=='buys'?libBuys():libArtists()}</div>`;hdrSr()}
+function buysView(){renderLib()}
+function libTab(t){V.lib=t;renderLib();scrollTo(0,0)}
+(function(){const s=$('achats');if(s&&!$('lib'))s.innerHTML='<div id="lib"></div><p id="fid" class="mut" style="display:none"></p><div id="bl" style="display:none"></div>'})();
+function navFix(){const b=document.querySelector('nav button[data-t="compte"]');if(b&&S.mode=='fan'&&!S.admin)b.innerHTML='<i>'+ic2('mn',24)+'</i>Bibliothèque'}
+
+/* --- Accueil : carrousel, liste complète et « Artistes à suivre » avec bouton S’abonner --- */
+function renderArtX(){const P=S.prof||[],top=[...P].sort((a,b)=>(b.avatar?1:0)-(a.avatar?1:0)).slice(0,12);
+if($('arts'))$('arts').innerHTML=top.map(p=>`<div class="art" onclick="openP('${p.id}')"><div class="av" style="background:${avt(p)}">${p.avatar?'':esc((p.name||'?')[0])}</div><span class="arN">${esc(p.name||'')}${vfb(p.id)}</span>${subBtn(p.id)}</div>`).join('');
+if($('art-all'))$('art-all').innerHTML=P.map(p=>`<div class="card song" style="cursor:pointer" onclick="openP('${p.id}')"><div class="cov" style="border-radius:50%;background:${avt(p)}">${p.avatar?'':esc((p.name||'?')[0])}</div><div><b>${esc(p.name||'')}${vfb(p.id)}</b><small>${esc(p.city||'')} · ${esc((p.genre||'').split(' · ')[0])}</small></div><div class="r">${subBtn(p.id)}</div></div>`).join('')||'<p class="mut">Aucun artiste pour le moment.</p>'}
+function renderSugg(){let el=$('sugg');if(!el){const t=document.querySelector('.topH');if(!t)return;t.insertAdjacentHTML('beforebegin','<div id="sugg"></div>');el=$('sugg')}
+if(ME&&ME.role!='fan'){el.innerHTML='';return}
+const A=S.prof||[],P=A.filter(p=>!(S.mf||{})[p.id]);if(!V.sgo||V.sgn!=A.length){V.sgo=A.map(p=>p.id).sort(()=>Math.random()-.5);V.sgn=A.length}
+const L=V.sgo.map(id=>P.find(p=>p.id==id)).filter(Boolean).slice(0,10);
+el.innerHTML=L.length?`<div class="secH"><span class="star">${ic2('pp',22)}</span><b>Artistes à suivre</b></div><div class="arts">${L.map(p=>`<div class="sgc"><div class="av" style="background:${avt(p)}" onclick="openP('${p.id}')">${p.avatar?'':esc((p.name||'?')[0])}</div><b>${esc(p.name||'')}${vfb(p.id)}</b><small>${esc((p.genre||'').split(' · ')[0])}</small>${subBtn(p.id)}</div>`).join('')}</div>`:''}
+function subSongs(){document.querySelectorAll('.sgA').forEach(u=>{const m=/openArt\((\d+)\)/.exec(u.getAttribute('onclick')||'');if(!m)return;const p=u.parentElement;if(!p||p.querySelector('.sbn'))return;const s=S.songs.find(x=>x.id==m[1]);if(s&&s.aid)u.insertAdjacentHTML('afterend',subBtn(s.aid))})}
+
+/* --- Un nom d’artiste ramène à son profil (actualités) --- */
+(function(){const o=postCard;postCard=function(tt,id,body,media,mk,date,author,link,full,extra){if(tt=='news'&&author){const a=(S.actus||[]).find(x=>x.id==id);if(a&&a.aid){const here=curPg()=='profil'&&V.aid==a.aid;author='<span class="aln" onclick="event.stopPropagation();openP(\''+a.aid+'\')">'+author+'</span>'+(here?'':subBtn(a.aid))}}return o.call(this,tt,id,body,media,mk,date,author,link,full,extra)}})();
+(function(){const o=openP;openP=function(id){['postDlg','cmDlg','smDlg','notifDlg'].forEach(i=>{const d=$(i);if(d&&d.open)d.close()});return o(id)}})();
+/* --- Lecteur : nom cliquable + bouton S’abonner --- */
+(function(){const o=plUI;plUI=function(){o();const s=V.cur&&S.songs.find(x=>x.id==V.cur);if(!s)return;const a=$('plArt');if(!a)return;a.style.cursor='pointer';a.onclick=()=>{plMin(true);openP(s.aid)};let b=$('plSb');if(!b){b=document.createElement('div');b.id='plSb';a.after(b)}b.innerHTML=subBtn(s.aid,'pl')}})();
+/* --- Recherche : bouton S’abonner à côté des artistes --- */
+(function(){const o=renderSrch;renderSrch=function(){o();document.querySelectorAll('#srch-l .card.song').forEach(c=>{const m=/openP\('([^']+)'\)/.exec(c.getAttribute('onclick')||'');if(m&&!c.querySelector('.sbn'))c.insertAdjacentHTML('beforeend','<div class="r">'+subBtn(m[1])+'</div>')})}})();
+
+/* --- Notifications : cloche pour les fans + liens cliquables --- */
+function bellRef(){const b=$('bell');if(!b)return;const on=ME&&(ME.role=='artist'||ME.role=='fan');b.style.display=on?'':'none';const n=(S.nt||[]).filter(x=>!x.read).length;$('bn').textContent=n>9?'9+':(n||'');$('bn').style.display=n?'':'none'}
+function openNotif(){const L=S.nt||[];
+$('nt-l').innerHTML=L.map(n=>{const lk=n.link,st='cursor:'+(lk?'pointer':'default')+';'+(n.read?'':'border-color:var(--gold)');return `<div class="card" ${lk?`onclick="ntGo('${esc(lk)}')"`:''} style="${st}"><p style="margin:0">${esc(n.body)}</p><small class="mut">${new Date(n.created_at).toLocaleString('fr-FR')}${lk?' · Appuyez pour voir ›':''}</small></div>`}).join('')||'<p class="mut">Aucune notification pour le moment.</p>';
+$('notifDlg').showModal();
+if(ME&&L.some(n=>!n.read)){SB.from('notifications').update({read:true}).eq('user_id',ME.id).eq('read',false).then(()=>{L.forEach(n=>n.read=true);bellRef()})}}
+async function ntGo(l){const p=String(l||'').split(':'),k=p[0],id=p[1],d=$('notifDlg');if(d.open)d.close();if(!id)return;
+const has=()=>k=='ann'?(S.annx||[]).some(x=>x.id==id):k=='svc'?(S.svc||[]).some(x=>x.id==id):k=='news'?(S.actus||[]).some(x=>x.id==id&&x.st=='ok'):(S.songs||[]).some(x=>x.id==id);
+if(!has())await busy(()=>load());
+if(!has())return toast('Cette publication n’est plus disponible.');
+if(k=='ann'){show('annonces');openPost('ann',+id)}else if(k=='svc'){show('services');openPost('svc',+id)}else if(k=='news'){show('actus');openPost('news',+id)}else{const s=S.songs.find(x=>x.id==id);openP(s.aid);play(s.id)}}
+
+/* --- Rafraîchissement automatique léger (toutes les 60 s) : nouvelles publications → pastilles et notifications --- */
+async function feedPoll(){if(document.hidden||V.polling)return;if(document.querySelector('dialog[open]'))return;const ae=document.activeElement;if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;V.polling=1;
+try{const one=t=>SB.from(t).select('created_at').order('created_at',{ascending:false}).limit(1),q=await Promise.all([one('announcements'),one('services'),SB.from('news').select('created_at').eq('status','ok').order('created_at',{ascending:false}).limit(1),SB.from('songs').select('created_at').eq('status','ok').order('created_at',{ascending:false}).limit(1),ME?SB.from('notifications').select('created_at').eq('user_id',ME.id).order('created_at',{ascending:false}).limit(1):Promise.resolve({data:[]})]),
+sig=q.map(x=>x.data&&x.data[0]?x.data[0].created_at:'').join('|'),u=ME?ME.id:'';if(V.sigU===u&&V.sig&&V.sig!==sig)await load();V.sigU=u;V.sig=sig}catch(e){}V.polling=0}
+setInterval(feedPoll,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)feedPoll()});
+
+/* --- Branchement sur l’affichage existant --- */
+(function(){const o=show;show=function(t){o(t);const c=curPg();if(NAVB.includes(c)&&!S.admin)markSeen(c);navBadges();hdrSr()}})();
+(function(){const r=render;render=function(){r();try{renderArtX();renderSugg();subSongs();navFix();navBadges();bellRef();if(curPg()=='recherche')renderSrch();hdrSr()}catch(e){console.error(e)}}})();
 render();
 </script></body></html>
