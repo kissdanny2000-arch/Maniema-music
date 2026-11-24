@@ -979,7 +979,7 @@ function ptab(t){V.ptab=t;render()}
 function smOpen(id){const s=S.songs.find(x=>x.id==id);if(!s)return;const q=lk('song',id),own=s.own||bought(id);
 $('sm-l').innerHTML=`<h2 style="font-size:20px;margin:0">${esc(s.t)}</h2><p class="mut" style="margin:4px 0 0">${esc(s.a)}${s.ft?' feat. '+esc(s.ft):''}</p><div class="smB"><button onclick="tog('song',${id}).then(()=>smOpen(${id}))">${ic('up',20)} J’aime (${kf(q.n)})</button><button onclick="smDlg.close();cmOpen(${id})">${ic('cm',20)} Commentaires</button><button onclick="shareIt('song',${id})">${ic('sh',20)} Partager</button>${own?`<button onclick="dl(${id})">${ic('dl',20)} Télécharger</button>`:s.sold?'<button disabled>🔒 Vendu</button>':`<button onclick="smDlg.close();buy(${id})">${ic('ct',20)} Acheter</button>`}</div>`;$('smDlg').showModal()}
 function renderProfile(){const el=$('prof-pg');if(!el||!V.aid)return;const p=(S.prof||[]).find(x=>x.id==V.aid)||(S.admin?(S.profAll||[]).find(x=>x.id==V.aid):null);if(!p)return;
-const k=S.fc[p.id]||{subs:0,tops:0},m=(S.mf||{})[p.id],fan=!ME||ME.role=='fan',bd=bdText(p),tab=V.ptab||'songs',
+const k=S.fc[p.id]||{subs:0,tops:0},m=(S.mf||{})[p.id],fan=!ME||ME.id!=p.id,bd=bdText(p),tab=V.ptab||'songs',
 songs=(S.songs||[]).filter(s=>s.st=='ok'&&s.aid==p.id),posts=(S.actus||[]).filter(a=>a.st=='ok'&&a.aid==p.id),av=p.avatar?PUB('avatars',p.avatar):'',cv=p.cover?PUB('avatars',p.cover):'';
 let fb='';if(fan){fb=!m?`<button class="fbSub" onclick="folDo('${p.id}','sub')">＋ S’abonner</button>`:`<div class="fbRow"><button class="fbBlk" onclick="folDo('${p.id}','unsub')">✓ Suivi</button>${m.top?`<button class="fbBlk" onclick="folDo('${p.id}','untop')">★ Top Fan</button>`:`<button class="fbRed" onclick="folDo('${p.id}','top')">? Artiste préféré ?</button>`}</div>`}
 const list=tab=='songs'?(songs.map(s=>`<div class="sr"><div class="srCv" ${s.cv?`data-zoom="${s.cv}"`:''} style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div class="srI"><b>${esc(s.t)}${s.ft?' feat. '+esc(s.ft):''}</b><small>${ic('pl',14)} ${kf(s.p||0)} écoutes</small></div><button class="srP" onclick="play(${s.id})" aria-label="Écouter">${ic('pl',24)}</button><button class="srM" onclick="smOpen(${s.id})" aria-label="Plus">⋯</button></div>`).join('')||'<p class="mut">Aucune chanson pour l’instant.</p>'):(posts.map(a=>postCard('news',a.id,a.x,a.m,a.k,dfmt(a.t),esc(a.a)+vfb(a.aid))).join('')||'<p class="mut">Aucune publication.</p>');
@@ -1147,4 +1147,68 @@ if(['profil','recherche','artistes','classement','soutien'].includes(c)){backP()
 if(V.tabH.length>1){V.tabH.pop();const p=V.tabH[V.tabH.length-1];V.gb=1;try{show(p)}finally{V.gb=0}g();return}
 if(c!='sorties'){V.gb=1;try{show('sorties')}finally{V.gb=0}V.tabH=['sorties'];g();return}
 history.back()});
+
+/* ===== v32 (suite) : abonnements pour tous les comptes, « Artistes suivis », Boost et promotion ===== */
+var BMAX=10;S.boost=S.boost||[];S.boostRows=S.boostRows||[];V.folO=false;V.bo=false;V.bp=null;
+
+/* --- Abonnements : tous les comptes connectés (fan, artiste, DJ, propriétaire) --- */
+async function loadFollow(){const [a,b]=await Promise.all([SB.rpc('follow_counts'),ME?SB.from('follows').select('artist_id,top,created_at').eq('fan_id',ME.id).order('created_at',{ascending:false}):Promise.resolve({data:[]})]);
+S.fc={};(a.data||[]).forEach(x=>{S.fc[x.artist_id]={subs:+x.subs,tops:+x.tops}});S.mf={};(b.data||[]).forEach(x=>{S.mf[x.artist_id]={top:!!x.top,t:x.created_at}})}
+async function folDo(aid,act){if(!ME){toast('Créez un compte pour vous abonner.');return openWel()}if(ME.id==aid)return toast('Vous ne pouvez pas vous abonner à vous-même.');
+const k=S.fc[aid]=S.fc[aid]||{subs:0,tops:0},m=S.mf[aid];let q;
+if(act=='sub'&&!m){S.mf[aid]={top:false,t:new Date().toISOString()};k.subs++;q=SB.from('follows').insert({artist_id:aid,fan_id:ME.id})}
+else if(act=='unsub'&&m){if(m.top)k.tops=Math.max(0,k.tops-1);k.subs=Math.max(0,k.subs-1);delete S.mf[aid];q=SB.from('follows').delete().eq('artist_id',aid).eq('fan_id',ME.id)}
+else if(act=='top'&&m&&!m.top){m.top=true;k.tops++;q=SB.from('follows').update({top:true}).eq('artist_id',aid).eq('fan_id',ME.id)}
+else if(act=='untop'&&m&&m.top){m.top=false;k.tops=Math.max(0,k.tops-1);q=SB.from('follows').update({top:false}).eq('artist_id',aid).eq('fan_id',ME.id)}
+else return;
+render();const r=await q;if(r.error){toast('Erreur : '+r.error.message);await loadFollow();render()}}
+function subBtn(aid,c){if(ME&&ME.id==aid)return'';const on=!!(S.mf||{})[aid];return `<button class="sbn ${on?'on':''} ${c||''}" onclick="event.stopPropagation();folDo('${aid}','${on?'unsub':'sub'}')">${on?'✓ Abonné':'＋ S’abonner'}</button>`}
+
+/* --- Boost : chargement --- */
+async function loadBoost(){try{const r=await SB.from('boost_artists').select('artist_id,pos').order('pos');S.boostRows=r.error?[]:(r.data||[]);S.boost=S.boostRows.map(x=>x.artist_id)}catch(e){S.boost=[];S.boostRows=[]}}
+(function(){const o=load;load=async function(){await o.apply(this,arguments);await loadBoost();render()}})();
+
+/* --- Accueil : « Artistes à suivre » (choisis par le propriétaire, sinon au hasard) --- */
+function renderSugg(){let el=$('sugg');if(!el){const t=document.querySelector('.topH');if(!t)return;t.insertAdjacentHTML('beforebegin','<div id="sugg"></div>');el=$('sugg')}
+const A=S.prof||[],me=ME?ME.id:null,bo=(S.boost||[]).map(id=>A.find(p=>p.id==id)).filter(p=>p&&p.id!=me).slice(0,BMAX);let L;
+if(bo.length)L=bo;else{const P=A.filter(p=>!(S.mf||{})[p.id]&&p.id!=me);if(!V.sgo||V.sgn!=A.length){V.sgo=A.map(p=>p.id).sort(()=>Math.random()-.5);V.sgn=A.length}L=V.sgo.map(id=>P.find(p=>p.id==id)).filter(Boolean).slice(0,10)}
+el.innerHTML=L.length?`<div class="secH"><span class="star">${ic2('pp',22)}</span><b>Artistes à suivre</b></div><div class="arts">${L.map(p=>`<div class="sgc"><div class="av" style="background:${avt(p)}" onclick="openP('${p.id}')">${p.avatar?'':esc((p.name||'?')[0])}</div><b>${esc(p.name||'')}${vfb(p.id)}</b><small>${esc((p.genre||'').split(' · ')[0])}</small>${subBtn(p.id)}</div>`).join('')}</div>`:''}
+
+/* --- Profil public : bouton d'abonnement pour tout compte connecté (sauf soi-même) --- */
+/* (la ligne fan=... de renderProfile est modifiée sur place) */
+
+/* --- « Artistes suivis » : Compte de l'artiste (avant le solde) et Admin (sous les statistiques) --- */
+(function(){const b=document.querySelector('#compte .bal');if(b&&!$('folBox'))b.insertAdjacentHTML('beforebegin','<div id="folBox"></div>');
+const s=$('a-stats');if(s&&!$('folBoxA'))s.insertAdjacentHTML('afterend','<div id="folBoxA"></div><div class="card" id="boostCard" style="display:none"><b>🚀 Boost et promotion</b><div id="boostBody" style="margin-top:8px"></div></div>')})();
+function renderFol(){const a=$('folBox'),b=$('folBoxA');
+const mk=()=>{const n=Object.keys(S.mf||{}).length,o=!!V.folO;return `<button class="ghost" style="width:100%;margin:12px 0 8px;display:flex;justify-content:space-between;align-items:center" onclick="V.folO=!V.folO;render()"><span>Artistes suivis (${n})</span><span>${o?'▲':'▼'}</span></button>`+(o?`<div class="card">${libArtists()}</div>`:'')};
+if(a)a.innerHTML=(ME&&ME.role=='artist')?mk():'';
+if(b)b.innerHTML=S.admin?mk():''}
+
+/* --- Boost et promotion (propriétaire) --- */
+function renderBoost(){const c=$('boostCard'),el=$('boostBody');if(!c||!el)return;if(!S.admin){c.style.display='none';return}c.style.display='';
+const ae=document.activeElement;if(ae&&ae.id=='bq')return;
+const B=S.boost||[],n=B.length,all=S.profAll||[],o=!!V.bo;
+let h=`<button class="ghost" style="width:100%;display:flex;justify-content:space-between;align-items:center" onclick="V.bo=!V.bo;renderBoost()"><span>⭐ Artistes à suivre (${n}/${BMAX})</span><span>${o?'▲':'▼'}</span></button>`;
+if(o){h+='<p class="mut" style="margin:8px 0">Ces artistes s’affichent dans « Artistes à suivre » sur l’Accueil, dans cet ordre. Si la liste est vide, le site choisit des artistes au hasard.</p>';
+h+=B.map((id,i)=>{const p=all.find(x=>x.id==id);return p?`<div class="lbR"><div class="lbA" style="background:${avt(p)}">${p.avatar?'':esc((p.name||'?')[0])}</div><div class="lbN"><b>${i+1}. ${esc(p.name||'')}${vfb(p.id)}</b><small>@${esc(p.username||'')}</small></div></div><div class="row" style="margin:0 0 10px"><button class="ghost" onclick="boostPick('replace','${p.id}')">Remplacer</button><button class="no" onclick="boostDel('${p.id}')">Retirer</button></div>`:`<div class="lbR"><div class="lbN"><b>${i+1}. (compte indisponible)</b></div></div><div class="row" style="margin:0 0 10px"><button class="no" onclick="boostDel('${id}')">Retirer</button></div>`}).join('')||'<p class="mut">Aucun artiste choisi.</p>';
+if(V.bp){const rp=V.bp.m=='replace',old=rp?all.find(x=>x.id==V.bp.id):null;
+h+=`<div class="card" style="margin-top:8px"><b>${rp?'Choisir l’artiste qui remplace '+esc(old?old.name:'')+' :':'Choisir l’artiste à ajouter :'}</b><input id="bq" type="search" placeholder="Rechercher un artiste" aria-label="Recherche" oninput="boostRes()" style="margin-top:8px"><div id="bres" style="margin-top:8px"></div><div class="row"><button class="ghost" onclick="V.bp=null;renderBoost()">Annuler</button></div></div>`}
+else if(n<BMAX)h+=`<div class="row"><button onclick="boostPick('add')">＋ Ajouter</button></div>`;
+else h+=`<p class="mut">Limite de ${BMAX} atteinte. Retirez-en un pour en ajouter.</p>`}
+el.innerHTML=h;if(V.bp)boostRes()}
+function boostPick(m,id){V.bp={m,id:id||null};renderBoost();setTimeout(()=>{const e=$('bq');if(e)e.focus()},60)}
+function boostRes(){const r=$('bres');if(!r)return;const q=(($('bq')||{}).value||'').trim().toLowerCase(),B=S.boost||[],
+A=(S.prof||[]).filter(p=>!B.includes(p.id)&&(!q||(p.name||'').toLowerCase().includes(q)||(p.username||'').toLowerCase().includes(q))).slice(0,q?20:5);
+r.innerHTML=A.map(p=>`<div class="lbR" style="cursor:pointer" onclick="boostSet('${p.id}')"><div class="lbA" style="background:${avt(p)}">${p.avatar?'':esc((p.name||'?')[0])}</div><div class="lbN"><b>${esc(p.name||'')}${vfb(p.id)}</b><small>@${esc(p.username||'')}</small></div><span class="sbn">Choisir</span></div>`).join('')||'<p class="mut">Aucun artiste trouvé.</p>'}
+function boostSet(id){const bp=V.bp;if(!bp)return;return busy(async()=>{let r;
+if(bp.m=='replace'){const row=(S.boostRows||[]).find(x=>x.artist_id==bp.id),pos=row?row.pos:0;r=await SB.from('boost_artists').delete().eq('artist_id',bp.id);if(r.error)throw r.error;r=await SB.from('boost_artists').insert({artist_id:id,pos})}
+else{if((S.boost||[]).length>=BMAX){toast('Limite de '+BMAX+' atteinte.');return}const pos=(S.boostRows||[]).reduce((a,x)=>Math.max(a,x.pos||0),0)+1;r=await SB.from('boost_artists').insert({artist_id:id,pos})}
+if(r.error)throw r.error;V.bp=null;await loadBoost();render();toast('Boost mis à jour ✓')})}
+function boostDel(id){return busy(async()=>{const r=await SB.from('boost_artists').delete().eq('artist_id',id);if(r.error)throw r.error;await loadBoost();render();toast('Artiste retiré du Boost.')})}
+
+/* --- Branchement sur l'affichage existant --- */
+(function(){const r=render;render=function(){r();try{renderFol();renderBoost()}catch(e){console.error(e)}}})();
+loadBoost().then(()=>render());
+render();
 </script></body></html>
