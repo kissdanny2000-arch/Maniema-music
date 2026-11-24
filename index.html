@@ -186,6 +186,22 @@ nav button{position:relative}
 .mqA{position:relative;width:74px;height:74px;border-radius:50%;margin:0 auto 4px;border:3px solid #19d3f3;box-shadow:0 0 12px #19d3f388;display:grid;place-items:center;font:800 24px Poppins,sans-serif;color:#fff}
 .mqH{position:absolute;right:-4px;bottom:-4px;width:24px;height:24px;border-radius:50%;background:#0b63f6;display:grid;place-items:center;color:#fff;border:2px solid #040a1c}
 </style>
+<style>
+/* v30 : en-tête (cloche + menu), profil, fenêtre de modification */
+#role{display:none!important}
+.hact{position:relative}
+#bell.hbtn{background:none!important;border:0!important;box-shadow:none!important;width:44px;height:44px;border-radius:0!important}
+#bell svg{width:28px;height:28px;color:#fff}
+#bell .bdg{top:2px;right:4px;border:2px solid #040a1c;min-width:20px;height:20px}
+.hbtn.hmn{width:46px;height:46px;border-radius:14px!important}
+.hmn svg{width:26px;height:26px;color:#fff}
+.hmenu{display:none;position:absolute;right:0;top:54px;z-index:40;background:#050d26;border:1.5px solid #1b6bff;border-radius:16px;padding:6px;box-shadow:0 8px 28px #000a;min-width:210px}
+.hmenu button{display:flex;align-items:center;gap:10px;width:100%;background:none;color:#fff;font-size:16px;padding:12px 14px;border-radius:12px;justify-content:flex-start}
+.pfHead{align-items:flex-start!important}
+.pfId{padding-top:54px!important;padding-bottom:0!important;flex:1;min-width:0}
+.pfN{overflow-wrap:anywhere}
+.ePv{background:#0a1f55 center/cover no-repeat;border:1.5px solid #1b6bff;border-radius:14px}
+</style>
 </head><body>
 <div id="topbar"></div><div id="splash"><div class="logobox" style="width:min(86vw,420px)" role="img" aria-label="ManiMusic"></div><div class="spBox"><div class="spin"></div><p id="spT" style="margin:0">Chargement…</p></div></div>
 <script>try{if(sessionStorage.mm_wb)document.getElementById("splash").className="soft"}catch(e){}</script>
@@ -469,7 +485,7 @@ if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.i
 const ss=await SB.from('songs').select('*, profiles(name,city,genre)').order('created_at',{ascending:false});
 S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:r.status,k:r.kind,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,aid:r.artist_id,ft:r.featuring||'',pc:r.price_cdf||500,sold:!!r.sold,ap:r.audio_path,dp:r.doc_path,cv:r.cover_path?PUB('media',r.cover_path):''}));
 const ns=await SB.from('news').select('*, profiles(name)').order('created_at',{ascending:false});
-S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id,t:r.created_at}));
+S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id,t:r.created_at,h:!!r.hidden}));
 const an=await SB.from('announcements').select('*').order('created_at',{ascending:false});S.ann=[];S.annx=an.data||[];
 if(ME){$('wel').close();
 if(ME.role=='admin')S.admin=true;
@@ -1064,5 +1080,55 @@ setInterval(feedPoll,60000);document.addEventListener('visibilitychange',()=>{if
 /* --- Branchement sur l’affichage existant --- */
 (function(){const o=show;show=function(t){o(t);const c=curPg();if(NAVB.includes(c)&&!S.admin)markSeen(c);navBadges();hdrSr()}})();
 (function(){const r=render;render=function(){r();try{renderArtX();renderSugg();subSongs();navFix();navBadges();bellRef();if(curPg()=='recherche')renderSrch();hdrSr()}catch(e){console.error(e)}}})();
+render();
+
+/* ===== v30 : en-tête (cloche + 3 barres), artistes par ville, masquer une actualité, page Compte artiste, modification du profil ===== */
+
+/* --- 1. En-tête : cloche (sans cercle) + bouton 3 barres pour tous les comptes --- */
+(function(){const h=document.querySelector('.hact');if(!h||$('menuBtn'))return;
+h.insertAdjacentHTML('beforeend','<button id="menuBtn" class="hbtn hmn" aria-label="Menu" onclick="menuTog(event)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button><div id="hmenu" class="hmenu"></div>')})();
+function menuTog(e){e.stopPropagation();const m=$('hmenu');if(m.style.display=='block'){m.style.display='none';return}
+const ico='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>';
+m.innerHTML=ME?'<button onclick="menuGo(1)">'+ico+' Se déconnecter</button>':'<button onclick="menuGo(0)">'+ico+' Se connecter</button>';m.style.display='block'}
+function menuGo(out){$('hmenu').style.display='none';if(out)logout();else openWel()}
+document.addEventListener('click',()=>{const m=$('hmenu');if(m)m.style.display='none'});
+function bellRef(){const b=$('bell');if(!b)return;b.style.display=ME?'':'none';const n=(S.nt||[]).filter(x=>!x.read).length;$('bn').textContent=n>9?'9+':(n||'');$('bn').style.display=n?'':'none'}
+
+/* --- 2. Propriétaire : artistes par ville --- */
+(function(){const a=$('a-acc');if(a&&!$('a-city')){const c=a.closest('.card');if(c)c.insertAdjacentHTML('beforebegin','<div class="card"><b>🏙 Artistes par ville</b><div id="a-city" style="margin-top:8px"></div></div>')}})();
+function renderCity(){const el=$('a-city');if(!el||!S.admin)return;const P=S.profAll||[],m={};
+P.forEach(p=>{const c=(p.city||'').trim()||'Ville non indiquée',k=c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');(m[k]=m[k]||{n:c,L:[]}).L.push(p)});
+const A=Object.values(m).sort((a,b)=>b.L.length-a.L.length||a.n.localeCompare(b.n));
+el.innerHTML='<p class="mut">'+P.length+' compte'+(P.length>1?'s':'')+' artiste/DJ · '+A.length+' ville'+(A.length>1?'s':'')+'</p>'+A.map((v,i)=>{const o=V.cityO===i;
+return `<div class="pay" style="cursor:pointer" onclick="V.cityO=${o?'null':i};renderCity()"><span><b>${esc(v.n)}</b></span><span><b>${v.L.length}</b> artiste${v.L.length>1?'s':''} ${o?'▲':'▼'}</span></div>`+(o?v.L.map(p=>`<div class="card song" style="cursor:pointer;margin:6px 0" onclick="openP('${p.id}')"><div class="cov" style="border-radius:50%;background:${avt(p)}">${p.avatar?'':esc((p.name||'?')[0])}</div><div><b>${esc(p.name||'')}${vfb(p.id)}</b><small>@${esc(p.username||'')} · ${esc(p.kind||'')} · ${esc((p.genre||'').split(' · ')[0])}</small></div></div>`).join(''):'')}).join('')}
+
+/* --- 3. Propriétaire : masquer une actualité du fil (reste visible sur le profil de l’artiste) --- */
+function hideNews(id,v){return busy(async()=>{const r=await SB.from('news').update({hidden:v}).eq('id',id);if(r.error)throw r.error;await load();toast(v?'Actualité masquée du fil. Elle reste visible sur le profil de l’artiste.':'Actualité remise dans le fil.')})}
+(function(){const o=postCard;postCard=function(tt,id,body,media,mk,date,author,link,full,extra){if(tt=='news'&&S.admin){const a=(S.actus||[]).find(x=>x.id==id);if(a)extra=(extra||'')+'<div class="row" style="margin:6px 0 10px">'+(a.h?'<span class="tag">Masquée du fil</span>':'')+`<button class="ghost" onclick="hideNews(${id},${!a.h})">${a.h?'👁 Remettre dans le fil':'🙈 Masquer du fil'}</button></div>`}return o.call(this,tt,id,body,media,mk,date,author,link,full,extra)}})();
+function renderFeedX(){const N=$('actus-l');if(!N)return;const L=(S.actus||[]).filter(a=>a.st=='ok'&&(S.admin||!a.h));
+N.innerHTML=L.map(a=>postCard('news',a.id,a.x,a.m,a.k,dfmt(a.t),esc(a.a)+vfb(a.aid))).join('')||'<p class="mut">Aucune actualité pour le moment.</p>'}
+function feedItems(t){const me=ME&&ME.id;if(t=='actus')return(S.actus||[]).filter(a=>a.st=='ok'&&!a.h&&a.aid!=me).map(a=>a.t);if(t=='annonces')return(S.annx||[]).map(a=>a.created_at);return(S.svc||[]).map(a=>a.created_at)}
+
+/* --- 4. Page Compte de l’artiste : abonnés et Top Fans en haut, bouton « Modifier mon profil » --- */
+function renderMe(){const m=S.me;if(!m||!ME)return;const k=(S.fc||{})[ME.id]||{subs:0,tops:0};
+$('prof').innerHTML=`<div class="pf" style="margin-top:0"><div class="pfCv" ${m.cv?`data-zoom="${m.cv}"`:''} style="${m.cv?`background-image:url(${m.cv})`:'background:linear-gradient(135deg,#0a2a7a,#040a1c)'}"></div><div class="pfHead"><div class="pfAv" ${m.ph?`data-zoom="${m.ph}"`:''} style="${m.ph?`background-image:url(${m.ph})`:''}">${m.ph?'':esc((m.name||'?')[0])}</div><div class="pfId"><div class="pfN">${esc(m.name||'')}${vfb(ME.id)}</div><div class="pfU">@${esc(ME.username||'')} · ${esc(m.kind||'Artiste')}</div><div class="pfL">📍 ${esc(m.city||'')}, ${esc(m.prov||'')}</div></div></div><div class="pfG"><span class="tag">${esc(m.genre||'')}</span></div><div class="pst"><div>${ic2('pp',32)}<span><b>${kf(k.subs)}</b><small>Abonnés</small></span></div><i></i><div>${ic2('st',32)}<span><b>${kf(k.tops)}</b><small>Top Fans</small></span></div></div><p class="pfBio">${esc(m.bio||'')}</p><div class="row" style="margin:12px 14px 0"><button style="flex:1" onclick="openEdit()">✏️ Modifier mon profil</button></div></div>`;
+$('mine').innerHTML=S.songs.filter(s=>s.own).map(s=>`<div class="card"><b>${esc(s.t)}</b> <span class="tag">${LBL[s.st]}</span>${s.k=='beat'?'<span class="tag">Beat</span>':''}<p class="mut">${s.u} $ · ${fx(s.c)} FC${s.st=='no'?' · Motif : '+esc(s.why):''}</p><div class="row"><button class="no" onclick="del(${s.id})">Retirer</button></div></div>`).join('')||'<p class="mut">Aucune chanson pour l’instant. Publiez la première ci-dessous.</p>'}
+
+/* --- 5. Modifier mon profil : photos avec aperçu avant d’enregistrer --- */
+var EP={};
+(function(){const d=$('editDlg');if(!d||$('ePcv'))return;d.querySelector('h2').insertAdjacentHTML('afterend',
+'<label for="epc">Photo de couverture</label><div id="ePcv" class="ePv" style="aspect-ratio:3/1;width:100%"></div><input id="epc" type="file" accept="image/*" onchange="editPic(this,\'cv\')">'+
+'<label for="epp">Photo de profil</label><div id="ePph" class="ePv" style="width:96px;height:96px"></div><input id="epp" type="file" accept="image/*" onchange="editPic(this,\'ph\')"><p class="mut" id="ePn"></p>')})();
+function editPic(i,k){const f=i.files[0];i.value='';if(!f)return;if(!f.type.startsWith('image/'))return toast('Choisissez une image.');cropOpen(f,k,b=>{EP[k]=b;ePrev()})}
+function ePrev(){const cv=EP.cv?URL.createObjectURL(EP.cv):(S.me&&S.me.cv)||'',ph=EP.ph?URL.createObjectURL(EP.ph):(S.me&&S.me.ph)||'';
+$('ePcv').style.backgroundImage=cv?`url(${cv})`:'none';$('ePph').style.backgroundImage=ph?`url(${ph})`:'none';
+$('ePn').textContent=(EP.cv||EP.ph)?'Nouvelle photo prête. Elle sera enregistrée quand vous toucherez « Enregistrer ». Si vous vous êtes trompé, choisissez-en une autre.':''}
+(function(){const o=openEdit;openEdit=async function(){await o();EP={};ePrev()}})();
+(function(){const o=saveEdit;saveEdit=async function(){const n=$('fn').value.trim(),d=$('fd').value,c=$('ft').value.trim();if(!n||!d||!c)return toast('Nom, date de naissance et ville sont obligatoires.');
+if(EP.ph||EP.cv){let ok=true;await busy(async()=>{const u={};if(EP.ph)u.avatar=await up('avatars',EP.ph,ME.id);if(EP.cv)u.cover=await up('avatars',EP.cv,ME.id);const r=await SB.from('profiles').update(u).eq('id',ME.id);if(r.error){ok=false;throw r.error}});if(!ok)return;EP={}}
+return o()}})();
+
+/* --- Branchement sur l’affichage existant --- */
+(function(){const r=render;render=function(){r();try{renderFeedX();watchV();renderCity();bellRef()}catch(e){console.error(e)}}})();
 render();
 </script></body></html>
