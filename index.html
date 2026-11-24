@@ -229,7 +229,7 @@ nav button{position:relative}
 <div class="card" id="postSong"><b>Poster une chanson</b>
 <label for="sk">Type</label><select id="sk" onchange="kind()"><option value="song">Chanson</option><option value="beat">Beat / instrumentale</option></select>
 <label for="stt">Titre</label><input id="stt"><label for="sfeat">Featuring (facultatif)</label><input id="sfeat" placeholder="Noms séparés par des virgules"><small class="mut">Ex. : Artiste 1, Artiste 2, Artiste 3</small>
-<label for="sf">Fichier audio</label><input id="sf" type="file" accept="audio/*"><small class="mut">iPhone : touchez « Parcourir » puis choisissez votre MP3 ou M4A dans l’application Fichiers.</small>
+<label for="sf">Fichier audio</label><input id="sf" type="file" accept="audio/*"><small class="mut">Taille maximum : 10 Mo (un MP3 de 3 à 4 minutes fait environ 4 Mo). iPhone : touchez « Parcourir » puis choisissez votre MP3 ou M4A dans l’application Fichiers.</small>
 <p class="mut" id="fp">Prix fixe d’une chanson : 500 FC (ou l’équivalent en dollars). Pour un beat, vous fixez votre prix. Écoute gratuite, téléchargement payant.</p><div id="bp" style="display:none"><label for="sp">Prix du beat en dollars ($)</label><input id="sp" type="number" inputmode="decimal">
 <label for="sq">Prix de votre beat en francs (FC), minimum 500</label><input id="sq" type="number" inputmode="numeric"></div>
 <label for="sc">Pochette (carrée, obligatoire)</label><input id="sc" type="file" accept="image/*" onchange="songCover(this)"><p id="scs" class="mut"></p>
@@ -478,7 +478,7 @@ render();
 var ME=null;
 const SB=supabase.createClient('https://xzobkpuizruxxrnkksrz.supabase.co','sb_publishable_IgMbn2cyqcp2Gjw4JzlvBQ_GVQPrEh5');
 const PUB=(b,p)=>SB.storage.from(b).getPublicUrl(p).data.publicUrl;
-async function up(b,f,uid){const p=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),r=await SB.storage.from(b).upload(p,f,{contentType:mimeOf(f)});if(r.error)throw r.error;return p}
+async function up(b,f,uid){const p=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),r=await SB.storage.from(b).upload(p,f,{contentType:mimeOf(f),cacheControl:(b=='avatars'||b=='media')?'31536000':'3600'});if(r.error)throw r.error;return p}
 async function load(){
 const {data:{session}}=await SB.auth.getSession();ME=null;S.me=null;S.fan=null;S.admin=false;
 if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.id).single();ME=r.data;V.blk=null;if(ME&&ME.role!='admin'&&ME.status=='blocked'&&(!ME.blocked_until||new Date(ME.blocked_until)>new Date())){V.blk=ME;await SB.auth.signOut();ME=null}}
@@ -517,7 +517,7 @@ function pic(i,k){const f=i.files[0];if(!f)return;if(k!='ph')return toast('La ph
 async function setAvatar(f){try{const p=await up('avatars',f,ME.id);await SB.from('profiles').update({avatar:p}).eq('id',ME.id);await load();toast('Photo mise à jour.')}catch(e){toast('Erreur : '+e.message)}}
 async function saveBio(){await SB.from('profiles').update({bio:$('eb').value}).eq('id',ME.id);await load();toast('Description enregistrée.')}
 async function postSong(){const t=$('stt').value.trim(),f=$('sf').files[0];
-if(!t||!f)return toast('Ajoutez le titre et le fichier audio.');if(!okAudio(f))return toast('Format non pris en charge. Utilisez un fichier MP3 ou M4A.');if(f.size>50*1024*1024)return toast('Fichier trop lourd : 50 Mo maximum.');
+if(!t||!f)return toast('Ajoutez le titre et le fichier audio.');if(!okAudio(f))return toast('Format non pris en charge. Utilisez un fichier MP3 ou M4A.');if(f.size>10*1024*1024)return toast('Fichier trop lourd : 10 Mo maximum. Utilisez un MP3 plus léger.');
 if(!T.sc)return toast('Ajoutez la pochette (obligatoire).');const bt=$('sk').value=='beat',pc=bt?parseInt($('sq').value):500;if(bt&&!(pc>=500&&pc<=1000000))return toast('Fixez le prix de votre beat : de 500 à 1 000 000 FC.');if(!$('so').checked)return toast('Cochez la certification : vous êtes le créateur.');
 if(S.songs.filter(s=>s.own&&s.st!='no').length>=3)return toast('Limite atteinte : 3 chansons par artiste pour le moment.');toast('Envoi en cours…');
 try{const a=await up('audio',f,ME.id),cv=await up('media',T.sc,ME.id),r=await SB.from('songs').insert({artist_id:ME.id,title:t,kind:$('sk').value,audio_path:a,cover_path:cv,featuring:feat(),price_cdf:pc});if(r.error)throw r.error;
@@ -544,7 +544,7 @@ async function setPhoto(f,k){await busy(async()=>{const p=await up('avatars',f,M
 async function busy(fn){const d=$('ld');d.showModal();const t=Date.now();try{await fn()}catch(e){toast('Erreur : '+e.message)}const w=600-(Date.now()-t);if(w>0)await new Promise(r=>setTimeout(r,w));d.close()}
 ['register','isFan','doLogin','logout','postSong','addActu','appr','appN','addAnn','saveBio'].forEach(n=>{const f=window[n];window[n]=function(...a){return busy(()=>f.apply(null,a))}});
 
-var RATE=2300;
+var RATE=2300;var SU={};async function audioUrl(path){const c=SU[path];if(c&&c.t>Date.now())return{data:{signedUrl:c.u}};const r=await SB.storage.from('audio').createSignedUrl(path,3600);if(r.error)return r;SU[path]={u:r.data.signedUrl,t:Date.now()+3000*1000};return r}
 async function play(id){if(!ME){toast('Créez un compte fan gratuit pour écouter.');return openWel()}
 const s=S.songs.find(x=>x.id==id);if(!s||!s.ap)return toast('Fichier introuvable.');
 const r=await SB.storage.from('audio').createSignedUrl(s.ap,3600);if(r.error)return toast('Lecture impossible : '+r.error.message);
@@ -562,7 +562,7 @@ function distPrice(){const m=distAmt();$('dnum').innerHTML='Envoyez <b>'+m.t+'</
 function openDist(){if(!ME||ME.role!='artist')return toast('Connectez-vous avec un compte artiste.');$('dpr').textContent='soit '+fx(Math.round(5*RATE))+' FC';distPrice();$('distDlg').showModal()}
 function distCover(i){const f=i.files[0];i.value='';if(!f)return;cropOpen(f,'ph',b=>{T.dc=b;$('dcs').textContent='Pochette prête ✓'})}
 async function distSend(){const t=$('dt2').value.trim(),f=$('df').files[0],ph=$('dph').value.trim(),rf=$('dref').value.trim();
-if(!t||!f)return toast('Ajoutez le titre et le fichier MP3.');if(!okAudio(f))return toast('Format non pris en charge. Utilisez un fichier MP3 ou M4A.');if(!T.dc)return toast('Ajoutez la pochette (obligatoire).');if(!$('dpf').files.length)return toast('Ajoutez la capture du transfert.');if(!ph)return toast('Saisissez le numéro qui envoie l’argent.');
+if(!t||!f)return toast('Ajoutez le titre et le fichier MP3.');if(!okAudio(f))return toast('Format non pris en charge. Utilisez un fichier MP3 ou M4A.');if(f.size>10*1024*1024)return toast('Fichier trop lourd : 10 Mo maximum.');if(!T.dc)return toast('Ajoutez la pochette (obligatoire).');if(!$('dpf').files.length)return toast('Ajoutez la capture du transfert.');if(!ph)return toast('Saisissez le numéro qui envoie l’argent.');
 await busy(async()=>{const a=await up('audio',f,ME.id),c=await up('media',T.dc,ME.id),m=distAmt(),pr=await up('docs',$('dpf').files[0],ME.id),r=await SB.from('dist_orders').insert({artist_id:ME.id,title:t,audio_path:a,cover_path:c,proof_path:pr,operator:$('dop').value,phone:ph,reference:rf,currency:m.c,amount:m.a});if(r.error)throw r.error;
 ['dt2','df','dph','dref'].forEach(i=>$(i).value='');T.dc=null;$('dcs').textContent='';$('distDlg').close();await loadDist();toast('Commande envoyée. Nous vérifions votre paiement.')})}
 async function loadDist(){const r=await SB.from('dist_orders').select('*, profiles(name)').order('created_at',{ascending:false});S.dist=r.data||[];renderDist()}
@@ -797,7 +797,7 @@ const hp=$('heroPh'),a=P.filter(p=>p.avatar);if(hp&&a.length)hp.style.background
 async function play(id){try{if(!ME){toast('Créez un compte fan gratuit pour écouter.');return openWel()}
 const s=S.songs.find(x=>x.id==id);if(!s||!s.ap)return toast('Fichier introuvable.');
 V.cur=id;$('pl').style.display='block';plMin(false);plUI();
-const r=await SB.storage.from('audio').createSignedUrl(s.ap,3600);if(r.error){toast('Lecture impossible : '+r.error.message);return}
+const r=await audioUrl(s.ap);if(r.error){toast('Lecture impossible : '+r.error.message);return}
 if(!V.q||!V.q.includes(id))V.q=qList();V.qi=V.q.indexOf(id);
 const a=$('au');a.src=r.data.signedUrl;a.play().catch(e=>toast('Appuyez sur ▶ pour lancer la lecture.'));
 const rp=await SB.rpc('inc_play',{sid:id});if(rp.error)toast('Compteur non enregistré : '+rp.error.message);s.p=(s.p||0)+1;plUI();render()}catch(e){toast('Erreur : '+e.message)}}
