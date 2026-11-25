@@ -871,7 +871,7 @@ el.innerHTML=`<div class="st"><b class="c1">${kf(P.length-dj)}</b><small>ARTISTE
 const hp=$('heroPh'),a=P.filter(p=>p.avatar);if(hp&&a.length)hp.style.backgroundImage=`url(${PUB('avatars',heroPick(a).avatar)})`}
 render();
 
-var SHARE_FN='https://manimusic-share.bendabiggreat.workers.dev';try{fetch(SHARE_FN+'?t=x&id=0',{mode:'no-cors'}).catch(function(){SHARE_FN=''})}catch(e){SHARE_FN=''}
+var SHARE_FN='https://manimusic-share.manimusic.workers.dev';try{fetch(SHARE_FN+'?t=x&id=0',{mode:'no-cors'}).catch(function(){SHARE_FN=''})}catch(e){SHARE_FN=''}
 document.addEventListener('click',e=>{const z=e.target.closest&&e.target.closest('[data-zoom]');if(z&&z.dataset.zoom){$('lbi').src=z.dataset.zoom;$('lb').showModal()}});
 function shrink(f){return new Promise(res=>{if(!f||!f.type||!f.type.startsWith('image/')||f.type=='image/gif')return res(f);const im=new Image();im.onload=()=>{const r=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b?new File([b],'photo.jpg',{type:'image/jpeg'}):f),'image/jpeg',.82)};im.onerror=()=>res(f);im.src=URL.createObjectURL(f)})}
 async function shareSite(){const url=location.origin+location.pathname+'?v=3',title='ManiMusic — La musique urbaine du Maniema';try{if(navigator.share){await navigator.share({title,text:title,url});return}await navigator.clipboard.writeText(url);toast('Lien du site copié.')}catch(e){if(!e||e.name!='AbortError')prompt('Copiez ce lien :',url)}}
