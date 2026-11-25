@@ -534,7 +534,7 @@ async function postSong(){const t=$('stt').value.trim(),f=$('sf').files[0];
 if(!t||!f)return toast('Ajoutez le titre et le fichier audio.');if(!okAudio(f))return toast('Format non pris en charge. Utilisez un fichier MP3 ou M4A.');if(f.size>10*1024*1024)return toast('Fichier trop lourd : 10 Mo maximum. Utilisez un MP3 plus léger.');
 if(!T.sc)return toast('Ajoutez la pochette (obligatoire).');const bt=$('sk').value=='beat',pc=bt?parseInt($('sq').value):500;if(bt&&!(pc>=500&&pc<=1000000))return toast('Fixez le prix de votre beat : de 500 à 1 000 000 FC.');if(!$('so').checked)return toast('Cochez la certification : vous êtes le créateur.');
 if(S.songs.filter(s=>s.own&&s.st!='no').length>=3)return toast('Limite atteinte : 3 chansons par artiste pour le moment.');toast('Envoi en cours…');
-try{const a=await up('audio',f,ME.id),cv=await up('media',T.sc,ME.id),r=await SB.from('songs').insert({artist_id:ME.id,title:t,kind:$('sk').value,audio_path:a,cover_path:cv,featuring:feat(),price_cdf:pc});if(r.error)throw r.error;
+try{const a=await upTg(f,ME.id),cv=await up('media',T.sc,ME.id),r=await SB.from('songs').insert({artist_id:ME.id,title:t,kind:$('sk').value,audio_path:a,cover_path:cv,featuring:feat(),price_cdf:pc});if(r.error)throw r.error;
 ['stt','sf','sfeat'].forEach(i=>$(i).value='');T.sc=null;$('scs').textContent='';$('so').checked=false;$('songDlg').close();await load();toast('Chanson envoyée. Elle apparaît après validation.')}catch(e){toast('Erreur : '+e.message)}}
 async function addActu(){const v=$('na').value.trim(),f=$('nm').files[0];if(!v)return toast('Écrivez votre actualité.');
 try{const m=f?await up('media',await shrink(f),ME.id):null,r=await SB.from('news').insert({author_id:ME.id,body:v,media_path:m,media_type:f?(f.type.startsWith('video')?'v':'i'):null});if(r.error)throw r.error;
@@ -1260,5 +1260,41 @@ extra=(extra||'')+'<div class="admT">'+(on?'<span class="tag">📌 jusqu’au '+
 let h=o.call(this,tt,id,body,media,mk,date,author,link,full,extra);
 if(x&&pinOn(x))h=h.replace(/(<span class="pcB">[^<]*<\/span>)/,'$1<span class="pcPin">📌 ÉPINGLÉ</span>');return h}})();
 (function(){const r=render;render=function(){try{srt()}catch(e){console.error(e)}r()}})();
+render();
+
+/* ===== v36 : audio sur Tigris (via le Worker manimusic-audio). Les anciennes chansons restent sur Supabase tant qu'elles ne sont pas migrées ===== */
+var AW='https://manimusic-audio.manimusic.workers.dev';
+async function tgTok(){const r=await SB.auth.getSession();return r.data.session?r.data.session.access_token:null}
+async function tgUrl(key,name){const tk=await tgTok();if(!tk)return{error:{message:'connexion requise'}};
+try{const r=await fetch(AW+'/url?path='+encodeURIComponent(key)+(name?'&name='+encodeURIComponent(name):''),{headers:{Authorization:'Bearer '+tk}}),j=await r.json().catch(()=>({}));
+if(!r.ok||!j.url)return{error:{message:j.error||('Worker '+r.status)}};return{data:{signedUrl:j.url}}}catch(e){return{error:{message:e.message}}}}
+async function audioUrl(path){const c=SU[path];if(c&&c.t>Date.now())return{data:{signedUrl:c.u}};
+const r=path.indexOf('tg:')===0?await tgUrl(path.slice(3)):await SB.storage.from('audio').createSignedUrl(path,3600);
+if(r.error)return r;SU[path]={u:r.data.signedUrl,t:Date.now()+3000*1000};return r}
+async function upTg(f,uid){const key=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),tk=await tgTok();if(!tk)throw new Error('Connexion requise.');
+let r,j;try{r=await fetch(AW+'/upload?path='+encodeURIComponent(key),{method:'POST',headers:{Authorization:'Bearer '+tk,'Content-Type':mimeOf(f)},body:f});j=await r.json().catch(()=>({}))}catch(e){throw new Error('Stockage injoignable : '+e.message)}
+if(!r.ok||!j.ok)throw new Error('Envoi audio refusé : '+(j.error||r.status));return 'tg:'+key}
+async function dl(id){const s=S.songs.find(x=>x.id==id);if(!s)return;if(!ME)return toast('Connectez-vous pour télécharger.');
+const nm=s.t+'.'+s.ap.split('.').pop();let r;
+if(s.ap.indexOf('tg:')===0)r=await tgUrl(s.ap.slice(3),nm);else r=await SB.storage.from('audio').createSignedUrl(s.ap,300,{download:nm});
+if(r.error)return toast('Téléchargement impossible : '+(r.error.message||''));
+const a=document.createElement('a');a.href=r.data.signedUrl;a.click();SB.rpc('inc_download',{sid:id});s.d=(s.d||0)+1;render()}
+(function(){const b=$('boostCard');if(b&&!$('tgCard'))b.insertAdjacentHTML('afterend','<div class="card" id="tgCard" style="display:none"><b>🚚 Audio sur Tigris</b><p class="mut" id="tgInfo"></p><div class="row"><button class="ghost" onclick="migTg(1)">Tester avec 1 chanson</button><button onclick="migTg(0)">Migrer toutes les chansons</button></div><p class="mut" id="tgLog"></p><p class="mut"><small>Les fichiers sont copiés, rien n’est supprimé chez Supabase. Gardez l’écran allumé pendant la copie.</small></p></div>')})();
+function renderTg(){const c=$('tgCard');if(!c)return;if(!S.admin){c.style.display='none';return}c.style.display='';
+const A=(S.songs||[]).filter(s=>s.ap),n=A.filter(s=>s.ap.indexOf('tg:')!==0).length;
+$('tgInfo').textContent=n+' chanson(s) encore sur Supabase · '+(A.length-n)+' sur Tigris.'}
+async function migTg(max){if(!S.admin||V.mg)return;V.mg=1;const log=m=>{const e=$('tgLog');if(e)e.textContent=m};
+const L=(S.songs||[]).filter(s=>s.ap&&s.ap.indexOf('tg:')!==0).slice(0,max||9999);let ok=0;const bad=[];
+try{for(let i=0;i<L.length;i++){const s=L[i];log('Copie '+(i+1)+'/'+L.length+' : '+s.t+'…');
+try{const su=await SB.storage.from('audio').createSignedUrl(s.ap,600);if(su.error)throw su.error;
+const fr=await fetch(su.data.signedUrl);if(!fr.ok)throw new Error('lecture Supabase '+fr.status);const b=await fr.blob();
+if(b.size>11*1024*1024)throw new Error('trop lourd ('+(b.size/1048576).toFixed(1)+' Mo)');
+const tk=await tgTok(),r=await fetch(AW+'/upload?path='+encodeURIComponent(s.ap),{method:'POST',headers:{Authorization:'Bearer '+tk,'Content-Type':mimeOf({type:b.type,name:s.ap})},body:b}),j=await r.json().catch(()=>({}));
+if(!r.ok||!j.ok)throw new Error(j.error||('Worker '+r.status));
+const u=await SB.from('songs').update({audio_path:'tg:'+s.ap}).eq('id',s.id).eq('audio_path',s.ap).select('id');
+if(u.error)throw u.error;if(!u.data||!u.data.length)throw new Error('base de données : modification refusée');ok++}
+catch(e){bad.push(s.t+' : '+(e.message||e))}}}finally{V.mg=0}
+await load();log(ok+' chanson(s) copiée(s) ✓'+(bad.length?' · '+bad.length+' échec(s) : '+bad.join(' | '):''));toast(ok+' copiée(s)'+(bad.length?', '+bad.length+' échec(s)':''))}
+(function(){const r=render;render=function(){r();try{renderTg()}catch(e){console.error(e)}}})();
 render();
 </script></body></html>
