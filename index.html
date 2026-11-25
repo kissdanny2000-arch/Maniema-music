@@ -211,6 +211,11 @@ nav button{position:relative}
 #stats.sb .st small{font-size:11px;letter-spacing:0;color:#fff;margin:6px 0 8px}
 #stats.sb .st span svg{width:30px;height:30px}
 </style>
+<style>
+/* v34 */
+.pcPin{position:absolute;left:12px;top:54px;background:#ffb300;color:#2a1a00;font-weight:800;font-size:12px;padding:6px 12px;border-radius:99px;box-shadow:0 0 12px #ffb30088}
+.admT{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px;align-items:center}.admT button{padding:8px 12px;font-size:13px}
+</style>
 </head><body>
 <div id="topbar"></div><div id="splash"><div class="logobox" style="width:min(86vw,420px)" role="img" aria-label="ManiMusic"></div><div class="spBox"><div class="spin"></div><p id="spT" style="margin:0">Chargement…</p></div></div>
 <script>try{if(sessionStorage.mm_wb)document.getElementById("splash").className="soft"}catch(e){}</script>
@@ -494,8 +499,8 @@ if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.i
 const ss=await SB.from('songs').select('*, profiles(name,city,genre)').order('created_at',{ascending:false});
 S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:r.status,k:r.kind,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,aid:r.artist_id,ft:r.featuring||'',pc:r.price_cdf||500,sold:!!r.sold,ap:r.audio_path,dp:r.doc_path,cv:r.cover_path?PUB('media',r.cover_path):''}));
 const ns=await SB.from('news').select('*, profiles(name)').order('created_at',{ascending:false});
-S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id,t:r.created_at,h:!!r.hidden}));
-const an=await SB.from('announcements').select('*').order('created_at',{ascending:false});S.ann=[];S.annx=an.data||[];
+S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id,t:r.created_at,h:!!r.hidden,pu:r.pinned_until||null}));
+const an=await SB.from('announcements').select('*').order('created_at',{ascending:false});S.ann=[];S.annx=(an.data||[]).filter(a=>(ME&&ME.role=='admin')||!a.hidden);
 if(ME){$('wel').close();
 if(ME.role=='admin')S.admin=true;
 else if(ME.role=='fan'){S.mode='fan';S.fan={id:ME.name,code:''};$('fid').innerHTML='Identifiant : <b>'+ME.name+'</b>'}
@@ -601,7 +606,7 @@ $('prof-pg').innerHTML=`<div class="row" style="margin:0 0 10px;justify-content:
 
 S.cert=[];S.svc=[];S.sreq=[];
 function vfb(id){const p=(S.prof||[]).find(x=>x.id==id);return p&&p.verified?'<span class="vf" title="Certifié">✓</span>':''}
-async function loadMore(){const [a,b,c]=await Promise.all([SB.from('cert_requests').select('*, profiles(name)').order('created_at',{ascending:false}),SB.from('services').select('*').order('created_at',{ascending:false}),SB.from('service_requests').select('*, services(title)').order('created_at',{ascending:false})]);S.cert=a.data||[];S.svc=b.data||[];S.sreq=c.data||[]}
+async function loadMore(){const [a,b,c]=await Promise.all([SB.from('cert_requests').select('*, profiles(name)').order('created_at',{ascending:false}),SB.from('services').select('*').order('created_at',{ascending:false}),SB.from('service_requests').select('*, services(title)').order('created_at',{ascending:false})]);S.cert=a.data||[];S.svc=(b.data||[]).filter(a=>(ME&&ME.role=='admin')||!a.hidden);S.sreq=c.data||[]}
 function certAmt(){const u=(10000/RATE).toFixed(2);return $('kcur').value=='USD'?{c:'USD',a:+u,t:u.replace('.',',')+' $'}:{c:'CDF',a:10000,t:'10 000 FC'}}
 function certPrice(){const m=certAmt();$('knum').innerHTML='Envoyez <b>'+m.t+'</b> au numéro '+esc($('kop').value)+' :<br><b style="font-size:18px">'+NUM[$('kop').value]+'</b>'}
 function openCert(){if(!ME||ME.role!='artist')return toast('Connectez-vous avec un compte artiste.');if(ME.verified)return toast('Vous êtes déjà certifié ✓');if(S.cert.some(o=>o.artist_id==ME.id&&o.status!='no'))return toast('Votre demande est déjà en cours.');certPrice();$('certDlg').showModal()}
@@ -1219,5 +1224,41 @@ function boostDel(id){return busy(async()=>{const r=await SB.from('boost_artists
 /* --- Branchement sur l'affichage existant --- */
 (function(){const r=render;render=function(){r();try{renderFol();renderBoost()}catch(e){console.error(e)}}})();
 loadBoost().then(()=>render());
+render();
+
+/* ===== v34 : le propriétaire peut modifier, masquer, supprimer et épingler annonces, services et actualités ===== */
+(function(){if($('edDlg'))return;document.body.insertAdjacentHTML('beforeend',
+'<dialog id="edDlg"><h2 id="edH">Modifier</h2><div id="edTW"><label for="edT">Titre</label><input id="edT"></div><label for="edB">Texte</label><textarea id="edB" rows="5"></textarea><div id="edLW"><label for="edL">Lien (facultatif)</label><input id="edL" type="url" placeholder="https://…"></div><label for="edP">Nouvelle photo (facultatif)</label><input id="edP" type="file" accept="image/*"><div class="row"><button onclick="edSave()">Enregistrer</button><button class="ghost" onclick="$(\'edDlg\').close()">Annuler</button></div></dialog>'+
+'<dialog id="pnDlg"><h2>📌 Épingler en haut</h2><p class="mut" id="pnT"></p><label for="pnD">Durée</label><select id="pnD"><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="7">7 jours</option></select><div class="row"><button onclick="pinSave(+$(\'pnD\').value)">📌 Épingler</button><button id="pnR" class="no" onclick="pinSave(0)">Retirer l’épingle</button><button class="ghost" onclick="$(\'pnDlg\').close()">Annuler</button></div></dialog>')})();
+var TB={ann:'announcements',svc:'services',news:'news'};
+function pinIt(tt,id){return tt=='ann'?(S.annx||[]).find(x=>x.id==id):tt=='svc'?(S.svc||[]).find(x=>x.id==id):(S.actus||[]).find(x=>x.id==id)}
+function pinVal(x){return x?(x.pinned_until||x.pu||null):null}
+function pinOn(x){const v=pinVal(x);return !!v&&Date.parse(v)>Date.now()}
+function dtl(v){return new Date(v).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+function srt(){const f=k=>(a,b)=>{const pa=pinOn(a)?1:0,pb=pinOn(b)?1:0;if(pa!==pb)return pb-pa;return (Date.parse(b[k])||0)-(Date.parse(a[k])||0)};
+if(S.annx)S.annx.sort(f('created_at'));if(S.svc)S.svc.sort(f('created_at'));if(S.actus)S.actus.sort(f('t'))}
+async function adm(tt,id,fn){const r=await fn(SB.from(TB[tt]));if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error('Refusé par la base. Exécutez d’abord le script update-19.')}
+function pinOpen(tt,id){const x=pinIt(tt,id);if(!x)return;V.pn={tt,id};const on=pinOn(x);$('pnT').textContent=on?'Épinglée jusqu’au '+dtl(pinVal(x))+'. Vous pouvez changer la durée.':'Cette publication n’est pas épinglée.';$('pnR').style.display=on?'':'none';$('pnDlg').showModal()}
+function pinSave(days){const p=V.pn;if(!p)return;const until=days?new Date(Date.now()+days*864e5).toISOString():null;
+return busy(async()=>{await adm(p.tt,p.id,q=>q.update({pinned_until:until}).eq('id',p.id).select('id'));$('pnDlg').close();await load();toast(days?'Épinglée pour '+days+' jour'+(days>1?'s':'')+' ✓':'Épingle retirée.')})}
+function hideItem(tt,id,v){return busy(async()=>{await adm(tt,id,q=>q.update({hidden:v}).eq('id',id).select('id'));await load();toast(v?'Masquée pour les autres.':'Remise en ligne.')})}
+function delItem(tt,id){if(!confirm('Supprimer définitivement cette publication ? Cette action est irréversible.'))return;
+return busy(async()=>{await adm(tt,id,q=>q.delete().eq('id',id).select('id'));const d=$('postDlg');if(d&&d.open)d.close();await load();toast('Supprimée.')})}
+function edOpen(tt,id){const x=pinIt(tt,id);if(!x)return;V.ed={tt,id};$('edH').textContent=tt=='svc'?'Modifier le service':'Modifier l’annonce';
+$('edTW').style.display=tt=='svc'?'':'none';$('edLW').style.display=tt=='ann'?'':'none';$('edT').value=x.title||'';$('edB').value=x.body||'';$('edL').value=x.link||'';$('edP').value='';$('edDlg').showModal()}
+function edSave(){const e=V.ed;if(!e)return;const b=$('edB').value.trim(),t=$('edT').value.trim(),l=$('edL').value.trim(),f=$('edP').files[0];
+if(e.tt=='svc'&&!t)return toast('Le titre est obligatoire.');if(e.tt=='ann'&&!b)return toast('Écrivez le texte.');if(e.tt=='ann'&&l&&!/^https?:\/\//.test(l))return toast('Le lien doit commencer par https://');
+return busy(async()=>{const u=e.tt=='svc'?{title:t,body:b}:{body:b,link:l||null};if(f)u.media_path=await up('media',await shrink(f),ME.id);
+await adm(e.tt,e.id,q=>q.update(u).eq('id',e.id).select('id'));$('edDlg').close();await load();toast('Modifié ✓')})}
+(function(){const o=postCard;postCard=function(tt,id,body,media,mk,date,author,link,full,extra){const x=(tt=='ann'||tt=='svc'||tt=='news')?pinIt(tt,id):null;
+if(S.admin&&x){const on=pinOn(x),hd=tt=='news'?x.h:x.hidden;
+extra=(extra||'')+'<div class="admT">'+(on?'<span class="tag">📌 jusqu’au '+dtl(pinVal(x))+'</span>':'')+(tt!='news'&&hd?'<span class="tag">Masquée</span>':'')+
+(tt!='news'?`<button class="ghost" onclick="edOpen('${tt}',${id})">✏️ Modifier</button>`:'')+
+`<button class="ghost" onclick="pinOpen('${tt}',${id})">📌 ${on?'Changer l’épingle':'Épingler'}</button>`+
+(tt!='news'?`<button class="ghost" onclick="hideItem('${tt}',${id},${!hd})">${hd?'👁 Remettre':'🙈 Masquer'}</button>`:'')+
+`<button class="no" onclick="delItem('${tt}',${id})">🗑 Supprimer</button></div>`}
+let h=o.call(this,tt,id,body,media,mk,date,author,link,full,extra);
+if(x&&pinOn(x))h=h.replace(/(<span class="pcB">[^<]*<\/span>)/,'$1<span class="pcPin">📌 ÉPINGLÉ</span>');return h}})();
+(function(){const r=render;render=function(){try{srt()}catch(e){console.error(e)}r()}})();
 render();
 </script></body></html>
