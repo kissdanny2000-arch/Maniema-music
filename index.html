@@ -1297,4 +1297,28 @@ catch(e){bad.push(s.t+' : '+(e.message||e))}}}finally{V.mg=0}
 await load();log(ok+' chanson(s) copiée(s) ✓'+(bad.length?' · '+bad.length+' échec(s) : '+bad.join(' | '):''));toast(ok+' copiée(s)'+(bad.length?', '+bad.length+' échec(s)':''))}
 (function(){const r=render;render=function(){r();try{renderTg()}catch(e){console.error(e)}}})();
 render();
+
+/* ===== v37 : choisir soi-même les chansons à copier vers Tigris + erreur visible + limite 30 Mo ===== */
+var MXB=30*1024*1024;V.mgE=V.mgE||{};
+async function migOne(s){try{const su=await SB.storage.from('audio').createSignedUrl(s.ap,600);if(su.error)throw su.error;
+const fr=await fetch(su.data.signedUrl);if(!fr.ok)throw new Error('lecture Supabase '+fr.status);const b=await fr.blob();
+if(b.size>MXB)throw new Error('trop lourd ('+(b.size/1048576).toFixed(1)+' Mo)');
+const tk=await tgTok(),r=await fetch(AW+'/upload?path='+encodeURIComponent(s.ap),{method:'POST',headers:{Authorization:'Bearer '+tk,'Content-Type':mimeOf({type:b.type,name:s.ap})},body:b}),j=await r.json().catch(()=>({}));
+if(!r.ok||!j.ok)throw new Error((j.error||'Worker')+' ('+r.status+') · '+(b.size/1048576).toFixed(1)+' Mo · chemin : '+s.ap);
+const u=await SB.from('songs').update({audio_path:'tg:'+s.ap}).eq('id',s.id).eq('audio_path',s.ap).select('id');
+if(u.error)throw u.error;if(!u.data||!u.data.length)throw new Error('base de données : modification refusée');delete V.mgE[s.id];return true}
+catch(e){V.mgE[s.id]=e.message||String(e);return false}}
+async function migTg(max){if(!S.admin||V.mg)return;V.mg=1;const log=m=>{const e=$('tgLog');if(e)e.textContent=m};
+const L=(S.songs||[]).filter(s=>s.ap&&s.ap.indexOf('tg:')!==0).slice(0,max||9999);let ok=0,bad=0;
+try{for(let i=0;i<L.length;i++){log('Copie '+(i+1)+'/'+L.length+' : '+L[i].t+'…');if(await migOne(L[i]))ok++;else bad++}}finally{V.mg=0}
+await load();log(ok+' copiée(s) ✓'+(bad?' · '+bad+' échec(s) : voir la liste ci-dessous.':''));toast(ok+' copiée(s)'+(bad?', '+bad+' échec(s)':''))}
+async function migPick(id){if(!S.admin||V.mg)return;const s=(S.songs||[]).find(x=>x.id==id);if(!s)return;V.mg=1;const e=$('tgLog');if(e)e.textContent='Copie de « '+s.t+' »…';
+let ok=false;try{ok=await migOne(s)}finally{V.mg=0}await load();if(e)e.textContent=ok?'« '+s.t+' » copiée ✓':'Échec pour « '+s.t+' » : voir l’erreur dans la liste.';toast(ok?'Copiée ✓':'Échec')}
+function renderTg(){const c=$('tgCard');if(!c)return;if(!S.admin){c.style.display='none';return}c.style.display='';
+const A=(S.songs||[]).filter(s=>s.ap),L=A.filter(s=>s.ap.indexOf('tg:')!==0);
+$('tgInfo').textContent=L.length+' chanson(s) encore sur Supabase · '+(A.length-L.length)+' sur Tigris.';
+let l=$('tgList');if(!l){$('tgInfo').insertAdjacentHTML('afterend','<div id="tgList"></div>');l=$('tgList')}
+l.style.maxHeight='45vh';l.style.overflowY='auto';
+l.innerHTML=L.map(s=>`<div class="pay" style="align-items:flex-start;gap:8px"><span style="min-width:0"><b>${esc(s.t)}</b> <small class="mut">${esc(s.a)}</small>${V.mgE[s.id]?'<br><small style="color:#ff6b6b;overflow-wrap:anywhere">'+esc(V.mgE[s.id])+'</small>':''}</span><button class="ghost" style="padding:6px 12px;flex:none" onclick="migPick(${s.id})">Copier</button></div>`).join('')||'<p class="mut">Toutes les chansons sont sur Tigris ✓</p>'}
+render();
 </script></body></html>
