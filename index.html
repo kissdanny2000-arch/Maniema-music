@@ -1421,4 +1421,17 @@ finally{V.ph=0}
 await load();log(ok+' photo(s) copiée(s) ✓'+(bad.length?' · '+bad.length+' échec(s) :':''));phShow(bad);toast(ok+' copiée(s)'+(bad.length?', '+bad.length+' échec(s)':''))}
 (function(){const r=render;render=function(){r();try{const c=$('phCard');if(c)c.style.display=S.admin?'':'none'}catch(e){console.error(e)}}})();
 render();
+/* ===== v40 : sauvegarde des données (propriétaire) ===== */
+(function(){const t=$('phCard');if(t&&!$('bkCard'))t.insertAdjacentHTML('afterend','<div class="card" id="bkCard" style="display:none"><b>💾 Sauvegarde</b><p class="mut">Télécharge un fichier avec les comptes artistes, chansons, achats, abonnements, retraits, etc. Les mots de passe n’y sont pas (Supabase les garde chiffrés). Ce fichier contient des informations privées : gardez-le en lieu sûr et ne le partagez pas.</p><div class="row"><button onclick="bkRun()">Télécharger la sauvegarde</button></div><p class="mut" id="bkLog"></p><div id="bkErr"></div></div>')})();
+var BKT=[['profiles','id'],['artist_private','id'],['songs','id'],['releases','id'],['news','id'],['announcements','id'],['services','id'],['service_requests','id'],['orders','id'],['supports','id'],['withdrawals','id'],['cert_requests','id'],['dist_orders','id'],['comments','id'],['likes',null],['counters',null],['socials',null],['follows',null],['boost_artists',null],['welcome_songs',null],['settings',null]];
+async function bkRun(){if(!S.admin||V.bk)return;V.bk=1;const log=m=>{const e=$('bkLog');if(e)e.textContent=m},out={date:new Date().toISOString(),tables:{}},bad=[];
+try{for(let i=0;i<BKT.length;i++){const tb=BKT[i][0],ok=BKT[i][1];log('Lecture '+(i+1)+'/'+BKT.length+' : '+tb+'…');let all=[],from=0,fail=false;
+for(;;){let q=SB.from(tb).select('*');if(ok)q=q.order(ok);const r=await q.range(from,from+999);if(r.error){bad.push(tb+' : '+r.error.message);fail=true;break}all=all.concat(r.data||[]);if(!r.data||r.data.length<1000)break;from+=1000}
+if(!fail)out.tables[tb]=all}}catch(e){bad.push(String(e.message||e))}finally{V.bk=0}
+const n=Object.values(out.tables).reduce((a,x)=>a+x.length,0),b=new Blob([JSON.stringify(out,null,1)],{type:'application/json'}),a=document.createElement('a');
+a.href=URL.createObjectURL(b);a.download='manimusic-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+log(n+' ligne(s) sauvegardée(s) dans '+Object.keys(out.tables).length+' tableau(x) ✓'+(bad.length?' · '+bad.length+' tableau(x) non lu(s) :':''));
+const e=$('bkErr');if(e)e.innerHTML=bad.map(m=>'<p style="color:#ff6b6b;font-size:13px;overflow-wrap:anywhere;margin:6px 0">'+esc(m)+'</p>').join('');toast('Sauvegarde téléchargée')}
+(function(){const r=render;render=function(){r();try{const c=$('bkCard');if(c)c.style.display=S.admin?'':'none'}catch(e){console.error(e)}}})();
+render();
 </script></body></html>
