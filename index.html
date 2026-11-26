@@ -216,6 +216,7 @@ nav button{position:relative}
 .pcPin{position:absolute;left:12px;top:54px;background:#ffb300;color:#2a1a00;font-weight:800;font-size:12px;padding:6px 12px;border-radius:99px;box-shadow:0 0 12px #ffb30088}
 .admT{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px;align-items:center}.admT button{padding:8px 12px;font-size:13px}
 </style>
+<style>.rtp{flex:1;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:10px 4px;text-align:center;line-height:1.2}.rtp.on{background:#0B63F6;border-color:#19d3f3;color:#fff}.trk{border:1px solid var(--line);border-radius:14px;padding:10px;margin:10px 0;background:#061233}.trk audio{width:100%;margin-top:8px}.cvP{width:120px;height:120px;border-radius:14px;flex:none;background:#0a1f55 center/cover;border:1.5px solid #1b6bff;display:grid;place-items:center;font-size:32px}</style>
 </head><body>
 <div id="topbar"></div><div id="splash"><div class="logobox" style="width:min(86vw,420px)" role="img" aria-label="ManiMusic"></div><div class="spBox"><div class="spin"></div><p id="spT" style="margin:0">Chargement…</p></div></div>
 <script>try{if(sessionStorage.mm_wb)document.getElementById("splash").className="soft"}catch(e){}</script>
@@ -235,7 +236,7 @@ nav button{position:relative}
 <div id="svc-l"></div>
 <div class="card"><b>Certification officielle <span class="vf">✓</span></b><p class="mut">Obtenez le badge bleu à côté de votre nom, comme sur Facebook. Paiement unique, valable à vie.</p><b>10 000 FC</b> <small class="mut" id="cpr"></small><div id="my-cert" class="mut" style="margin:6px 0"></div><div class="row"><button class="alt" onclick="openCert()">Demander la certification</button></div></div>
 <div id="my-dist"></div><div class="card"><b>Réservation d’artistes</b><p class="mut">Concerts, mariages, fêtes : contactez l’artiste directement.</p></div></section>
-<section class="sec" id="compte"><h2>Mon compte</h2><div class="row" style="margin:0 0 12px"><button style="flex:1" onclick="openSong()">🎵 Poster une chanson</button><button class="alt" style="flex:1" onclick="openNews()">📰 Publier une actualité</button></div><div id="prof"></div>
+<section class="sec" id="compte"><h2>Mon compte</h2><div class="row" style="margin:0 0 12px"><button style="flex:1" onclick="openSong()">🎵 Nouvelle sortie</button><button class="alt" style="flex:1" onclick="openNews()">📰 Publier une actualité</button></div><div id="prof"></div>
 
 <div class="bal"><div>Solde USD<strong id="bu">0,00 $</strong></div><div>Solde CDF<strong id="bc">0 FC</strong></div></div>
 <h2 style="font-size:17px;margin-top:16px">Mes chansons</h2><div id="mine"></div>
@@ -436,7 +437,7 @@ $('role').textContent=ad?'🛡 Propriétaire':m=='fan'?'👤 Fan · '+S.fan.id:m
 nb('services').style.display='';nb('admin').style.display=ad?'':'none';
 nb('compte').innerHTML='<i>'+ic(m=='fan'?'ct':'us',24)+'</i>'+(m=='fan'?'Achats':'Compte');nb('compte').style.display=ad?'none':'';
 const mk=(a,b)=>m=='artist'?(S.me?'<div class="row" style="margin:0 0 12px">'+a+'</div>':'<div class="row" style="margin:0 0 12px"><button onclick="show(\'compte\')">Créer mon compte artiste</button></div>'):'';
-$('artBar').innerHTML=mk('<button onclick="openSong()">＋ Poster une chanson</button><button class="alt" onclick="openNews()">＋ Publier une actualité</button>');
+$('artBar').innerHTML=mk('<button onclick="openSong()">＋ Nouvelle sortie</button><button class="alt" onclick="openNews()">＋ Publier une actualité</button>');
 $('actBtn').innerHTML=mk('<button class="alt" onclick="openNews()">＋ Publier une actualité</button>')}
 function go(id){const e=$(id);e.style.scrollMarginTop='110px';e.scrollIntoView({behavior:'smooth',block:'start'})}
 function openN(i){V.art=V.al[i];$('q').value='';render();show('sorties')}
@@ -454,8 +455,8 @@ $('wel').innerHTML=`<h2>Compte fan créé</h2><p>Gardez ces identifiants pour vo
 function oldRow(s){return `<div class="card song"><div class="cov" style="background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div><b>${esc(s.t)}</b><small><u style="cursor:pointer" onclick="openArt(${s.id})">${esc(s.a)}</u>${s.ft?' feat. '+esc(s.ft):''} · ${esc(s.v)}</small><br><span class="tag">${s.k=='beat'?'Beat':esc(s.g)}</span>${vfb(s.aid)?'<span class="tag" style="background:#1d9bf0;color:#fff">Certifié ✓</span>':''}</div><div class="r"><b>${String(s.u).replace('.',',')} $</b><small>${fx(s.c)} FC</small><br><button class="alt" onclick="buy(${s.id})">Acheter</button></div></div>`}
 function openArt(id){V.art=S.songs.find(s=>s.id==id).a;$('q').value='';render();show('sorties')}
 function renderActus(){{const as=[...new Set(S.songs.filter(s=>s.st=='ok').map(s=>s.a))];if(S.me&&!as.includes(S.me.name))as.push(S.me.name);V.al=as;$('arts').innerHTML=as.map((a,i)=>{const m=S.me&&S.me.name==a&&S.me.ph;return `<div class="art" onclick="openN(${i})"><div class="av" style="background:${m?`url(${S.me.ph}) center/cover`:cols[a.length%4]}">${m?'':esc(a[0])}</div>${esc(a)}</div>`}).join('')}
-if(S.me&&$('myNews'))$('myNews').innerHTML=S.actus.filter(a=>a.a==S.me.name&&a.st&&a.st!='ok').map(a=>`<div class="card"><span class="tag">${a.st=='wait'?'En attente':'Refusée'}</span> ${esc(a.x)}</div>`).join('');
-{const w=S.actus.map((a,i)=>a.st=='wait'?`<div class="card"><b>${esc(a.a)}</b>${vfb(a.aid)}<p style="white-space:pre-wrap">${esc(a.x)}</p>${a.m?(a.k=='v'?`<video src="${a.m}" controls style="width:100%;max-height:260px;border-radius:10px"></video>`:`<img src="${a.m}" alt="" style="width:100%;max-height:260px;object-fit:cover;border-radius:10px">`):''}<div class="row"><button onclick="appN(${i},1)">Approuver</button><button class="no" onclick="appN(${i},0)">Refuser</button></div></div>`:'').join('');$('a-posts').innerHTML=w||'<p class="mut">Aucune publication en attente.</p>'}$('ann-l').innerHTML=S.ann.map((a,i)=>{const k=S.al[a]||{};return `<div class="card ann">${esc(a)}<div class="row"><button class="ghost" onclick="likeA(${i})">${k.l?'♥':'♡'} ${k.n||0}</button></div></div>`}).join('');$('actus-l').innerHTML=S.actus.map((a,i)=>a.st&&a.st!='ok'?'':`<div class="card"><b>${esc(a.a)}</b>${vfb(a.aid)}<p style="margin:4px 0 8px">${esc(a.x)}</p>${a.m?(a.k=='v'?`<video src="${a.m}" controls style="width:100%;max-height:220px;border-radius:10px"></video>`:`<img src="${a.m}" alt="" style="width:100%;height:190px;object-fit:cover;border-radius:10px">`):''}<div class="row" style="margin:0"><button class="ghost" onclick="like(${i})">${a.l?'♥':'♡'} ${a.n||0}</button></div>${(a.c||[]).map(c=>`<p class="mut" style="margin:8px 0 0"><b>${esc(c[0])}</b> : ${esc(c[1])}</p>`).join('')}<div class="row"><input id="cm${i}" placeholder="Votre commentaire" aria-label="Commentaire" style="flex:1"><button onclick="comment(${i})">Envoyer</button></div></div>`).join('')}
+if(S.me&&$('myNews'))$('myNews').innerHTML=S.actus.filter(a=>a.a==S.me.name&&a.st&&a.st!='ok').map(a=>`<div class="card"><span class="tag">${a.st=='wait'?'En attente':a.st=='sched'?'Planifiée '+dtl(a.pa):'Refusée'}</span> ${esc(a.x)}</div>`).join('');
+{const w=S.actus.map((a,i)=>a.st=='wait'?`<div class="card"><b>${esc(a.a)}</b>${vfb(a.aid)}${a.pa?'<br><span class="tag">📅 Planifiée : '+dtl(a.pa)+'</span>':''}<p style="white-space:pre-wrap">${esc(a.x)}</p>${a.m?(a.k=='v'?`<video src="${a.m}" controls style="width:100%;max-height:260px;border-radius:10px"></video>`:`<img src="${a.m}" alt="" style="width:100%;max-height:260px;object-fit:cover;border-radius:10px">`):''}<div class="row"><button onclick="appN(${i},1)">Approuver</button><button class="no" onclick="appN(${i},0)">Refuser</button></div></div>`:'').join('');$('a-posts').innerHTML=w||'<p class="mut">Aucune publication en attente.</p>'}$('ann-l').innerHTML=S.ann.map((a,i)=>{const k=S.al[a]||{};return `<div class="card ann">${esc(a)}<div class="row"><button class="ghost" onclick="likeA(${i})">${k.l?'♥':'♡'} ${k.n||0}</button></div></div>`}).join('');$('actus-l').innerHTML=S.actus.map((a,i)=>a.st&&a.st!='ok'?'':`<div class="card"><b>${esc(a.a)}</b>${vfb(a.aid)}<p style="margin:4px 0 8px">${esc(a.x)}</p>${a.m?(a.k=='v'?`<video src="${a.m}" controls style="width:100%;max-height:220px;border-radius:10px"></video>`:`<img src="${a.m}" alt="" style="width:100%;height:190px;object-fit:cover;border-radius:10px">`):''}<div class="row" style="margin:0"><button class="ghost" onclick="like(${i})">${a.l?'♥':'♡'} ${a.n||0}</button></div>${(a.c||[]).map(c=>`<p class="mut" style="margin:8px 0 0"><b>${esc(c[0])}</b> : ${esc(c[1])}</p>`).join('')}<div class="row"><input id="cm${i}" placeholder="Votre commentaire" aria-label="Commentaire" style="flex:1"><button onclick="comment(${i})">Envoyer</button></div></div>`).join('')}
 function renderSearch(){renderActus();const q=$('q').value.trim().toLowerCase(),ok=S.songs.filter(s=>s.st=='ok');let h;
 if(V.art){const l=ok.filter(s=>s.a==V.art);h=`<button class="ghost" onclick="V.art=null;render()">Retour aux sorties</button><div class="card" style="margin-top:10px"><b style="font-size:20px">${esc(V.art)}</b><br><small class="mut">${esc(l[0]?l[0].v:'')} · ${l.length} titre(s)</small></div>`+l.map(row).join('')}
 else if(q){const as=[...new Set(ok.filter(s=>s.a.toLowerCase().includes(q)).map(s=>s.a))],ts=ok.filter(s=>s.t.toLowerCase().includes(q));
@@ -497,9 +498,9 @@ async function load(){
 const {data:{session}}=await SB.auth.getSession();ME=null;S.me=null;S.fan=null;S.admin=false;
 if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.id).single();ME=r.data;V.blk=null;if(ME&&ME.role!='admin'&&ME.status=='blocked'&&(!ME.blocked_until||new Date(ME.blocked_until)>new Date())){V.blk=ME;await SB.auth.signOut();ME=null}}
 const ss=await SB.from('songs').select('*, profiles(name,city,genre)').order('created_at',{ascending:false});
-S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:r.status,k:r.kind,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,aid:r.artist_id,ft:r.featuring||'',pc:r.price_cdf||500,sold:!!r.sold,ap:r.audio_path,dp:r.doc_path,cv:r.cover_path?PUB('media',r.cover_path):''}));
+S.songs=(ss.data||[]).map(r=>({id:r.id,t:r.title,a:(r.profiles||{}).name||'',v:(r.profiles||{}).city||'',g:((r.profiles||{}).genre||'').split(' · ')[0],u:1,c:2800,st:(r.status=='ok'&&r.release_at&&Date.parse(r.release_at)>Date.now())?'sched':r.status,k:r.kind,ra:r.release_at||null,rid:r.release_id||null,tn:r.track_no||0,p:r.plays,d:r.downloads,b:r.buys,why:r.why,own:!!ME&&r.artist_id==ME.id,aid:r.artist_id,ft:r.featuring||'',pc:r.price_cdf||500,sold:!!r.sold,ap:r.audio_path,dp:r.doc_path,cv:r.cover_path?PUB('media',r.cover_path):''}));
 const ns=await SB.from('news').select('*, profiles(name)').order('created_at',{ascending:false});
-S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id,t:r.created_at,h:!!r.hidden,pu:r.pinned_until||null}));
+S.actus=(ns.data||[]).map(r=>({id:r.id,a:(r.profiles||{}).name||'',x:r.body,st:(r.status=='ok'&&r.publish_at&&Date.parse(r.publish_at)>Date.now())?'sched':r.status,m:r.media_path?PUB('media',r.media_path):'',k:r.media_type,aid:r.author_id,t:r.created_at,h:!!r.hidden,pu:r.pinned_until||null,pa:r.publish_at||null}));
 const an=await SB.from('announcements').select('*').order('created_at',{ascending:false});S.ann=[];S.annx=(an.data||[]).filter(a=>(ME&&ME.role=='admin')||!a.hidden);
 if(ME){$('wel').close();
 if(ME.role=='admin')S.admin=true;
@@ -628,7 +629,7 @@ $('my-cert').innerHTML=ME&&ME.verified?'Vous êtes certifié ✓':mc?'Demande en
 $('cpr').textContent='(environ '+(10000/RATE).toFixed(2).replace('.',',')+' $)';
 $('a-cert').innerHTML=S.admin?(S.cert.filter(o=>o.status=='wait').map(o=>`<div class="card"><b>${esc((o.profiles||{}).name||'')}</b><p class="mut">${o.amount} ${o.currency} · ${esc(o.operator)} · ${esc(o.phone)} · Réf. ${esc(o.reference)}</p><div class="row"><button class="ghost" onclick="viewPf('${o.proof_path}')">Capture du transfert</button><button onclick="setCert(${o.id},'${o.artist_id}',1)">Valider (badge bleu)</button><button class="no" onclick="setCert(${o.id},'${o.artist_id}',0)">Refuser</button></div></div>`).join('')||'<p class="mut">Aucune demande.</p>'):'';
 $('a-sreq').innerHTML=S.admin?(S.sreq.map(q=>`<div class="card"><b>${esc(q.user_name||'')}</b> · ${esc((q.services||{}).title||'')}<p class="mut">${esc(q.operator||'')} · ${esc(q.amount||'')} · Contact : ${esc(q.phone||'')}</p>${q.proof_path?`<button class="ghost" onclick="viewPf('${q.proof_path}')">Capture du transfert</button>`:''}</div>`).join('')||'<p class="mut">Aucune demande.</p>'):'';
-const n=S.admin?S.songs.filter(s=>s.st=='wait').length+S.actus.filter(a=>a.st=='wait').length+(S.dist||[]).filter(o=>o.status=='wait').length+S.cert.filter(o=>o.status=='wait').length+(S.ord||[]).filter(o=>o.status=='wait').length+(S.wd||[]).filter(o=>o.status=='wait').length+(S.sup||[]).filter(o=>o.status=='wait').length:0;
+const n=S.admin?S.songs.filter(s=>s.st=='wait'&&!s.rid).length+(S.rel||[]).filter(x=>x.status=='wait').length+S.actus.filter(a=>a.st=='wait').length+(S.dist||[]).filter(o=>o.status=='wait').length+S.cert.filter(o=>o.status=='wait').length+(S.ord||[]).filter(o=>o.status=='wait').length+(S.wd||[]).filter(o=>o.status=='wait').length+(S.sup||[]).filter(o=>o.status=='wait').length:0;
 const ab=document.querySelector('nav button[data-t="admin"]');if(ab)ab.innerHTML='<i>'+ic('sd',24)+'</i>Admin'+(n?' <b style="color:#ff6b6b">('+n+')</b>':'')}
 
 V.stack=[];
@@ -1320,5 +1321,87 @@ $('tgInfo').textContent=L.length+' chanson(s) encore sur Supabase · '+(A.length
 let l=$('tgList');if(!l){$('tgInfo').insertAdjacentHTML('afterend','<div id="tgList"></div>');l=$('tgList')}
 l.style.maxHeight='45vh';l.style.overflowY='auto';
 l.innerHTML=L.map(s=>`<div class="pay" style="align-items:flex-start;gap:8px"><span style="min-width:0"><b>${esc(s.t)}</b> <small class="mut">${esc(s.a)}</small>${V.mgE[s.id]?'<br><small style="color:#ff6b6b;overflow-wrap:anywhere">'+esc(V.mgE[s.id])+'</small>':''}</span><button class="ghost" style="padding:6px 12px;flex:none" onclick="migPick(${s.id})">Copier</button></div>`).join('')||'<p class="mut">Toutes les chansons sont sur Tigris ✓</p>'}
+render();
+
+/* ===== v38 : Nouvelle sortie (single / EP / album), planification des sorties et des actualités, écoute de contrôle ===== */
+LBL.sched='Planifiée';
+var RTY={single:{n:'Single',min:1,max:1,d:'1 chanson'},ep:{n:'EP',min:2,max:6,d:'2 à 6 chansons'},album:{n:'Album',min:7,max:30,d:'7 chansons ou plus'}};
+var NR={t:'single',k:'song',tr:[],ti:'',pq:'',sm:'now',sd:'',so:false};S.rel=S.rel||[];
+function newTr(){return{f:null,u:'',t:'',ft:''}}
+function nowL(){return new Date(Date.now()+3e5-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16)}
+function ftS(x){return String(x||'').split(',').map(s=>s.trim()).filter(Boolean).slice(0,8).join(', ')||null}
+function pauseOthers(a){document.querySelectorAll('#postSong audio').forEach(x=>{if(x!==a)x.pause()});try{$('au').pause()}catch(e){}}
+function relUI(){const el=$('postSong');if(!el)return;const R=RTY[NR.t],bt=NR.k=='beat',n=NR.tr.length;
+const pill=k=>`<button type="button" class="rtp ${NR.t==k?'on':''}" ${bt&&k!='single'?'disabled style="opacity:.4"':''} onclick="relType('${k}')"><b>${RTY[k].n}</b><br><small>${RTY[k].d}</small></button>`;
+const tk=NR.tr.map((t,i)=>`<div class="trk"><b>Titre ${i+1}</b>${n>R.min?`<button type="button" class="no" style="float:right;padding:4px 10px" onclick="trkDel(${i})">✕</button>`:''}${NR.t=='single'?'':`<label>Nom de la chanson</label><input value="${esc(t.t)}" oninput="NR.tr[${i}].t=this.value" maxlength="100">`}<label>Featuring (facultatif)</label><input value="${esc(t.ft)}" oninput="NR.tr[${i}].ft=this.value" placeholder="Artiste 1, Artiste 2"><label>Fichier audio (10 Mo maximum)</label><input type="file" ${isIOS()?'':'accept="audio/*"'} onchange="trkFile(${i},this)">${t.f?`<small class="okm">✓ ${esc(t.f.name)}</small><audio controls preload="metadata" src="${t.u}" onplay="pauseOthers(this)"></audio>`:'<small class="mut">Aucun fichier choisi</small>'}</div>`).join('');
+el.innerHTML=`<b style="font-size:18px">Nouvelle sortie</b>
+<label for="rkd">Contenu</label><select id="rkd" onchange="relKind(this.value)"><option value="song" ${bt?'':'selected'}>Chanson</option><option value="beat" ${bt?'selected':''}>Beat / instrumentale</option></select>
+<label>Type de sortie</label><div class="row" style="flex-wrap:nowrap;margin-top:0">${pill('single')}${pill('ep')}${pill('album')}</div>
+<label for="rtt">Titre du ${R.n=='Single'?'single':R.n=='EP'?'EP':'l’album'}</label><input id="rtt" value="${esc(NR.ti)}" oninput="NR.ti=this.value" maxlength="100">
+<label>Pochette (carrée, obligatoire)</label><div class="row" style="align-items:center;flex-wrap:nowrap;margin-top:0"><div class="cvP" ${NR.cu?`style="background-image:url(${NR.cu})"`:''}>${NR.cu?'':'🖼'}</div><div style="flex:1"><input id="rcv" type="file" accept="image/*" hidden onchange="relCover(this)"><button type="button" class="ghost" onclick="$('rcv').click()">${NR.cu?'Changer la pochette':'Choisir la pochette'}</button>${NR.cu?'<small class="okm">✓ Pochette prête</small>':''}</div></div>
+<div style="margin-top:12px"><b>Titres (${n})</b> <small class="mut">${R.d}</small></div>${tk}${n<R.max?'<button type="button" class="ghost" onclick="trkAdd()">＋ Ajouter un titre</button>':''}
+${bt?`<label>Prix du beat en francs (FC), de 500 à 1 000 000</label><input type="number" inputmode="numeric" value="${esc(NR.pq)}" oninput="NR.pq=this.value">`:'<p class="mut">Prix fixe d’une chanson : 500 FC (ou l’équivalent en dollars). Écoute gratuite, téléchargement payant.</p>'}
+<label for="rsm">Publication</label><select id="rsm" onchange="NR.sm=this.value;relUI()"><option value="now" ${NR.sm=='now'?'selected':''}>Publier dès la validation</option><option value="plan" ${NR.sm=='plan'?'selected':''}>Planifier une sortie</option></select>
+${NR.sm=='plan'?`<label for="rsd">Jour et heure de sortie</label><input id="rsd" type="datetime-local" min="${nowL()}" value="${esc(NR.sd)}" onchange="NR.sd=this.value"><p class="mut">Choisissez le jour, le mois, l’année et l’heure. Après validation, la sortie reste cachée jusqu’à ce moment.</p>`:''}
+<label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" style="width:auto;margin-top:4px" ${NR.so?'checked':''} onchange="NR.so=this.checked"> Je certifie être l’auteur et propriétaire des droits de cette sortie.</label>
+<p class="mut">Votre sortie est vérifiée avant d’apparaître. Aucune limite de chansons.</p><div class="row"><button onclick="postRelease()">Envoyer pour validation</button></div>`}
+function relType(k){if(NR.k=='beat'&&k!='single')return;NR.t=k;const R=RTY[k];while(NR.tr.length<R.min)NR.tr.push(newTr());while(NR.tr.length>R.max){const t=NR.tr.pop();if(t.u)URL.revokeObjectURL(t.u)}relUI()}
+function relKind(v){NR.k=v;if(v=='beat')relType('single');else relUI()}
+function trkAdd(){if(NR.tr.length<RTY[NR.t].max){NR.tr.push(newTr());relUI()}}
+function trkDel(i){if(NR.tr.length>RTY[NR.t].min){const t=NR.tr.splice(i,1)[0];if(t.u)URL.revokeObjectURL(t.u);relUI()}}
+function trkFile(i,inp){const f=inp.files[0];if(!f)return;if(!okAudio(f)){relUI();return toast('Format non pris en charge. Utilisez un MP3 ou M4A.')}if(f.size>10*1024*1024){relUI();return toast('Fichier trop lourd : 10 Mo maximum.')}
+const t=NR.tr[i];if(t.u)URL.revokeObjectURL(t.u);t.f=f;t.u=URL.createObjectURL(f);if(NR.t!='single'&&!t.t.trim())t.t=f.name.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').slice(0,100);relUI()}
+function relCover(inp){const f=inp.files[0];inp.value='';if(!f)return;if(!f.type.startsWith('image/'))return toast('Choisissez une image.');cropOpen(f,'ph',b=>{T.sc=b;if(NR.cu)URL.revokeObjectURL(NR.cu);NR.cu=URL.createObjectURL(b);relUI()})}
+function openSong(){if(!NR.tr.length)NR.tr.push(newTr());relUI();$('songDlg').showModal()}
+$('songDlg').addEventListener('close',()=>document.querySelectorAll('#postSong audio').forEach(x=>x.pause()));
+function ldT(m){try{$('ld').lastChild.textContent=m}catch(e){}}
+function postRelease(){if(!ME||ME.role!='artist')return toast('Connectez-vous avec un compte artiste.');
+const R=RTY[NR.t],tt=(NR.ti||'').trim(),n=NR.tr.length,bt=NR.k=='beat',sg=NR.t=='single';
+if(!tt)return toast('Écrivez le titre de la sortie.');if(!T.sc)return toast('Ajoutez la pochette (obligatoire).');if(n<R.min||n>R.max)return toast(R.n+' : '+R.d+'.');
+for(let i=0;i<n;i++){const t=NR.tr[i];if(!t.f)return toast('Titre '+(i+1)+' : ajoutez le fichier audio.');if(!sg&&!t.t.trim())return toast('Titre '+(i+1)+' : écrivez le nom de la chanson.')}
+const pc=bt?parseInt(NR.pq):500;if(bt&&!(pc>=500&&pc<=1000000))return toast('Fixez le prix de votre beat : de 500 à 1 000 000 FC.');
+if(!NR.so)return toast('Cochez la certification : vous êtes le créateur.');
+let at=null;if(NR.sm=='plan'){const ms=new Date(NR.sd).getTime();if(!NR.sd||isNaN(ms))return toast('Choisissez le jour et l’heure de sortie.');if(ms<Date.now()+3e5)return toast('La date de sortie doit être au moins 5 minutes dans le futur.');at=new Date(ms).toISOString()}
+return busy(async()=>{let rid=null;try{ldT('Envoi de la pochette…');const cv=await up('media',T.sc,ME.id),P=[];
+for(let i=0;i<n;i++){ldT('Envoi audio '+(i+1)+'/'+n+'…');P.push(await upTg(NR.tr[i].f,ME.id))}
+ldT('Enregistrement…');const r=await SB.from('releases').insert({artist_id:ME.id,title:tt,type:NR.t,cover_path:cv,release_at:at}).select('id').single();if(r.error)throw r.error;rid=r.data.id;
+const s=await SB.from('songs').insert(NR.tr.map((t,i)=>({artist_id:ME.id,title:sg?tt:t.t.trim(),kind:NR.k,audio_path:P[i],cover_path:cv,featuring:ftS(t.ft),price_cdf:pc,release_id:rid,track_no:i+1,release_at:at})));if(s.error)throw s.error;
+NR.tr.forEach(t=>{if(t.u)URL.revokeObjectURL(t.u)});if(NR.cu)URL.revokeObjectURL(NR.cu);NR={t:'single',k:'song',tr:[newTr()],ti:'',pq:'',sm:'now',sd:'',so:false};T.sc=null;
+$('songDlg').close();await load();toast(at?'Sortie planifiée. Elle apparaîtra à la date prévue, après validation.':'Sortie envoyée. Elle apparaît après validation.')}
+catch(e){if(rid)await SB.from('releases').update({status:'removed'}).eq('id',rid);throw e}finally{ldT('Chargement…')}})}
+
+/* --- Admin : valider une sortie entière --- */
+async function loadRel(){try{const r=await SB.from('releases').select('*').order('created_at',{ascending:false});S.rel=r.error?[]:(r.data||[])}catch(e){S.rel=[]}}
+(function(){const o=load;load=async function(){await o.apply(this,arguments);await loadRel();render()}})();
+function relAppr(id,ok){const x=(S.rel||[]).find(r=>r.id==id);if(!x)return;let why=null;if(!ok){why=prompt('Motif du refus ?');if(why===null)return;why=why||'Non conforme'}
+return busy(async()=>{const r=await SB.from('releases').update({status:ok?'ok':'no',why}).eq('id',id).select('id');if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error('Refusé par la base. Exécutez update-20.');
+const lab=RTY[x.type].n+' « '+x.title+' »',pl=x.release_at&&Date.parse(x.release_at)>Date.now();
+await notify(x.artist_id,'song',ok?'Votre '+lab+' a été approuvé'+(pl?' : sortie le '+dtl(x.release_at)+'.':' et publié.'):'Votre '+lab+' a été refusé. Motif : '+why);await load();toast(ok?'Sortie approuvée.':'Sortie refusée.')})}
+function renderRelAdm(){const el=$('a-songs');if(!el||!S.admin)return;const R=(S.rel||[]).filter(x=>x.status=='wait'),W=(S.songs||[]).filter(s=>s.st=='wait'&&!s.rid);
+const rc=x=>{const a=(S.profAll||[]).find(p=>p.id==x.artist_id)||{},tl=(S.songs||[]).filter(s=>s.rid==x.id).sort((p,q)=>(p.tn||0)-(q.tn||0)),cv=x.cover_path?PUB('media',x.cover_path):'';
+return `<div class="card"><div class="song"><div class="cov" ${cv?`data-zoom="${cv}"`:''} style="width:90px;height:90px;cursor:zoom-in;background:${cv?`url(${cv}) center/cover`:'var(--g)'}"></div><div><span class="tag">${RTY[x.type].n}</span><br><b>${esc(x.title)}</b><small>${esc(a.name||'')} · ${tl.length} titre${tl.length>1?'s':''}</small>${x.release_at?`<br><span class="tag">📅 Sortie prévue : ${dtl(x.release_at)}</span>`:''}</div></div>${tl.map(s=>`<div class="pay"><span>${s.tn||''}. ${esc(s.t)}${s.ft?' feat. '+esc(s.ft):''}</span><button class="ghost" style="padding:6px 12px" onclick="play(${s.id})">▶ Écouter</button></div>`).join('')}<div class="row"><button onclick="relAppr(${x.id},1)">Approuver</button><button class="no" onclick="relAppr(${x.id},0)">Refuser</button></div></div>`};
+const lg=s=>`<div class="card">${s.cv?`<img src="${s.cv}" alt="Pochette" style="width:110px;height:110px;object-fit:cover;border-radius:12px;float:right;margin-left:10px">`:'<p class="mut">⚠ Pas de pochette</p>'}<b>${esc(s.t)}</b> · ${esc(s.a)}${s.ft?' feat. '+esc(s.ft):''}<div class="row"><button class="ghost" onclick="play(${s.id})">▶ Écouter dans le lecteur</button></div><div class="row"><button onclick="appr(${s.id},1)">Approuver</button><button class="no" onclick="appr(${s.id},0)">Refuser</button></div></div>`;
+el.innerHTML=R.map(rc).join('')+W.map(lg).join('')||'<p class="mut">Rien en attente.</p>'}
+
+/* --- Artiste : « Mes chansons » avec type de sortie et date prévue --- */
+function renderMine(){const el=$('mine');if(!el||!ME||ME.role!='artist')return;const L=(S.songs||[]).filter(s=>s.own&&s.st!='removed').sort((a,b)=>(b.rid||0)-(a.rid||0)||(a.tn||0)-(b.tn||0));
+el.innerHTML=L.map(s=>{const x=s.rid?(S.rel||[]).find(r=>r.id==s.rid):null;
+return `<div class="card"><div class="song"><div class="cov" ${s.cv?`data-zoom="${s.cv}"`:''} style="cursor:zoom-in;background:${s.cv?`url(${s.cv}) center/cover`:cols[s.id%4]}">${s.cv?'':esc(s.t[0])}</div><div><b>${esc(s.t)}</b>${s.ft?'<small>feat. '+esc(s.ft)+'</small>':''}<small>${String(s.u).replace('.',',')} $ · ${fx(s.c)} FC</small><br><span class="tag">${LBL[s.st]||s.st}</span>${s.ra&&Date.parse(s.ra)>Date.now()?'<span class="tag">📅 '+dtl(s.ra)+'</span>':''}${x?'<span class="tag">'+RTY[x.type].n+' · '+esc(x.title)+' · titre '+(s.tn||1)+'</span>':''}${s.k=='beat'?'<span class="tag">Beat</span>':''}${s.sold?'<span class="tag">Vendu 🔒</span>':''}${s.st=='no'?'<span class="tag">Motif : '+esc(s.why||'')+'</span>':''}</div></div><div class="row"><button class="ghost" onclick="seOpen(${s.id})">✏️ Modifier</button><button class="no" onclick="del(${s.id})">🗑 Supprimer</button></div></div>`}).join('')||'<p class="mut">Aucune sortie pour l’instant. Touchez « Nouvelle sortie ».</p>'}
+
+/* --- Actualités : publier maintenant ou planifier --- */
+(function(){const c=$('postNews');if(!c||$('nwm'))return;const p=c.querySelector('p.mut');if(p)p.insertAdjacentHTML('beforebegin','<label for="nwm">Publication</label><select id="nwm" onchange="nwSch()"><option value="now">Publier directement (après validation)</option><option value="plan">Planifier une actualité</option></select><div id="nwW" style="display:none"><label for="nwd">Jour et heure de publication</label><input id="nwd" type="datetime-local"><p class="mut">Jour, mois, année et heure. Elle reste cachée jusqu’à ce moment ; les abonnés sont prévenus à la publication.</p></div>')})();
+function nwSch(){const p=$('nwm').value=='plan';$('nwW').style.display=p?'':'none';if(p)$('nwd').min=nowL()}
+addActu=function(){const v=$('na').value.trim(),f=$('nm').files[0],pl=$('nwm').value=='plan';if(!v)return toast('Écrivez votre actualité.');let at=null;
+if(pl){const ms=new Date($('nwd').value).getTime();if(!$('nwd').value||isNaN(ms))return toast('Choisissez le jour et l’heure de publication.');if(ms<Date.now()+3e5)return toast('La date doit être au moins 5 minutes dans le futur.');at=new Date(ms).toISOString()}
+return busy(async()=>{const m=f?await up('media',await shrink(f),ME.id):null,r=await SB.from('news').insert({author_id:ME.id,body:v,media_path:m,media_type:f?(f.type.startsWith('video')?'v':'i'):null,publish_at:at});if(r.error)throw r.error;
+$('na').value='';$('nm').value='';$('nwm').value='now';nwSch();$('newsDlg').close();await load();toast(pl?'Planifiée. Elle sera publiée à la date prévue, après validation.':'Envoyée. Elle apparaît après validation.')})};
+
+/* --- Sorties et actualités planifiées : apparition à l'heure + notifications --- */
+async function schedTick(){if(document.hidden||V.stk)return;if(document.querySelector('dialog[open]'))return;const ae=document.activeElement;if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;const now=Date.now();
+if(!((S.songs||[]).some(s=>s.st=='sched'&&Date.parse(s.ra)<=now)||(S.actus||[]).some(a=>a.st=='sched'&&Date.parse(a.pa)<=now)))return;V.stk=1;try{await SB.rpc('notify_due');await load()}catch(e){}V.stk=0}
+setInterval(schedTick,30000);setTimeout(()=>{SB.rpc('notify_due').then(()=>{})},5000);
+(function(){const o=ntGo;ntGo=function(l){const p=String(l||'').split(':');if(p[0]=='artist'){const d=$('notifDlg');if(d.open)d.close();return openP(p[1])}return o(l)}})();
+(function(){const r=render;render=function(){r();try{renderRelAdm()}catch(e){console.error(e)}}})();
+loadRel().then(()=>render());
 render();
 </script></body></html>
