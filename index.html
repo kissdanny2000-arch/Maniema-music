@@ -492,8 +492,9 @@ render();
 
 var ME=null;
 const SB=supabase.createClient('https://xzobkpuizruxxrnkksrz.supabase.co','sb_publishable_IgMbn2cyqcp2Gjw4JzlvBQ_GVQPrEh5');
-const PUB=(b,p)=>SB.storage.from(b).getPublicUrl(p).data.publicUrl;
-async function up(b,f,uid){const p=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),r=await SB.storage.from(b).upload(p,f,{contentType:mimeOf(f),cacheControl:(b=='avatars'||b=='media')?'31536000':'3600'});if(r.error)throw r.error;return p}
+const PUB=(b,p)=>(typeof p==='string'&&p.indexOf('tg:')===0)?'https://manimusic-audio.manimusic.workers.dev/photo/'+b+'/'+p.slice(3):SB.storage.from(b).getPublicUrl(p).data.publicUrl;
+async function up(b,f,uid){if((b=='avatars'||b=='media')&&f&&f.size<=6*1024*1024){const ct=mimeOf(f);if(/^image\/(jpeg|png|webp|gif)$/.test(ct)){try{const key=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),tk=await tgTok();if(tk){const r=await fetch(AW+'/putphoto?path='+encodeURIComponent(b+'/'+key),{method:'POST',headers:{Authorization:'Bearer '+tk,'Content-Type':ct},body:f}),j=await r.json().catch(()=>({}));if(r.ok&&j.ok)return 'tg:'+key}}catch(e){}}}
+const p=uid+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_'),r=await SB.storage.from(b).upload(p,f,{contentType:mimeOf(f),cacheControl:(b=='avatars'||b=='media')?'31536000':'3600'});if(r.error)throw r.error;return p}
 async function load(){
 const {data:{session}}=await SB.auth.getSession();ME=null;S.me=null;S.fan=null;S.admin=false;
 if(session){const r=await SB.from('profiles').select('*').eq('id',session.user.id).single();ME=r.data;V.blk=null;if(ME&&ME.role!='admin'&&ME.status=='blocked'&&(!ME.blocked_until||new Date(ME.blocked_until)>new Date())){V.blk=ME;await SB.auth.signOut();ME=null}}
@@ -1403,5 +1404,21 @@ setInterval(schedTick,30000);setTimeout(()=>{SB.rpc('notify_due').then(()=>{})},
 (function(){const o=ntGo;ntGo=function(l){const p=String(l||'').split(':');if(p[0]=='artist'){const d=$('notifDlg');if(d.open)d.close();return openP(p[1])}return o(l)}})();
 (function(){const r=render;render=function(){r();try{renderRelAdm()}catch(e){console.error(e)}}})();
 loadRel().then(()=>render());
+render();
+
+/* ===== v39 : photos sur Tigris (nouvelles photos + copie des anciennes) ===== */
+(function(){const t=$('tgCard');if(t&&!$('phCard'))t.insertAdjacentHTML('afterend','<div class="card" id="phCard" style="display:none"><b>📷 Photos sur Tigris</b><p class="mut">Copie les anciennes photos (profils, couvertures, pochettes, annonces, services, actualités) vers Tigris. Rien n’est supprimé chez Supabase. Les vidéos restent chez Supabase.</p><div class="row"><button class="ghost" onclick="phScan()">Compter les photos à copier</button><button onclick="phMig()">Copier les photos</button></div><p class="mut" id="phLog"></p><div id="phErr" style="max-height:35vh;overflow-y:auto"></div></div>')})();
+var PHT=[['profiles','avatar','avatars'],['profiles','cover','avatars'],['songs','cover_path','media'],['news','media_path','media'],['announcements','media_path','media'],['services','media_path','media'],['releases','cover_path','media'],['dist_orders','cover_path','media']];
+async function phList(){const L=[],bad=[];for(const [tb,col,bk] of PHT){const r=await SB.from(tb).select('id,'+col+(tb=='news'?',media_type':'')).not(col,'is',null).not(col,'like','tg:%');if(r.error){bad.push(tb+'.'+col+' : '+r.error.message);continue}(r.data||[]).forEach(x=>{if(!x[col])return;if(tb=='news'&&x.media_type=='v')return;L.push({tb,col,bk,id:x.id,p:x[col]})})}return{L,bad}}
+function phShow(bad){const e=$('phErr');if(e)e.innerHTML=bad.map(m=>'<p style="color:#ff6b6b;font-size:13px;overflow-wrap:anywhere;margin:6px 0">'+esc(m)+'</p>').join('')}
+async function phScan(){if(!S.admin||V.ph)return;V.ph=1;try{$('phLog').textContent='Recherche…';const r=await phList();$('phLog').textContent=r.L.length+' photo(s) encore chez Supabase.';phShow(r.bad)}finally{V.ph=0}}
+async function phOne(x){const fr=await fetch(SB.storage.from(x.bk).getPublicUrl(x.p).data.publicUrl);if(!fr.ok)throw new Error('lecture Supabase '+fr.status);const b=await fr.blob();let ct=b.type||'';const OK=/^image\/(jpeg|png|webp|gif)$/;if(!OK.test(ct))ct=mimeOf({type:'',name:x.p});if(!OK.test(ct))throw new Error('pas une image ('+(b.type||'?')+')');if(b.size>6*1024*1024)throw new Error('trop lourde ('+(b.size/1048576).toFixed(1)+' Mo)');
+const tk=await tgTok(),r=await fetch(AW+'/putphoto?path='+encodeURIComponent(x.bk+'/'+x.p),{method:'POST',headers:{Authorization:'Bearer '+tk,'Content-Type':ct},body:b}),j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error((j.error||'Worker')+' ('+r.status+') · '+x.p);
+const u={};u[x.col]='tg:'+x.p;const q=await SB.from(x.tb).update(u).eq('id',x.id).eq(x.col,x.p).select(x.col);if(q.error)throw q.error;if(!q.data||!q.data.length||q.data[0][x.col]!=='tg:'+x.p)throw new Error('base de données : modification refusée')}
+async function phMig(){if(!S.admin||V.ph)return;V.ph=1;const log=m=>{const e=$('phLog');if(e)e.textContent=m};let ok=0,bad=[];
+try{log('Recherche des photos…');const r=await phList();bad=r.bad.slice();for(let i=0;i<r.L.length;i++){const x=r.L[i];log('Copie '+(i+1)+'/'+r.L.length+'…');try{await phOne(x);ok++}catch(e){bad.push(x.tb+' #'+x.id+' : '+(e.message||e))}}}
+finally{V.ph=0}
+await load();log(ok+' photo(s) copiée(s) ✓'+(bad.length?' · '+bad.length+' échec(s) :':''));phShow(bad);toast(ok+' copiée(s)'+(bad.length?', '+bad.length+' échec(s)':''))}
+(function(){const r=render;render=function(){r();try{const c=$('phCard');if(c)c.style.display=S.admin?'':'none'}catch(e){console.error(e)}}})();
 render();
 </script></body></html>
