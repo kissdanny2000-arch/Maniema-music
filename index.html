@@ -1499,4 +1499,37 @@ async function ntReload(){if(!ME)return;var r=await SB.from('notifications').sel
 function ntSub(){if(!ME){if(V.ntC){try{SB.removeChannel(V.ntC)}catch(e){}V.ntC=null}V.ntCh=null;return}if(V.ntCh==ME.id)return;try{if(V.ntC)SB.removeChannel(V.ntC);V.ntCh=ME.id;V.ntC=SB.channel('nt'+ME.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+ME.id},function(){ntReload()}).subscribe()}catch(e){}}
 (function(){var r=render;render=function(){r();try{ntSub()}catch(e){}}})();
 render();
+
+/* ===== v43 : solde du propriétaire (30 % des ventes et soutiens, certifications, distributions, services) ===== */
+(function(){if(document.getElementById('ownSt'))return;var s=document.createElement('style');s.id='ownSt';s.textContent='.ntA{font:800 16px Poppins,sans-serif;color:#ffd24a;flex:none;text-align:right;white-space:nowrap}.ownT{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}.ownT div{background:linear-gradient(135deg,#0b3da8,#061233);border:1.5px solid #1b6bff;border-radius:16px;padding:12px;color:#fff}.ownT strong{display:block;font:800 24px Poppins,sans-serif;color:#ffd24a;letter-spacing:-.5px}.ownB{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}';document.head.appendChild(s);
+var h=document.querySelector('#admin h2');if(h&&!document.getElementById('ownCard'))h.insertAdjacentHTML('afterend','<div class="card" id="ownCard" style="display:none"><b>💰 Mon solde de propriétaire</b><div id="ownBody"></div></div>')})();
+function ownR(n){return Math.round(n*100)/100}
+function ownLedger(){var E=[],P=S.profAll||[],nm=function(id){return(P.find(function(p){return p.id==id})||{}).name||'un artiste'};
+(S.ord||[]).filter(function(o){return o.status=='paid'}).forEach(function(o){E.push({t:o.created_at,c:o.currency,a:ownR(o.amount*0.3),k:'Achats',r:'30 % de l’achat de « '+((o.songs||{}).title||'chanson')+' » par '+(o.buyer_name||'un fan')+' (artiste : '+nm((o.songs||{}).artist_id)+')'})});
+(S.sup||[]).filter(function(o){return o.status=='paid'}).forEach(function(o){E.push({t:o.created_at,c:o.currency,a:ownR(o.amount*0.3),k:'Soutiens',r:'30 % du soutien de '+(o.from_name||'un fan')+' à '+nm(o.artist_id)})});
+(S.cert||[]).filter(function(o){return o.status=='done'}).forEach(function(o){E.push({t:o.created_at,c:o.currency,a:+o.amount,k:'Certifications',r:'Certification (badge bleu) de '+((o.profiles||{}).name||'un artiste')})});
+(S.dist||[]).filter(function(o){return o.status=='paid'||o.status=='done'}).forEach(function(o){E.push({t:o.created_at,c:o.currency,a:+o.amount,k:'Distribution',r:'Distribution de « '+(o.title||'')+' » par '+((o.profiles||{}).name||'un artiste')})});
+(S.sreq||[]).filter(function(o){return o.status=='paid'&&o.paid_amount}).forEach(function(o){E.push({t:o.created_at,c:o.paid_currency||'CDF',a:+o.paid_amount,k:'Services',r:'Service « '+((o.services||{}).title||'')+' » demandé par '+(o.user_name||'un client')})});
+return E.sort(function(a,b){return Date.parse(b.t)-Date.parse(a.t)})}
+function ownFmt(c,a){return c=='USD'?String(ownR(a).toFixed(2)).replace('.',',')+' $':fx(Math.round(a))+' FC'}
+function renderOwn(){var c=$('ownCard'),el=$('ownBody');if(!c||!el)return;if(!S.admin){c.style.display='none';return}c.style.display='';
+var E=ownLedger(),u=0,f=0,by={};E.forEach(function(e){if(e.c=='USD')u+=e.a;else f+=e.a;var b=by[e.k]=by[e.k]||{U:0,F:0};if(e.c=='USD')b.U+=e.a;else b.F+=e.a});
+var N=V.owN||10;
+var h='<div class="ownT"><div>Solde USD<strong>'+ownFmt('USD',u)+'</strong></div><div>Solde CDF<strong>'+ownFmt('CDF',f)+'</strong></div></div>';
+h+=Object.keys(by).map(function(k){var b=by[k];return '<div class="ownB"><span>'+k+'</span><b>'+(b.U?ownFmt('USD',b.U):'')+(b.U&&b.F?' + ':'')+(b.F?ownFmt('CDF',b.F):'')+'</b></div>'}).join('');
+h+='<p class="mut" style="margin:10px 0 6px"><b>Chaque entrée d’argent</b> (la plus récente en haut) :</p>';
+h+=E.slice(0,N).map(function(e){var k=NTK.mon;return '<div class="ntC" style="--c:'+k.c+'"><div class="ntI">'+k.i()+'</div><div class="ntB"><p>'+esc(e.r)+'</p><small>🕒 '+ntDate(e.t)+'</small><span class="ntP">'+e.k+'</span></div><div class="ntA">+'+ownFmt(e.c,e.a)+'</div></div>'}).join('')||'<p class="mut">Aucune entrée pour l’instant. Elles apparaissent dès que vous validez un paiement.</p>';
+if(E.length>N)h+='<button class="ntM" onclick="V.owN='+(N+10)+';renderOwn()">Voir plus ('+(E.length-N)+' autres)</button>';
+h+='<p class="mut"><small>Date affichée = date de la demande du client. Les 70 % des artistes ne sont pas comptés ici.</small></p>';
+el.innerHTML=h}
+/* --- Services : valider un paiement (nécessite update-22) --- */
+function svcPay(id){var q=(S.sreq||[]).find(function(x){return x.id==id});if(!q)return;var v=prompt('Montant reçu, avec la monnaie (ex. 5000 FC ou 3 $)',q.amount||'');if(v===null)return;
+var m=/([\d][\d\s.,]*)/.exec(v);if(!m)return toast('Montant invalide.');var a=parseFloat(m[1].replace(/\s/g,'').replace(',','.'));if(!(a>0))return toast('Montant invalide.');var c=/\$|usd|dollar/i.test(v)?'USD':'CDF';
+return busy(async function(){var r=await SB.from('service_requests').update({status:'paid',paid_amount:a,paid_currency:c}).eq('id',id).select('id');if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error('Refusé par la base. Exécutez d’abord update-22.');await loadMore();render();toast('Paiement validé : '+ownFmt(c,a)+' ajouté à votre solde.')})}
+function svcNo(id){if(!confirm('Refuser cette demande ?'))return;return busy(async function(){var r=await SB.from('service_requests').update({status:'no'}).eq('id',id).select('id');if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error('Refusé par la base. Exécutez d’abord update-22.');await loadMore();render();toast('Demande refusée.')})}
+function renderSreq(){var el=$('a-sreq');if(!el||!S.admin)return;
+el.innerHTML=(S.sreq||[]).map(function(q){var st=q.status=='paid'?'<span class="tag">✓ Payé : '+ownFmt(q.paid_currency||'CDF',q.paid_amount||0)+'</span>':q.status=='no'?'<span class="tag">Refusée</span>':'<span class="tag">À vérifier</span>';
+return '<div class="card"><b>'+esc(q.user_name||'')+'</b> · '+esc((q.services||{}).title||'')+' '+st+'<p class="mut">'+esc(q.operator||'')+' · '+esc(q.amount||'')+' · Contact : '+esc(q.phone||'')+'</p><div class="row">'+(q.proof_path?'<button class="ghost" onclick="viewPf(\''+q.proof_path+'\')">Capture du transfert</button>':'')+((q.status!='paid'&&q.status!='no')?'<button onclick="svcPay('+q.id+')">✓ Paiement reçu</button><button class="no" onclick="svcNo('+q.id+')">Refuser</button>':'')+'</div></div>'}).join('')||'<p class="mut">Aucune demande.</p>'}
+(function(){var r=render;render=function(){r();try{renderOwn();renderSreq()}catch(e){console.error(e)}}})();
+render();
 </script></body></html>
