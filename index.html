@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ManiMusic — La musique urbaine du Maniema</title>
 <meta name="description" content="Découvrez, écoutez et soutenez les artistes du Maniema."><link rel="icon" type="image/png" href="logo-icon.png"><link rel="apple-touch-icon" href="icon-192.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#040a1c"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ManiMusic"><meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta property="og:type" content="website"><meta property="og:site_name" content="ManiMusic"><meta property="og:title" content="ManiMusic — La musique urbaine du Maniema"><meta property="og:description" content="Découvrez, écoutez et soutenez les artistes du Maniema."><meta property="og:image" content="https://kissdanny2000-arch.github.io/Maniema-music/logo-partage.png"><meta property="og:image:width" content="1000"><meta property="og:image:height" content="525"><meta property="og:url" content="https://kissdanny2000-arch.github.io/Maniema-music/"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://kissdanny2000-arch.github.io/Maniema-music/logo-partage.png">
+<meta property="og:type" content="website"><meta property="og:site_name" content="ManiMusic"><meta property="og:title" content="ManiMusic — La musique urbaine du Maniema"><meta property="og:description" content="Découvrez, écoutez et soutenez les artistes du Maniema."><meta property="og:image" content="https://manimusic.store/logo-partage.png"><meta property="og:image:width" content="1000"><meta property="og:image:height" content="525"><meta property="og:url" content="https://manimusic.store/"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://manimusic.store/logo-partage.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#040A1C;--card:#0A1634;--ink:#E8F0FF;--mut:#93A5C8;--g:#1F6BFF;--gold:#19D3F3;--red:#E5484D;--line:#1B2D52;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -1603,5 +1603,105 @@ for(let i=0;i<NR.tr.length;i++)if((NR.tr[i].d||'').trim().length<10)return toast
 function mineExtra(){document.querySelectorAll('#mine .card .row').forEach(r=>{if(r.querySelector('.mnP'))return;const m=/seOpen\((\d+)\)/.exec(r.innerHTML);if(!m)return;const s=(S.songs||[]).find(x=>x.id==m[1]);if(!s||!s.ap)return;
 r.insertAdjacentHTML('afterbegin','<button class="ghost mnP" onclick="play('+s.id+')">▶ Écouter</button><button class="ghost" onclick="cmOpen('+s.id+')">💬 Commentaires</button>')})}
 (function(){const r=render;render=function(){r();try{svcHomeR();svcDetR();mineExtra()}catch(e){console.error(e)}}})();
+render();
+
+/* ===== v45 : collaborations (featuring) entre artistes + messagerie artistes / propriétaire. Nécessite update-24 ===== */
+(function(){if(document.getElementById('v45st'))return;var s=document.createElement('style');s.id='v45st';s.textContent=
+'.fdt{position:absolute;right:1px;bottom:1px;width:20px;height:20px;border-radius:50%;background:#2ee66b;border:3px solid #040a1c;box-shadow:0 0 10px #2ee66b;z-index:2;pointer-events:none}.fdt.tr{bottom:auto;top:0;right:0}'+
+'.fdn{display:inline-block;width:11px;height:11px;border-radius:50%;background:#2ee66b;box-shadow:0 0 8px #2ee66b;margin-left:6px;vertical-align:middle}'+
+'.cbR{display:flex;gap:10px;margin:14px 14px 0;align-items:stretch}'+
+'.cbT{flex:1;display:flex;align-items:center;gap:8px;border:2px solid #1b6bff;border-radius:22px;padding:8px 10px;background:#06143a;min-width:0}.cbT b{flex:1;font-size:14px;line-height:1.15}'+
+'.cbO{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:99px;padding:10px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-weight:700;font-size:14px;text-align:center;line-height:1.2}'+
+'.cbM{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:99px;padding:12px 10px;background:linear-gradient(135deg,#1a8cff,#0b4fe0);color:#fff;font-weight:700;font-size:15px;box-shadow:0 0 14px #1a8cff88}'+
+'.sw{position:relative;width:56px;height:32px;flex:none}.sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;z-index:2;cursor:pointer}.sw span{position:absolute;inset:0;border-radius:99px;background:#2a3a66;transition:.2s}.sw span::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:.2s}.sw input:checked+span{background:#0b63f6}.sw input:checked+span::after{left:27px}'+
+'#msgBtn svg{width:28px;height:28px;color:#fff}#msgBtn .bdg{top:2px;right:4px;border:2px solid #040a1c;min-width:20px;height:20px}'+
+'#msgDlg{width:min(96vw,520px);padding:12px}.msH{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.msH h2{margin:0;font:800 22px Poppins,sans-serif}'+
+'.chBox{height:48vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:8px 2px;margin:8px 0}.bb{max-width:82%;padding:8px 12px;border-radius:16px;overflow-wrap:anywhere}.bb p{margin:0;white-space:pre-wrap}.bb small{display:block;font-size:11px;opacity:.7;margin-top:2px}'+
+'.bb.me{align-self:flex-end;background:linear-gradient(135deg,#1a8cff,#0b4fe0)}.bb.th{align-self:flex-start;background:#0a2a7a;border:1px solid #1b6bff66}'+
+'.chIn{display:flex;gap:8px;align-items:flex-end}.chIn textarea{flex:1;min-height:44px}.msU{background:#ef3b3b;color:#fff;border-radius:99px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px;flex:none}';
+document.head.appendChild(s);
+document.body.insertAdjacentHTML('beforeend','<dialog id="msgDlg"><div id="msg-l"></div></dialog>');
+var b=document.getElementById('bell');if(b&&!document.getElementById('msgBtn'))b.insertAdjacentHTML('beforebegin','<button id="msgBtn" class="hbtn" style="display:none;background:none;border:0;box-shadow:none;width:44px;height:44px;border-radius:0" onclick="msgOpen()" aria-label="Messages"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span id="msgN" class="bdg" style="display:none"></span></button>')})();
+
+S.of=S.of||{};S.msg=S.msg||[];S.mn=S.mn||{};V.mw=null;V.cwid=null;V.mq='';
+function isArt(){return !!ME&&(ME.role=='artist'||ME.role=='admin')}
+
+/* --- Chargement (tolère l'absence de update-24 : rien ne casse) --- */
+async function loadFeat(){S.of={};if(!isArt())return;try{const r=await SB.from('profiles').select('id,open_feat').eq('role','artist').eq('open_feat',true);if(!r.error)(r.data||[]).forEach(x=>{S.of[x.id]=true})}catch(e){}}
+async function loadMsgs(){if(!isArt()){S.msg=[];return}
+try{const r=await SB.from('messages').select('*').order('created_at',{ascending:false}).limit(300);if(r.error){S.msg=[];V.msgErr=r.error.message;return}V.msgErr=null;S.msg=r.data||[];
+const kn=id=>(S.profAll||[]).some(p=>p.id==id)||S.mn[id],miss=[...new Set(S.msg.map(m=>m.from_id==ME.id?m.to_id:m.from_id))].filter(id=>!kn(id));
+if(miss.length){const q=await SB.from('profiles').select('id,name,avatar,role').in('id',miss);(q.data||[]).forEach(x=>{S.mn[x.id]=x})}}catch(e){}}
+(function(){const o=load;load=async function(){await o.apply(this,arguments);await loadFeat();await loadMsgs();render()}})();
+
+/* --- Interrupteur « Ouvert pour un featuring » --- */
+async function featTog(v){if(!ME||ME.role!='artist')return;
+const r=await SB.from('profiles').update({open_feat:v}).eq('id',ME.id).select('id');
+if(r.error||!r.data||!r.data.length){toast('Impossible pour le moment'+(r.error?' : '+r.error.message:'')+'. (update-24 exécuté ?)');render();return}
+ME.open_feat=v;if(v)S.of[ME.id]=true;else delete S.of[ME.id];render();toast(v?'Vous êtes ouvert aux featurings : un point vert apparaît à côté de votre photo.':'Option désactivée : le point vert a disparu.')}
+
+/* --- Point vert (visible seulement par les artistes et le propriétaire) --- */
+function dotAv(el){if(!el||el.querySelector(':scope>.fdt'))return;if(getComputedStyle(el).position=='static')el.style.position='relative';const d=document.createElement('span');d.className='fdt'+(el.classList.contains('mqA')?' tr':'');d.dataset.a='1';el.appendChild(d)}
+function dotNm(el){if(!el||(el.nextElementSibling&&el.nextElementSibling.classList.contains('fdn')))return;const d=document.createElement('span');d.className='fdn';d.dataset.a='1';el.insertAdjacentElement('afterend',d)}
+function featDots(){document.querySelectorAll('.fdt[data-a],.fdn[data-a]').forEach(e=>e.remove());if(!isArt())return;const F=S.of||{};if(!Object.keys(F).length)return;
+document.querySelectorAll('[onclick*="openP(\'"]').forEach(el=>{const m=/openP\('([^']+)'\)/.exec(el.getAttribute('onclick')||'');if(!m||!F[m[1]])return;
+const AV='.av,.lbA,.cov,.mqA',a=el.matches(AV)?el:el.querySelector(AV);if(a)dotAv(a);else if(el.classList.contains('aln'))dotNm(el)});
+document.querySelectorAll('.sgA').forEach(u=>{const m=/openArt\((\d+)\)/.exec(u.getAttribute('onclick')||'');if(!m)return;const s=(S.songs||[]).find(x=>x.id==m[1]);if(s&&F[s.aid])dotNm(u)});
+if(V.aid&&F[V.aid]){const a=document.querySelector('#prof-pg .pfAv');if(a)dotAv(a)}
+if(ME&&F[ME.id]){const a=document.querySelector('#prof .pfAv');if(a)dotAv(a)}}
+
+/* --- Profils : boutons « Ouvert pour un featuring » et « Envoyer message » --- */
+function featProfile(){if(!isArt())return;const nu=S.msg.filter(m=>m.to_id==ME.id&&!m.read).length;
+const pg=$('prof-pg'),p=pg&&V.aid?(S.profAll||[]).find(x=>x.id==V.aid):null,ps=pg?pg.querySelector('.pst'):null;
+if(p&&ps&&!pg.querySelector('.cbR')&&p.id!=ME.id)ps.insertAdjacentHTML('afterend','<div class="cbR">'+(S.of[p.id]?'<div class="cbO">🤝 Ouvert pour un featuring</div>':'')+'<button class="cbM" onclick="chatOpen(\''+p.id+'\')">'+ic('cm',22)+' Envoyer message</button></div>');
+const me=$('prof'),pm=me?me.querySelector('.pst'):null;
+if(ME.role=='artist'&&pm&&!me.querySelector('.cbR'))pm.insertAdjacentHTML('afterend','<div class="cbR"><div class="cbT"><span style="font-size:22px">🎤</span><b>Ouvert pour un Featuring</b><label class="sw"><input type="checkbox" '+(ME.open_feat?'checked':'')+' onchange="featTog(this.checked)" aria-label="Ouvert pour un featuring"><span></span></label></div><button class="cbM" onclick="msgOpen()">✉ Messages'+(nu?' <b class="msU">'+(nu>9?'9+':nu)+'</b>':'')+'</button></div><p class="mut" style="margin:6px 14px 0;font-size:13px">Quand c’est activé, un point vert apparaît à côté de votre photo et de votre nom pour les autres artistes.</p>')}
+
+/* --- Liste des artistes : filtre « Disponibles pour un feat » --- */
+function featFilter(){const a=$('art-all');if(!a)return;let b=$('ffBtn');if(!isArt()){if(b&&b.parentElement)b.parentElement.remove();return}
+if(!b){a.insertAdjacentHTML('beforebegin','<div class="row" style="margin:0 0 10px"><button id="ffBtn" class="ghost" onclick="V.ff=!V.ff;featFilter()"></button></div>');b=$('ffBtn')}
+const n=Object.keys(S.of||{}).filter(id=>id!=ME.id).length;b.textContent=(V.ff?'✓ ':'🟢 ')+'Disponibles pour un feat ('+n+')';
+a.querySelectorAll(':scope>.card.song').forEach(c=>{const m=/openP\('([^']+)'\)/.exec(c.getAttribute('onclick')||'');c.style.display=(V.ff&&m&&!S.of[m[1]])?'none':''})}
+
+/* --- Messagerie --- */
+function mpr(id){const p=(S.profAll||[]).find(x=>x.id==id)||S.mn[id]||{};return{id,name:p.role=='admin'?'ManiMusic (propriétaire)':(p.name||'Artiste'),avatar:p.avatar||'',admin:p.role=='admin'}}
+function msgBadge(){const b=$('msgBtn');if(!b)return;const on=isArt(),n=on?S.msg.filter(m=>m.to_id==ME.id&&!m.read).length:0;b.style.display=on?'':'none';const e=$('msgN');e.textContent=n>9?'9+':(n||'');e.style.display=n?'':'none'}
+function msgOpen(){if(!isArt())return;['postDlg','cmDlg','smDlg','notifDlg'].forEach(i=>{const d=$(i);if(d&&d.open)d.close()});V.mw=null;V.cwid=null;msgRender();const d=$('msgDlg');if(!d.open)d.showModal()}
+function chatOpen(id){if(!isArt()||!id||id==ME.id)return;['postDlg','cmDlg','smDlg','notifDlg'].forEach(i=>{const d=$(i);if(d&&d.open)d.close()});V.mw=id;V.cwid=null;msgRender();const d=$('msgDlg');if(!d.open)d.showModal();msgRead(id)}
+function msgRead(id){if(!ME)return;let ch=false;S.msg.forEach(m=>{if(m.from_id==id&&m.to_id==ME.id&&!m.read){m.read=true;ch=true}});
+SB.rpc('mark_read',{other:id}).then(()=>{});
+SB.from('notifications').update({read:true}).eq('user_id',ME.id).eq('link','chat:'+id).eq('read',false).then(()=>{(S.nt||[]).forEach(n=>{if(n.link=='chat:'+id)n.read=true});bellRef()});msgBadge()}
+function msgRender(){const el=$('msg-l');if(!el)return;if(V.mw)return chatRender();V.cwid=null;
+const by={};S.msg.forEach(m=>{const o=m.from_id==ME.id?m.to_id:m.from_id;(by[o]=by[o]||[]).push(m)});
+const L=Object.keys(by).map(id=>({id,last:by[id][0],un:by[id].filter(m=>m.to_id==ME.id&&!m.read).length})).sort((a,b)=>Date.parse(b.last.created_at)-Date.parse(a.last.created_at));
+el.innerHTML='<div class="msH"><h2>✉ Messages</h2><button class="ghost" onclick="$(\'msgDlg\').close()">Fermer</button></div><p class="mut" style="margin:0 0 10px">Discutez avec les autres artistes et ManiMusic pour préparer vos featurings. Les fans n’ont pas accès à cette messagerie.</p><button style="width:100%;margin-bottom:10px" onclick="msgNew()">＋ Nouveau message</button>'+
+(V.msgErr?'<p class="mut">La messagerie n’est pas encore activée (script update-24 à exécuter dans Supabase).</p>':'')+
+L.map(x=>{const p=mpr(x.id),m=x.last;return '<div class="lbR" style="cursor:pointer" onclick="chatOpen(\''+x.id+'\')"><div class="lbA" style="background:'+avt(p)+'">'+(p.avatar?'':esc(p.name[0]))+'</div><div class="lbN"><b>'+esc(p.name)+(S.of[x.id]?'<span class="fdn"></span>':'')+'</b><small>'+(m.from_id==ME.id?'Vous : ':'')+esc(String(m.body).slice(0,60))+'</small></div>'+(x.un?'<span class="msU">'+(x.un>9?'9+':x.un)+'</span>':'')+'</div>'}).join('')||(V.msgErr?'':'<p class="mut">Aucune conversation pour l’instant. Touchez « Nouveau message ».</p>')}
+async function getAdm(){if(V.adm!==undefined)return;V.adm=null;try{const r=await SB.from('profiles').select('id,name,role').eq('role','admin').limit(1);if(r.data&&r.data[0]){V.adm=r.data[0].id;S.mn[V.adm]=r.data[0]}}catch(e){}}
+function msgNew(){V.mw='new';V.mq='';V.cwid=null;msgRender();getAdm().then(newRes);setTimeout(()=>{const e=$('msq');if(e)e.focus()},60)}
+function newRes(){const r=$('msRes');if(!r)return;const q=(V.mq||'').trim().toLowerCase();
+let A=(S.profAll||[]).filter(p=>p.id!=ME.id&&!inact(p)&&(!q||(p.name||'').toLowerCase().includes(q)||(p.username||'').includes(q)));
+A.sort((a,b)=>(S.of[b.id]?1:0)-(S.of[a.id]?1:0)||(a.name||'').localeCompare(b.name||'','fr'));A=A.slice(0,q?30:15);
+let h='';if(ME.role!='admin'&&V.adm&&(!q||'manimusic propriétaire'.includes(q)))h+='<div class="lbR" style="cursor:pointer" onclick="chatOpen(\''+V.adm+'\')"><div class="lbA" style="background:var(--g)">👑</div><div class="lbN"><b>ManiMusic (propriétaire)</b><small>Écrire à l’équipe</small></div></div>';
+h+=A.map(p=>'<div class="lbR" style="cursor:pointer" onclick="chatOpen(\''+p.id+'\')"><div class="lbA" style="background:'+avt(p)+'">'+(p.avatar?'':esc((p.name||'?')[0]))+'</div><div class="lbN"><b>'+esc(p.name||'')+vfb(p.id)+(S.of[p.id]?'<span class="fdn"></span>':'')+'</b><small>'+(S.of[p.id]?'🤝 Ouvert pour un featuring · ':'')+esc((p.genre||'').split(' · ')[0])+'</small></div></div>').join('');
+r.innerHTML=h||'<p class="mut">Aucun artiste trouvé.</p>'}
+function chatRender(){const el=$('msg-l'),id=V.mw;if(!el)return;
+if(id=='new'){V.cwid=null;el.innerHTML='<div class="msH"><button class="ghost" onclick="V.mw=null;msgRender()">←</button><h2 style="font-size:18px">Nouveau message</h2><button class="ghost" onclick="$(\'msgDlg\').close()">✕</button></div><input id="msq" type="search" placeholder="Rechercher un artiste" aria-label="Recherche" value="'+esc(V.mq||'')+'" oninput="V.mq=this.value;newRes()"><div id="msRes" style="margin-top:8px"></div>';newRes();return}
+const p=mpr(id);
+if(!$('chBox')||V.cwid!=id){V.cwid=id;el.innerHTML='<div class="msH"><button class="ghost" onclick="V.mw=null;msgRender()">←</button><div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0"><div class="lbA" style="width:44px;height:44px;border-width:2px;background:'+avt(p)+'">'+(p.avatar?'':esc(p.name[0]))+'</div><b style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(p.name)+(S.of[id]?'<span class="fdn"></span>':'')+'</b></div><button class="ghost" onclick="$(\'msgDlg\').close()">✕</button></div><div id="chBox" class="chBox"></div><div class="chIn"><textarea id="chTx" rows="2" maxlength="1000" placeholder="Écrivez votre message…" aria-label="Message"></textarea><button onclick="chatSend()">Envoyer</button></div>'}
+const L=S.msg.filter(m=>(m.from_id==ME.id&&m.to_id==id)||(m.from_id==id&&m.to_id==ME.id)).slice().reverse(),bx=$('chBox');
+bx.innerHTML=L.map(m=>'<div class="bb '+(m.from_id==ME.id?'me':'th')+'"><p>'+esc(m.body)+'</p><small>'+dtl(m.created_at)+'</small></div>').join('')||'<p class="mut">Aucun message. Écrivez le premier pour proposer un featuring !</p>';bx.scrollTop=bx.scrollHeight}
+async function chatSend(){const id=V.mw,t=$('chTx');if(!id||id=='new'||!t||V.cs)return;const b=t.value.trim();if(!b)return;V.cs=1;
+try{const r=await SB.from('messages').insert({from_id:ME.id,to_id:id,body:b.slice(0,1000)}).select('*').single();if(r.error)throw r.error;S.msg.unshift(r.data);t.value='';chatRender()}catch(e){toast('Message non envoyé : '+(e.message||e))}V.cs=0}
+async function msgReload(live){await loadMsgs();const d=$('msgDlg');if(d&&d.open){msgRender();if(V.mw&&V.mw!='new')msgRead(V.mw)}else if(live)toast('✉ Nouveau message');msgBadge()}
+function msgSub(){if(!isArt()){if(V.mC){try{SB.removeChannel(V.mC)}catch(e){}V.mC=null}V.mCh=null;return}if(V.mCh==ME.id)return;
+try{if(V.mC)SB.removeChannel(V.mC);V.mCh=ME.id;V.mC=SB.channel('ms'+ME.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'to_id=eq.'+ME.id},()=>msgReload(true)).subscribe()}catch(e){}}
+setInterval(()=>{if(isArt()&&!document.hidden&&!V.cs)msgReload(false)},45000);
+
+/* --- Notification « message » : ouvre la discussion --- */
+(function(){const o=ntGo;ntGo=function(l){const p=String(l||'').split(':');if(p[0]=='chat'){const d=$('notifDlg');if(d.open)d.close();return chatOpen(p[1])}return o(l)}})();
+
+/* --- Branchement sur l'affichage existant (chargement paresseux : le premier load() part avant les enveloppes) --- */
+(function(){const r=render;render=function(){r();try{if(isArt()&&V.fl!=ME.id){V.fl=ME.id;loadFeat().then(loadMsgs).then(()=>render())}featProfile();featDots();featFilter();msgBadge();msgSub()}catch(e){console.error(e)}}})();
 render();
 </script></body></html>
