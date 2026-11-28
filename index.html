@@ -1704,4 +1704,36 @@ setInterval(()=>{if(isArt()&&!document.hidden&&!V.cs)msgReload(false)},45000);
 /* --- Branchement sur l'affichage existant (chargement paresseux : le premier load() part avant les enveloppes) --- */
 (function(){const r=render;render=function(){r();try{if(isArt()&&V.fl!=ME.id){V.fl=ME.id;loadFeat().then(loadMsgs).then(()=>render())}featProfile();featDots();featFilter();msgBadge();msgSub()}catch(e){console.error(e)}}})();
 render();
+
+/* ===== v46 : mot de passe oublié (par e-mail) ===== */
+(function(){
+if($('fgDlg'))return;
+document.body.insertAdjacentHTML('beforeend',
+'<dialog id="fgDlg"><div id="fg-l"></div></dialog>'+
+'<dialog id="rsDlg"><h2>Nouveau mot de passe</h2><p class="mut">Choisissez un nouveau mot de passe (6 caractères minimum).</p><label for="rsp1">Nouveau mot de passe</label><input id="rsp1" type="password" autocomplete="new-password"><label for="rsp2">Répétez-le</label><input id="rsp2" type="password" autocomplete="new-password"><div class="row"><button onclick="resetSave()">Enregistrer</button></div></dialog>');
+const lk='<p style="text-align:center;margin:14px 0 0"><a href="#" onclick="openForgot();return false" style="color:#19d3f3;font-weight:600">Mot de passe oublié ?</a></p>';
+const f=$('logDlg')&&$('logDlg').querySelector('form');if(f)f.insertAdjacentHTML('beforeend',lk);
+const c=$('inscr')&&$('inscr').querySelector('.card');if(c)c.insertAdjacentHTML('beforeend',lk);
+})();
+function fgHTML(msg,ok){return '<h2>Mot de passe oublié ?</h2><p class="mut">Entrez l’adresse e-mail de votre compte. Nous vous envoyons un lien pour choisir un nouveau mot de passe.</p><label for="fge">Adresse e-mail</label><input id="fge" type="email" inputmode="email" autocomplete="email" placeholder="exemple@gmail.com">'+(msg?'<p style="color:'+(ok?'#2ee66b':'#ff9a9a')+';overflow-wrap:anywhere">'+msg+'</p>':'')+'<div class="row"><button id="fgb" onclick="forgotSend()">Envoyer le lien</button><button class="ghost" onclick="$(\'fgDlg\').close()">Fermer</button></div><p class="mut"><small>Compte fan (identifiant du type Fan-1234) : il n’a pas d’e-mail. Votre identifiant et votre code sont enregistrés sur le téléphone utilisé à la création ; sinon contactez ManiMusic.</small></p>'}
+function openForgot(){['logDlg','wel'].forEach(i=>{const d=$(i);if(d&&d.open)d.close()});
+let v='';try{v=$('le').value.trim()}catch(e){}
+$('fg-l').innerHTML=fgHTML('',0);if(v.includes('@'))$('fge').value=v;$('fgDlg').showModal()}
+async function forgotSend(){const e=($('fge').value||'').trim().toLowerCase();
+if(!e.includes('@')||!e.includes('.')){$('fg-l').innerHTML=fgHTML('Écrivez une adresse e-mail valide.',0);return}
+if(/@fans\.manimusic\.app$/.test(e)){$('fg-l').innerHTML=fgHTML('Les comptes fan n’ont pas de vraie adresse e-mail.',0);return}
+const b=$('fgb');b.disabled=true;b.textContent='Envoi…';
+try{const r=await SB.auth.resetPasswordForEmail(e,{redirectTo:location.origin+'/'});
+if(r.error){const m=/rate|limit|seconds/i.test(r.error.message)?'Trop de demandes pour le moment. Réessayez dans quelques minutes.':'Erreur : '+esc(r.error.message);$('fg-l').innerHTML=fgHTML(m,0);$('fge').value=e;return}
+$('fg-l').innerHTML=fgHTML('✓ Si cette adresse est celle d’un compte ManiMusic, un message vient d’être envoyé. Ouvrez-le et touchez le lien. Regardez aussi dans les courriers indésirables (spam).',1);$('fge').value=e}
+catch(x){$('fg-l').innerHTML=fgHTML('Erreur : '+esc(x.message||x),0)}}
+function openReset(){['logDlg','wel','fgDlg'].forEach(i=>{const d=$(i);if(d&&d.open)d.close()});const d=$('rsDlg');if(d&&!d.open)d.showModal()}
+async function resetSave(){const a=$('rsp1').value,b=$('rsp2').value;
+if(a.length<6)return toast('6 caractères minimum.');if(a!==b)return toast('Les deux mots de passe ne sont pas identiques.');
+await busy(async()=>{const r=await SB.auth.updateUser({password:a});if(r.error)throw r.error;
+$('rsp1').value='';$('rsp2').value='';$('rsDlg').close();V.rec=0;try{history.replaceState(null,'',location.pathname)}catch(e){}
+await load();toast('Mot de passe changé ✓ Vous êtes connecté.')})}
+(function(){const hs=location.hash||'';if(/type=recovery/.test(hs))V.rec=1;
+try{SB.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY')V.rec=1})}catch(e){}
+let n=0;const t=setInterval(()=>{n++;const sp=$('splash');if(V.rec&&(!sp||sp.style.display=='none')){clearInterval(t);openReset()}if(n>40)clearInterval(t)},500)})();
 </script></body></html>
